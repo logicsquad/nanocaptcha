@@ -5,8 +5,6 @@
   <version>0.0.1-SNAPSHOT</version>
   <name>NanoCaptcha</name>
   <build>
-    <sourceDirectory>Java/src</sourceDirectory>
-    <testSourceDirectory>Java/test</testSourceDirectory>
     <plugins>
       <plugin>
         <artifactId>maven-compiler-plugin</artifactId>
