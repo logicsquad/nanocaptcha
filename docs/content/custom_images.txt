@@ -1,0 +1,96 @@
+---
+title:      Customizing Your Image CAPTCHAs
+created_at: 2009-02-10 14:05:15.956302 -06:00
+filter:
+  - erb
+  - textile
+---
+p(title). <%= h(@page.title) %>
+
+While the default implementation of SimpleCaptcha will hopefully provide all your needs straight out-of-the-box, you may find it useful to customize your CAPTCHA. SimpleCaptcha provides hooks allowing you to specify how answers are generated (five Latin characters, from a list of words, etc.), how the answer is rendered on the image, how backgrounds are generated, and so forth.
+
+h2. The Builder
+
+Image CAPTCHAs are generated using @Captcha.Builder@: 
+
+<% coderay :lang => "java", :line_numbers => :inline do -%>
+Captcha captcha = new Captcha.Builder(200, 50)
+    .addText()
+    .build(); // Required! Always!
+<% end -%>
+
+This will generate a 200x50 image that looks something like this:
+
+<div align="center">!i/simplest.png!</div>
+
+Here, the call to @addText()@ on line 2 uses the default behavior to generate an answer: five random Latin characters. Most of the @add*@ methods in the @Builder@ have two versions: a no-arg version which provides default behavior, and another which will allow you to provide your own behavior. For example, in addition to the @addText()@ method there is an @addText(TextProducer)@ version. If you had your own @TextProducer@, you could use it with the builder like so:
+
+<% coderay :lang => "java", :line_numbers => :inline do -%>
+Captcha captcha = new Captcha.Builder(200, 50)
+    .addText(new MyTextProducer())
+    .build();
+<% end -%>
+
+Arabic and Chinese @TextProducers@ are provided for you. So if you wanted to generate an answer in Arabic, you would do the following:
+
+<% coderay :lang => "java", :line_numbers => :inline do -%>
+Captcha captcha = new Captcha.Builder(200, 50)
+    .addText(new ArabicTextProducer())
+    .build();
+<% end -%>
+
+Let's take a look at a more flushed-out implementation of of the @Builder@.
+
+<% coderay :lang => "java", :line_numbers => :inline do -%>
+Captcha captcha = new Captcha.Builder(200, 50)
+    .addText()
+    .addBackground()
+    .addNoise()
+    .gimp()
+    .addBorder()
+    .build(); // Required. 
+<% end -%>
+
+This would yield something like:
+
+<div align="center">!i/defaults_all.png!</div>
+
+Each of the builder methods has a no-args version, and most have one (or more) overloaded versions so you can add your own behavior. Let's take our last example and make it more customized:
+
+<% coderay :lang => "java", :line_numbers => :inline do -%>
+Captcha captcha = new Captcha.Builder(200, 50)
+    .addText(new ChineseTextProducer(6)) // Answer will be 6 Chinese characters
+    .addBackground(new GradiatedBackgroundProducer())
+    .addNoise(new StraightLineNoiseProducer())
+    .gimp(new FishEyeGimpyRenderer())
+    .addBorder()
+    .build(); // Required. 
+<% end -%>
+
+Here, each of the methods on lines 2-4 have had non-default types passed to them, and would generate something like this:
+
+<div align="center">!i/example_complete.png!</div>
+
+Note that the @gimp()@, @addNoise()@, and @addText()@ methods can be called multiple times. For example:
+
+<% coderay :lang => "java", :line_numbers => :inline do -%>
+Captcha captcha = new Captcha.Builder(250, 50)
+    .addBackground(new GradiatedBackgroundProducer())
+    .addText(new ChineseTextProducer(2))
+    .addText(new DefaultTextProducer(2))
+    .addText(new ChineseTextProducer(2))
+    .gimp()
+    .gimp(new DropShadowGimpyRenderer())
+    .addNoise()
+    .addNoise()
+    .addNoise()
+    .addBorder()
+    .build(); // Required.
+<% end -%>
+
+This would generate something like this:
+
+<div align="center">!i/chinese_multi.png!</div>
+
+SimpleCaptcha is designed to be easy both to use and extend. Feel free to experiment with it to get the behavior you need for your project
+

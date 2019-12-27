@@ -1,0 +1,83 @@
+---
+extension: html
+filter:    
+    - erb
+---
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en-us">
+<head>
+   <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+   <title>SimpleCaptcha - <%= @page.title %></title>
+   <meta name="author" content="<%= @page.author %>" />
+   <meta name="description" content="SimpleCaptcha - A CAPTCHA library for Java 1.5 and Java 6" />
+   <meta name="keywords" content="captcha, java, j2ee, library, grails, java 1.5, java 6" />
+
+   <!-- Blueprint CSS Framework -->
+   <link rel="stylesheet" href="/css/blueprint/screen.css" type="text/css" media="screen, projection" />
+   <link rel="stylesheet" href="/css/blueprint/print.css" type="text/css" media="print" />
+
+   <!-- CodeRay syntax highlighting CSS -->
+   <link rel="stylesheet" href="/css/coderay.css" type="text/css" />
+
+    <link rel="stylesheet" href="/css/uv/twilight.css" type="text/css" media="screen, projection" />
+    <link rel="stylesheet" href="/css/uv/spacecadet.css" type="text/css" media="screen, projection" />
+
+   <!-- Homepage CSS -->
+   <link rel="stylesheet" href="/css/site.css" type="text/css" media="screen, projection" />
+</head>
+<body>
+
+<div class="container">
+
+    <div class="column span-20 prepend-2 append-2 first last" id="header">
+        <p class="title">SimpleCaptcha</p>
+        <hr>
+    </div>
+
+   <div class="column span-14 prepend-2 first">
+      <%= @content %>
+   </div>
+
+   <div class="column prepend-1 span-6 last">
+        <h4><a href="/index.html">Home</a></h4>
+        <h4>Download SimpleCaptcha</h4>
+        <ul>
+            <li><a href="http://sourceforge.net/projects/simplecaptcha/files/simplecaptcha-1.2.1.jar/download">SimpleCaptcha for Java 6</a></li>
+            <li><a href="http://sourceforge.net/projects/simplecaptcha/files/simplecaptcha-1.2-jdk1.5.jar/download">SimpleCaptcha for Java 1.5</a></li>
+        </ul>
+        <h4><a href="/installing.html">Installing</a></h4>
+        <h4>Customizing</h4>
+        <ul>
+          <li><a href="/custom_images.html">Custom Image CAPTCHAs</a></li>
+          <li><a href="/custom_audio.html">Custom Audio CAPTCHAs</a></li>
+        </ul>
+        <h4>Example Applications</h4>
+        <ul>
+            <li><a href="/samples.html">Running</a></li>
+            <li><a href="http://sourceforge.net/projects/simplecaptcha/files/SimpleCaptcha/1.1.1/Sample%20Apps/simplecaptcha-grails-example.war/download">Download Grails Example</a></li>
+            <li><a href="http://sourceforge.net/projects/simplecaptcha/files/simplecaptcha-1.2-j2ee-sample.war/download">Download J2EE Example</a></li>
+        </ul>
+        <h4>Source</h4>
+        <ul>
+            <li><a href="/building.html">Building From Source</a></li>
+            <li><a href="https://sourceforge.net/scm/?type=git&group_id=147810">Get Source Code</a></li>
+            <li><a href="http://simplecaptcha.git.sourceforge.net/git/gitweb.cgi?p=simplecaptcha/simplecaptcha;a=summary">Browse Repository</a></li>
+        </ul>
+        <h4><a href="/javadocs/index.html">Javadocs</a></h4>
+    </div>
+<!-- Piwik -->
+<script type="text/javascript">
+var pkBaseURL = (("https:" == document.location.protocol) ? "https://sourceforge.net/apps/piwik/simplecaptcha/" : "http://sourceforge.net/apps/piwik/simplecaptcha/");
+document.write(unescape("%3Cscript src='" + pkBaseURL + "piwik.js' type='text/javascript'%3E%3C/script%3E"));
+</script><script type="text/javascript">
+try {
+var piwikTracker = Piwik.getTracker(pkBaseURL + "piwik.php", 1);
+piwikTracker.trackPageView();
+piwikTracker.enableLinkTracking();
+} catch( err ) {}
+</script><noscript><p><img src="http://sourceforge.net/apps/piwik/simplecaptcha/piwik.php?idsite=1" style="border:0" alt=""/></p></noscript>
+<!-- End Piwik Tag -->
+</body>
+</html>

@@ -1,0 +1,16 @@
+SITE.xpaths << '/html/body//img[@usemap]'
+
+SITE.user = 'jchilders235,simplecaptcha'
+SITE.host = 'web.sourceforge.net'
+SITE.remote_dir = '/home/groups/s/si/simplecaptcha/htdocs/'
+
+# see /Library/Ruby/Gems/1.8/gems/webby-0.9.4/lib/webby/tasks
+task :default => :build
+
+desc 'deploy the site to the webserver'
+# SITE.rsync_args = ['--delete', '-r', '--dry-run', '--verbose']
+SITE.rsync_args = ['--delete', '-r', '--verbose']
+task :deploy => [:build, 'deploy:rsync']
+
+
+# EOF

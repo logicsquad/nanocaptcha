@@ -1,0 +1,58 @@
+---
+title:      Customizing Your Audio CAPTCHAs
+created_at: 2009-02-10 14:05:15.956302 -06:00
+filter:
+  - erb
+  - textile
+---
+p(title). <%= h(@page.title) %>
+
+Audio CAPTCHAs allow you to gracefully handle visually-impaired users. These CAPTCHAs are generated similarly to image CAPTCHAs, using a @Builder@. Also like @Captcha.Builder@, hooks are provided to allow for developers to provide their own behavior.
+
+h2. The Builder
+
+Audio CAPTCHAs are generated using @AudioCaptcha.Builder@: 
+
+<% coderay :lang => "java", :line_numbers => :inline do -%>
+AudioCaptcha ac = new AudioCaptcha.Builder()
+    .addAnswer()
+    .addNoise()
+    .build(); // Required
+<% end -%>
+
+The default behavior here is to generate an audio CAPTCHA that is five spoken (English) numbers, from a list of voices. For example, the above would generate something like the following:
+
+<audio controls="true" src="audio/audio_captcha1.wav" type="audio/wav"></audio>
+
+The voices are picked at random from the @/sounds/en/numbers@ directory in the JAR file. If you would like to provide your own files for the numbers, you can do so:
+
+<% coderay :lang => "java", :line_numbers => :inline do -%>
+Map<Integer, String[]> voicesMap = new HashMap<Integer, String[]>();
+String[] fileLocs0 = {"/my_sounds/0-loud.wav", "/my_sounds/0-quiet.wav"};
+String[] fileLocs1 = {"/my_sounds/1-loud.wav", "/my_sounds/1-quiet.wav"};
+...
+voicesMap.put(0, fileLocs0);
+voicesMap.put(1, fileLocs1);
+VoiceProducer vProd = new RandomNumberVoiceProducer(voicesMap);
+
+AudioCaptcha ac = new AudioCaptcha.Builder()
+    .addAnswer()
+    .addVoice(vProd)
+    .addNoise()
+    .build(); // Required
+<% end -%>
+
+You can also provide your own noise:
+
+<% coderay :lang => "java", :line_numbers => :inline do -%>
+String[] noiseFiles = {"/my_sounds/my_noise1.wav", "/my_sounds/my_noise2.wav"};
+NoiseProducer nProd = new NoiseProducer(noiseFiles);
+
+AudioCaptcha ac = new AudioCaptcha.Builder()
+    .addAnswer()
+    .addVoice()
+    .addNoise(nProd)
+    .build(); // Required
+<% end -%>
+
+

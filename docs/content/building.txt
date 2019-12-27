@@ -1,0 +1,30 @@
+---
+title:      Building SimpleCaptcha
+created_at: 2010-12-18 00:22:15.956302 -06:00
+filter:
+  - erb
+  - textile
+---
+p(title). <%= h(@page.title) %>
+
+Buliding SimpleCaptcha from source is intended to be a painless process:
+
+<% coderay :lang => 'bash', :line_numbers => nil do -%>
+    # git clone git://simplecaptcha.git.sourceforge.net/gitroot/simplecaptcha/simplecaptcha
+    # cd simplecaptcha
+    # ant
+<% end -%>
+
+To build the Java5 version, check out the java1.5 branch and build:
+
+<% coderay :lang => 'bash', :line_numbers => nil do -%>
+    # git checkout java1.5
+    # ant
+<% end -%>
+
+Note: If you get errors during the build about various things related to javax.servlet, try setting the $CATALINA_HOME environment variable to a directory containing the servlet-api.jar. For example:
+
+<% coderay :lang => 'bash', :line_numbers => nil do -%>
+    # export CATALINA_HOME=/usr/apache-tomcat-6.0.29
+<% end -%>
+
