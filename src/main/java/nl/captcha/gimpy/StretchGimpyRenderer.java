@@ -1,10 +1,7 @@
 package nl.captcha.gimpy;
 
 import java.awt.Graphics2D;
-import java.awt.Rectangle;
-import java.awt.RenderingHints;
 import java.awt.geom.AffineTransform;
-import java.awt.image.AffineTransformOp;
 import java.awt.image.BufferedImage;
 
 /**
@@ -37,8 +34,6 @@ public class StretchGimpyRenderer implements GimpyRenderer {
 		Graphics2D g = image.createGraphics();
 		AffineTransform at = new AffineTransform();
 		at.scale(_xScale, _yScale);
-//		RenderingHints hints = new RenderingHints(RenderingHints.KEY_INTERPOLATION,
-//                RenderingHints.VALUE_INTERPOLATION_BICUBIC);
 		g.drawRenderedImage(image, at);
 	}
 }

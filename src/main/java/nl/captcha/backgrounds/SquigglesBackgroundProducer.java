@@ -31,13 +31,11 @@ public class SquigglesBackgroundProducer implements BackgroundProducer {
         graphics.translate(width * -1.0, 0.0);
         double delta = 5.0;
         double xt;
-        double ts = 0.0;
         for (xt = 0.0; xt < (2.0 * width); xt += delta) {
             Arc2D arc = new Arc2D.Double(0, 0, width, height, 0.0, 360.0,
                     Arc2D.OPEN);
             graphics.draw(arc);
             graphics.translate(delta, 0.0);
-            ts += delta;
         }
         graphics.dispose();
         return result;

@@ -7,7 +7,6 @@ import java.awt.image.BufferedImage;
 import java.awt.image.BufferedImageFilter;
 import java.awt.image.BufferedImageOp;
 import java.awt.image.FilteredImageSource;
-import java.awt.image.ImageFilter;
 
 public class ImageUtil {
 	public static final void applyFilter(BufferedImage img, BufferedImageOp filter) {
