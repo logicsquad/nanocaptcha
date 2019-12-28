@@ -1,12 +1,15 @@
-SimpleCaptcha - A Java library for creating CAPTCHAs for J2EE applications,
-including Spring MVC, Struts, and Grails.
+NanoCaptcha
+===========
 
-Example implementations are located in the examples/ directory. The more robust
-examples were done using Grails; this is the recommended starting point for
-learning how to implement and use SimpleCaptcha.
+NanoCaptcha is a Java library for generating CAPTCHAs. NanoCaptcha is
+intended to be:
 
-To build, simply run ant from this directory. The only requirement is that the 
-$CATALINA_HOME environment variable be set:
+* Self-contained: no network API hits to any external services.
 
-    # set $CATALINA_HOME=/usr/apache-tomcat-6.0.18/
-    # ant
+* Minimally-dependent: using NanoCaptcha should not involve pulling in
+  a plethora of JARs.
+
+NanoCaptcha is based on
+[SimpleCaptcha](https://sourceforge.net/p/simplecaptcha/),
+and uses
+[JH Labs Java Image Filters](http://huxtable.com/ip/filters/).
