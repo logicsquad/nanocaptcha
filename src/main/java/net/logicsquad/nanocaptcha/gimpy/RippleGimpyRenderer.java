@@ -1,7 +1,5 @@
 package net.logicsquad.nanocaptcha.gimpy;
 
-import static net.logicsquad.nanocaptcha.util.ImageUtil.applyFilter;
-
 import java.awt.image.BufferedImage;
 
 import com.jhlabs.image.RippleFilter;
@@ -24,6 +22,6 @@ public class RippleGimpyRenderer implements GimpyRenderer {
         filter.setYAmplitude(1.7f);
         filter.setXWavelength(15);
         filter.setYWavelength(5);
-        applyFilter(image, filter);
+        GimpyRenderer.applyFilter(image, filter);
     }
 }

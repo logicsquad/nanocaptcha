@@ -1,7 +1,5 @@
 package net.logicsquad.nanocaptcha.gimpy;
 
-import static net.logicsquad.nanocaptcha.util.ImageUtil.applyFilter;
-
 import java.awt.image.BufferedImage;
 import com.jhlabs.image.ShadowFilter;
 
@@ -32,6 +30,6 @@ public class DropShadowGimpyRenderer implements GimpyRenderer {
         ShadowFilter sFilter = new ShadowFilter();
         sFilter.setRadius(_radius);
         sFilter.setOpacity(_opacity);
-        applyFilter(image, sFilter);
+        GimpyRenderer.applyFilter(image, sFilter);
     }
 }

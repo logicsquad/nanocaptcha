@@ -1,7 +1,5 @@
 package net.logicsquad.nanocaptcha.gimpy;
 
-import static net.logicsquad.nanocaptcha.util.ImageUtil.applyFilter;
-
 import java.awt.image.BufferedImage;
 import com.jhlabs.image.BlockFilter;
 
@@ -22,6 +20,6 @@ public class BlockGimpyRenderer implements GimpyRenderer {
 	public void gimp(BufferedImage image) {
 		BlockFilter filter = new BlockFilter();
 		filter.setBlockSize(_blockSize);
-		applyFilter(image, filter);
+		GimpyRenderer.applyFilter(image, filter);
 	}
 }
