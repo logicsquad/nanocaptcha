@@ -4,6 +4,16 @@
   <artifactId>nanocaptcha</artifactId>
   <version>0.0.1-SNAPSHOT</version>
   <name>NanoCaptcha</name>
+
+  <licenses>
+    <license>
+      <name>3-Clause BSD License</name>
+      <url>https://opensource.org/licenses/BSD-3-Clause</url>
+      <distribution>repo</distribution>
+      <comments>See LICENSE.txt in this project.</comments>
+    </license>
+  </licenses>
+
   <build>
     <plugins>
       <plugin>
