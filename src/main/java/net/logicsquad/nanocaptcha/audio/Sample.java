@@ -35,6 +35,10 @@ public class Sample {
 
     private final AudioInputStream _audioInputStream;
 
+    public Sample(String filename) {
+		this(Sample.class.getResourceAsStream(filename));
+    }
+
     public Sample(InputStream is) {
         if (is instanceof AudioInputStream) {
             _audioInputStream = (AudioInputStream) is;

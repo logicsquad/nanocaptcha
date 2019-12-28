@@ -6,7 +6,6 @@ import java.util.Random;
 
 import net.logicsquad.nanocaptcha.audio.Mixer;
 import net.logicsquad.nanocaptcha.audio.Sample;
-import net.logicsquad.nanocaptcha.util.FileUtil;
 
 /**
  * Adds noise to a {@link Sample} from one of the given <code>noiseFiles</code>.
@@ -50,7 +49,7 @@ public class RandomNoiseProducer implements NoiseProducer {
     @Override public Sample addNoise(List<Sample> samples) {
         Sample appended = Mixer.append(samples);
         String noiseFile = _noiseFiles[RAND.nextInt(_noiseFiles.length)];
-        Sample noise = FileUtil.readSample(noiseFile);
+        Sample noise = new Sample(noiseFile);
 
         // Decrease the volume of the noise to make sure the voices can be heard
         return Mixer.mix(appended, 1.0, noise, 0.6);

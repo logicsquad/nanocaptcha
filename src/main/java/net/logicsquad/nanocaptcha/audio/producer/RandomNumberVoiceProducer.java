@@ -7,7 +7,6 @@ import java.util.Map;
 import java.util.Random;
 
 import net.logicsquad.nanocaptcha.audio.Sample;
-import net.logicsquad.nanocaptcha.util.FileUtil;
 
 /**
  * <p>
@@ -86,6 +85,6 @@ public class RandomNumberVoiceProducer implements VoiceProducer {
         String[] files = _voices.get(idx);
         String filename = files[RAND.nextInt(files.length)];
 
-        return FileUtil.readSample(filename);
+        return new Sample(filename);
     }
 }
