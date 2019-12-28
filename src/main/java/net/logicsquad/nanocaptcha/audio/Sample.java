@@ -5,9 +5,12 @@ import java.io.*;
 import javax.sound.sampled.*;
 
 /**
+ * <p>
  * Class representing a sound sample, typically read in from a file. Note that
  * at this time this class only supports wav files with the following
  * characteristics:
+ * </p>
+ * 
  * <ul>
  * <li>Sample rate: 16KHz</li>
  * <li>Sample size: 16 bits</li>
@@ -23,6 +26,7 @@ import javax.sound.sampled.*;
  * 
  * @author <a href="mailto:james.childers@gmail.com">James Childers</a>
  * @author <a href="mailto:paulh@logicsquad.net">Paul Hoadley</a>
+ * @since 1.0
  */
 public class Sample {
 

@@ -9,16 +9,12 @@ import java.util.Random;
 import net.logicsquad.nanocaptcha.audio.Sample;
 
 /**
- * <p>
- * {@link VoiceProducer} which generates a vocalization for a given number,
- * randomly selecting from a list of voices. The default voices are located in
- * the jar in the <code>sounds/en/numbers</code> directory, and have filenames
- * with a format of <i>num</i>-<i>voice</i>.wav, e.g.:
- * <code>sounds/en/numbers/1-alex.wav</code>.
- * </p>
+ * A {@link VoiceProducer} that can generate a vocalization for a given number
+ * in a randomly chosen voice.
  * 
  * @author <a href="mailto:james.childers@gmail.com">James Childers</a>
  * @author <a href="mailto:paulh@logicsquad.net">Paul Hoadley</a>
+ * @since 1.0
  */
 public class RandomNumberVoiceProducer implements VoiceProducer {
 

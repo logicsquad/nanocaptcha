@@ -13,10 +13,8 @@ import net.logicsquad.nanocaptcha.text.producer.NumbersAnswerProducer;
 import net.logicsquad.nanocaptcha.text.producer.TextProducer;
 
 /**
- * A builder for generating a CAPTCHA audio/answer pair.
- *
  * <p>
- * Example for generating a new CAPTCHA:
+ * Represents an audio CAPTCHA. Example for generating a new CAPTCHA:
  * </p>
  * 
  * <pre>
@@ -31,7 +29,7 @@ import net.logicsquad.nanocaptcha.text.producer.TextProducer;
  * </p>
  *
  * @author <a href="mailto:james.childers@gmail.com">James Childers</a>
- *
+ * @since 1.0
  */
 public final class AudioCaptcha {
 

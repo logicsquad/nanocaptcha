@@ -8,20 +8,19 @@ import net.logicsquad.nanocaptcha.audio.Mixer;
 import net.logicsquad.nanocaptcha.audio.Sample;
 
 /**
- * Adds noise to a {@link Sample} from one of the given <code>noiseFiles</code>.
- * By default this noise comes from one of three files, all located in
- * <code>/sounds/noises/</code>: <code>radio_tuning.wav</code>,
- * <code>restaurant.wav</code>, and <code>swimming.wav</code>. This can be
- * overridden by passing the location of your own sound files to the
- * constructor, e.g.:
+ * <p>
+ * Adds noise to a {@link Sample} from one of the built-in noise files:
+ * </p>
  * 
- * <pre>
- * String myFiles = { &quot;/mysounds/noise1.wav&quot;, &quot;/mysounds/noise2.wav&quot; };
- * NoiseProducer myNp = new RandomNoiseProducer(myFiles);
- * </pre>
+ * <ul>
+ * <li>{@code radio_tuning.wav}</li>
+ * <li>{@code restaurant.wav}</li>
+ * <li>{@code swimming.wav}</li>
+ * </ul>
  * 
  * @author <a href="mailto:james.childers@gmail.com">James Childers</a>
  * @author <a href="mailto:paulh@logicsquad.net">Paul Hoadley</a>
+ * @since 1.0
  */
 public class RandomNoiseProducer implements NoiseProducer {
 
