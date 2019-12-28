@@ -4,6 +4,12 @@
   <artifactId>nanocaptcha</artifactId>
   <version>0.0.1-SNAPSHOT</version>
   <name>NanoCaptcha</name>
+  <description>A Java-based CAPTCHA implementation with a minimum of dependencies.</description>
+
+  <organization>
+    <name>Logic Squad</name>
+    <url>http://logicsquad.net/</url>
+  </organization>
 
   <licenses>
     <license>
@@ -14,18 +20,23 @@
     </license>
   </licenses>
 
-  <build>
-    <plugins>
-      <plugin>
-        <artifactId>maven-compiler-plugin</artifactId>
-        <version>3.8.0</version>
-        <configuration>
-          <source>1.8</source>
-          <target>1.8</target>
-        </configuration>
-      </plugin>
-    </plugins>
-  </build>
+  <developers>
+    <developer>
+      <id>paulh</id>
+      <name>Paul Hoadley</name>
+      <email>paulh@logicsquad.net</email>
+      <organization>Logic Squad</organization>
+      <timezone>Australia/Adelaide</timezone>
+    </developer>
+  </developers>
+
+  <properties>
+    <main.class></main.class>
+    <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <maven.compiler.source>1.8</maven.compiler.source>
+    <maven.compiler.target>1.8</maven.compiler.target>
+  </properties>
 
   <dependencies>
     <dependency>
@@ -42,7 +53,7 @@
     <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
-      <version>4.13-rc-2</version>
+      <version>4.12</version>
       <scope>test</scope>
     </dependency>
   </dependencies>
