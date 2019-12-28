@@ -35,8 +35,12 @@ public class NumbersContentProducer implements ContentProducer {
 	 * Constructor taking a {@code length} specifier.
 	 * 
 	 * @param length length of returned content strings
+	 * @throws IllegalArgumentException if {@code length} is not positive
 	 */
 	public NumbersContentProducer(int length) {
+		if (length <= 0) {
+			throw new IllegalArgumentException("Must have length > 0");
+		}
 		producer = new DefaultContentProducer(length, NUMBERS);
 	}
 
