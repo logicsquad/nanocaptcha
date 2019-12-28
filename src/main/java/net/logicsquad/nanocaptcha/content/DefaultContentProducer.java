@@ -1,4 +1,4 @@
-package net.logicsquad.nanocaptcha.text.producer;
+package net.logicsquad.nanocaptcha.content;
 
 import java.security.SecureRandom;
 import java.util.Random;
@@ -9,7 +9,7 @@ import java.util.Random;
  * @author <a href="mailto:james.childers@gmail.com">James Childers</a>
  * 
  */
-public class DefaultTextProducer implements TextProducer {
+public class DefaultContentProducer implements ContentProducer {
 
     private static final Random RAND = new SecureRandom();
     private static final int DEFAULT_LENGTH = 5;
@@ -20,17 +20,17 @@ public class DefaultTextProducer implements TextProducer {
     private final int _length;
     private final char[] _srcChars;
 
-    public DefaultTextProducer() {
+    public DefaultContentProducer() {
     	this(DEFAULT_LENGTH, DEFAULT_CHARS);
     }
     
-    public DefaultTextProducer(int length, char[] srcChars) {
+    public DefaultContentProducer(int length, char[] srcChars) {
     	_length = length;
     	_srcChars = copyOf(srcChars, srcChars.length);
     }
     
     @Override
-    public String getText() {
+    public String getContent() {
         String capText = "";
         for (int i = 0; i < _length; i++) {
             capText += _srcChars[RAND.nextInt(_srcChars.length)];

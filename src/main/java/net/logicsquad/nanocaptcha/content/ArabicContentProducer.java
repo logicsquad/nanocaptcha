@@ -1,6 +1,6 @@
-package net.logicsquad.nanocaptcha.text.producer;
+package net.logicsquad.nanocaptcha.content;
 
-public class ArabicTextProducer implements TextProducer {
+public class ArabicContentProducer implements ContentProducer {
     static final int DEFAULT_LENGTH = 5;
 
     private static char[] ARABIC_CHARS = { '\u0627', '\u0628', '\u062a',
@@ -10,18 +10,18 @@ public class ArabicTextProducer implements TextProducer {
             '\u0643', '\u0644', '\u0645', '\u0646', '\u0647', '\u0648',
             '\u064a' };
     
-    private final TextProducer _txtProd;
+    private final ContentProducer _txtProd;
     
-    public ArabicTextProducer() {
+    public ArabicContentProducer() {
         this(DEFAULT_LENGTH);
     }
     
-    public ArabicTextProducer(int length) {
-        _txtProd = new DefaultTextProducer(length, ARABIC_CHARS);
+    public ArabicContentProducer(int length) {
+        _txtProd = new DefaultContentProducer(length, ARABIC_CHARS);
     }
     
     @Override
-    public String getText() {
-        return new StringBuffer(_txtProd.getText()).reverse().toString();
+    public String getContent() {
+        return new StringBuffer(_txtProd.getContent()).reverse().toString();
     }
 }

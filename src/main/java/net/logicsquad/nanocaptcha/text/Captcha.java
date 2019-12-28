@@ -12,14 +12,14 @@ import java.util.Date;
 
 import javax.imageio.ImageIO;
 
+import net.logicsquad.nanocaptcha.content.DefaultContentProducer;
+import net.logicsquad.nanocaptcha.content.ContentProducer;
 import net.logicsquad.nanocaptcha.text.backgrounds.BackgroundProducer;
 import net.logicsquad.nanocaptcha.text.backgrounds.TransparentBackgroundProducer;
 import net.logicsquad.nanocaptcha.text.gimpy.GimpyRenderer;
 import net.logicsquad.nanocaptcha.text.gimpy.RippleGimpyRenderer;
 import net.logicsquad.nanocaptcha.text.noise.CurvedLineNoiseProducer;
 import net.logicsquad.nanocaptcha.text.noise.NoiseProducer;
-import net.logicsquad.nanocaptcha.text.producer.DefaultTextProducer;
-import net.logicsquad.nanocaptcha.text.producer.TextProducer;
 import net.logicsquad.nanocaptcha.text.renderer.DefaultWordRenderer;
 import net.logicsquad.nanocaptcha.text.renderer.WordRenderer;
 
@@ -105,43 +105,43 @@ public final class Captcha implements Serializable {
         }
 
         /**
-         * Generate the answer to the CAPTCHA using the {@link DefaultTextProducer}.
+         * Generate the answer to the CAPTCHA using the {@link DefaultContentProducer}.
          */
         public Builder addText() {
-            return addText(new DefaultTextProducer());
+            return addText(new DefaultContentProducer());
         }
 
         /**
          * Generate the answer to the CAPTCHA using the given
-         * {@link TextProducer}.
+         * {@link ContentProducer}.
          * 
          * @param txtProd
          */
-        public Builder addText(TextProducer txtProd) {
+        public Builder addText(ContentProducer txtProd) {
             return addText(txtProd, new DefaultWordRenderer());
         }
 
         /**
          * Generate the answer to the CAPTCHA using the default
-         * {@link TextProducer}, and render it to the image using the given
+         * {@link ContentProducer}, and render it to the image using the given
          * {@link WordRenderer}.
          *
          * @param wRenderer
          */
         public Builder addText(WordRenderer wRenderer) {
-        	return addText(new DefaultTextProducer(), wRenderer);
+        	return addText(new DefaultContentProducer(), wRenderer);
         }
 
         /**
          * Generate the answer to the CAPTCHA using the given
-         * {@link TextProducer}, and render it to the image using the given
+         * {@link ContentProducer}, and render it to the image using the given
          * {@link WordRenderer}.
          *
          * @param txtProd
          * @param wRenderer
          */
-        public Builder addText(TextProducer txtProd, WordRenderer wRenderer) {
-        	_answer += txtProd.getText();
+        public Builder addText(ContentProducer txtProd, WordRenderer wRenderer) {
+        	_answer += txtProd.getContent();
         	wRenderer.render(_answer, _img);
         	
         	return this;

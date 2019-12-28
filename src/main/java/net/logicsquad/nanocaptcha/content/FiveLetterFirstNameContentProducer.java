@@ -1,4 +1,4 @@
-package net.logicsquad.nanocaptcha.text.producer;
+package net.logicsquad.nanocaptcha.content;
 
 import java.security.SecureRandom;
 import java.util.Random;
@@ -7,7 +7,7 @@ import java.util.Random;
  * @author <a href="mailto:james.childers@gmail.com">James Childers</a>
  * 
  */
-public class FiveLetterFirstNameTextProducer implements TextProducer {
+public class FiveLetterFirstNameContentProducer implements ContentProducer {
 
     private static final Random RAND = new SecureRandom();
     private static final String[] FIRST_NAMES = new String[] { "jomah",
@@ -1048,7 +1048,7 @@ public class FiveLetterFirstNameTextProducer implements TextProducer {
     };
 
     @Override
-    public String getText() {
+    public String getContent() {
         int car = FIRST_NAMES.length - 1;
         return FIRST_NAMES[RAND.nextInt(car) + 1];
     }

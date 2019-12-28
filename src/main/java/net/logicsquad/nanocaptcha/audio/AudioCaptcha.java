@@ -9,8 +9,8 @@ import net.logicsquad.nanocaptcha.audio.noise.NoiseProducer;
 import net.logicsquad.nanocaptcha.audio.noise.RandomNoiseProducer;
 import net.logicsquad.nanocaptcha.audio.producer.RandomNumberVoiceProducer;
 import net.logicsquad.nanocaptcha.audio.producer.VoiceProducer;
-import net.logicsquad.nanocaptcha.text.producer.NumbersAnswerProducer;
-import net.logicsquad.nanocaptcha.text.producer.TextProducer;
+import net.logicsquad.nanocaptcha.content.NumbersContentProducer;
+import net.logicsquad.nanocaptcha.content.ContentProducer;
 
 /**
  * <p>
@@ -55,11 +55,11 @@ public final class AudioCaptcha {
         }
 
         public Builder addAnswer() {
-            return addAnswer(new NumbersAnswerProducer());
+            return addAnswer(new NumbersContentProducer());
         }
 
-        public Builder addAnswer(TextProducer ansProd) {
-            _answer += ansProd.getText();
+        public Builder addAnswer(ContentProducer ansProd) {
+            _answer += ansProd.getContent();
 
             return this;
         }
