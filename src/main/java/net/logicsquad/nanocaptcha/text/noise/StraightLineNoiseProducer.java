@@ -1,4 +1,4 @@
-package net.logicsquad.nanocaptcha.noise;
+package net.logicsquad.nanocaptcha.text.noise;
 
 import java.awt.Color;
 import java.awt.Graphics;

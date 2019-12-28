@@ -1,4 +1,4 @@
-package net.logicsquad.nanocaptcha.gimpy;
+package net.logicsquad.nanocaptcha.text.gimpy;
 
 import java.awt.image.BufferedImage;
 import com.jhlabs.image.BlockFilter;

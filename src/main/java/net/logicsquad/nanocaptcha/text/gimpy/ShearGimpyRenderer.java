@@ -1,4 +1,4 @@
-package net.logicsquad.nanocaptcha.gimpy;
+package net.logicsquad.nanocaptcha.text.gimpy;
 
 import java.awt.Color;
 import java.awt.Graphics2D;

@@ -1,4 +1,4 @@
-package net.logicsquad.nanocaptcha;
+package net.logicsquad.nanocaptcha.text;
 
 import java.awt.AlphaComposite;
 import java.awt.Color;
@@ -12,12 +12,12 @@ import java.util.Date;
 
 import javax.imageio.ImageIO;
 
-import net.logicsquad.nanocaptcha.backgrounds.BackgroundProducer;
-import net.logicsquad.nanocaptcha.backgrounds.TransparentBackgroundProducer;
-import net.logicsquad.nanocaptcha.gimpy.GimpyRenderer;
-import net.logicsquad.nanocaptcha.gimpy.RippleGimpyRenderer;
-import net.logicsquad.nanocaptcha.noise.CurvedLineNoiseProducer;
-import net.logicsquad.nanocaptcha.noise.NoiseProducer;
+import net.logicsquad.nanocaptcha.text.backgrounds.BackgroundProducer;
+import net.logicsquad.nanocaptcha.text.backgrounds.TransparentBackgroundProducer;
+import net.logicsquad.nanocaptcha.text.gimpy.GimpyRenderer;
+import net.logicsquad.nanocaptcha.text.gimpy.RippleGimpyRenderer;
+import net.logicsquad.nanocaptcha.text.noise.CurvedLineNoiseProducer;
+import net.logicsquad.nanocaptcha.text.noise.NoiseProducer;
 import net.logicsquad.nanocaptcha.text.producer.DefaultTextProducer;
 import net.logicsquad.nanocaptcha.text.producer.TextProducer;
 import net.logicsquad.nanocaptcha.text.renderer.DefaultWordRenderer;
