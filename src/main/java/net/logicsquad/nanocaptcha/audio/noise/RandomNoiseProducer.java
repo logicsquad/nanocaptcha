@@ -21,7 +21,7 @@ import net.logicsquad.nanocaptcha.audio.Sample;
  * </pre>
  * 
  * @author <a href="mailto:james.childers@gmail.com">James Childers</a>
- * 
+ * @author <a href="mailto:paulh@logicsquad.net">Paul Hoadley</a>
  */
 public class RandomNoiseProducer implements NoiseProducer {
 

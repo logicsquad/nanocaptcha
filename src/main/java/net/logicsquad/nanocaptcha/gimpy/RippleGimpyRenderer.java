@@ -6,6 +6,7 @@ import com.jhlabs.image.RippleFilter;
 
 /**
  * @author <a href="mailto:james.childers@gmail.com">James Childers</a>
+ * @author <a href="mailto:paulh@logicsquad.net">Paul Hoadley</a>
  */
 public class RippleGimpyRenderer implements GimpyRenderer {
 

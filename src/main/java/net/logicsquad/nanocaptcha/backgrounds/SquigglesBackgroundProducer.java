@@ -5,7 +5,11 @@ import java.awt.BasicStroke;
 import java.awt.Graphics2D;
 import java.awt.geom.Arc2D;
 import java.awt.image.BufferedImage;
-
+/**
+ * 
+ * @author <a href="mailto:james.childers@gmail.com">James Childers</a>
+ * @author <a href="mailto:paulh@logicsquad.net">Paul Hoadley</a>
+ */
 public class SquigglesBackgroundProducer implements BackgroundProducer {
 
 	@Override
