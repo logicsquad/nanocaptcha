@@ -4,13 +4,21 @@ import java.security.SecureRandom;
 import java.util.Random;
 
 /**
- * @author <a href="mailto:james.childers@gmail.com">James Childers</a>
+ * {@link ContentProducer} implementation that chooses from a static list of 5-letter "first names".
  * 
+ * @author <a href="mailto:james.childers@gmail.com">James Childers</a>
+ * @since 1.0
  */
 public class FiveLetterFirstNameContentProducer implements ContentProducer {
+	/**
+	 * {@link Random} number generator
+	 */
+	private static final Random RAND = new SecureRandom();
 
-    private static final Random RAND = new SecureRandom();
-    private static final String[] FIRST_NAMES = new String[] { "jomah",
+	/**
+	 * Names list
+	 */
+	private static final String[] FIRST_NAMES = new String[] { "jomah",
             "yanae", "dagna", "aadel", "aaden", "aafia", "aamir", "aaran",
             "aaren", "aaric", "aarin", "aarle", "aaron", "aarti", "aaryn",
             "aasia", "aasif", "aasim", "abame", "abani", "abasi", "abbah",
@@ -1049,7 +1057,6 @@ public class FiveLetterFirstNameContentProducer implements ContentProducer {
 
     @Override
     public String getContent() {
-        int car = FIRST_NAMES.length - 1;
-        return FIRST_NAMES[RAND.nextInt(car) + 1];
+        return FIRST_NAMES[RAND.nextInt(FIRST_NAMES.length)];
     }
 }
