@@ -1,6 +1,7 @@
 package net.logicsquad.nanocaptcha.content;
 
 import java.security.SecureRandom;
+import java.util.Arrays;
 import java.util.Random;
 
 /**
@@ -41,7 +42,8 @@ public abstract class AbstractContentProducer implements ContentProducer {
 	 */
 	public AbstractContentProducer(int length, char[] srcChars) {
 		this.length = length;
-		this.srcChars = copyOf(srcChars, srcChars.length);
+		this.srcChars = Arrays.copyOf(srcChars, srcChars.length);
+		return;
 	}
 
 	@Override
@@ -51,18 +53,5 @@ public abstract class AbstractContentProducer implements ContentProducer {
 			sb.append(srcChars[RAND.nextInt(srcChars.length)]);
 		}
 		return sb.toString();
-	}
-
-	/**
-	 * Copies a supplied array.
-	 * 
-	 * @param original  source array
-	 * @param newLength length of returned array
-	 * @return copy of source array
-	 */
-	private static char[] copyOf(char[] original, int newLength) {
-		char[] copy = new char[newLength];
-		System.arraycopy(original, 0, copy, 0, Math.min(original.length, newLength));
-		return copy;
 	}
 }
