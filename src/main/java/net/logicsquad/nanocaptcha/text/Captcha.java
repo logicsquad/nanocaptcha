@@ -13,6 +13,7 @@ import java.util.Date;
 import javax.imageio.ImageIO;
 
 import net.logicsquad.nanocaptcha.content.DefaultContentProducer;
+import net.logicsquad.nanocaptcha.content.LatinContentProducer;
 import net.logicsquad.nanocaptcha.content.ContentProducer;
 import net.logicsquad.nanocaptcha.text.backgrounds.BackgroundProducer;
 import net.logicsquad.nanocaptcha.text.backgrounds.TransparentBackgroundProducer;
@@ -108,7 +109,7 @@ public final class Captcha implements Serializable {
          * Generate the answer to the CAPTCHA using the {@link DefaultContentProducer}.
          */
         public Builder addText() {
-            return addText(new DefaultContentProducer());
+            return addText(new LatinContentProducer());
         }
 
         /**
@@ -129,7 +130,7 @@ public final class Captcha implements Serializable {
          * @param wRenderer
          */
         public Builder addText(WordRenderer wRenderer) {
-        	return addText(new DefaultContentProducer(), wRenderer);
+        	return addText(new LatinContentProducer(), wRenderer);
         }
 
         /**

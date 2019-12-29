@@ -12,17 +12,9 @@ import java.util.Random;
 public class DefaultContentProducer implements ContentProducer {
 
     private static final Random RAND = new SecureRandom();
-    private static final int DEFAULT_LENGTH = 5;
-    private static final char[] DEFAULT_CHARS = new char[] { 'a', 'b', 'c', 'd',
-            'e', 'f', 'g', 'h', 'k', 'm', 'n', 'p', 'r', 'w', 'x', 'y',
-            '2', '3', '4', '5', '6', '7', '8', };
     
     private final int _length;
     private final char[] _srcChars;
-
-    public DefaultContentProducer() {
-    	this(DEFAULT_LENGTH, DEFAULT_CHARS);
-    }
     
     public DefaultContentProducer(int length, char[] srcChars) {
     	_length = length;
