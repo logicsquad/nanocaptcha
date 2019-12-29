@@ -8,6 +8,7 @@ import java.util.Random;
  * 5-letter "first names".
  * 
  * @author <a href="mailto:james.childers@gmail.com">James Childers</a>
+ * @author <a href="mailto:paulh@logicsquad.net">Paul Hoadley</a>
  * @since 1.0
  */
 public class FiveLetterFirstNameContentProducer implements ContentProducer {
