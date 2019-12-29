@@ -11,17 +11,12 @@ public class ChineseContentProducer extends AbstractContentProducer implements C
 	/**
 	 * Code point at start of range
 	 */
-	static final int CODE_POINT_START = 0x4E00;
+	private static final int CODE_POINT_START = 0x4E00;
 
 	/**
 	 * Code point at end of range
 	 */
-	static final int CODE_POINT_END = 0x4F6F;
-
-	/**
-	 * Number of chars in array
-	 */
-	private static final int NUM_CHARS = CODE_POINT_END - CODE_POINT_START;
+	private static final int CODE_POINT_END = 0x4F6F;
 
 	/**
 	 * Array of source characters
@@ -29,7 +24,7 @@ public class ChineseContentProducer extends AbstractContentProducer implements C
 	private static final char[] CHARS;
 
 	static {
-		CHARS = new char[NUM_CHARS];
+		CHARS = new char[CODE_POINT_END - CODE_POINT_START];
 		for (char c = CODE_POINT_START, i = 0; c < CODE_POINT_END; c++, i++) {
 			CHARS[i] = Character.valueOf(c);
 		}
