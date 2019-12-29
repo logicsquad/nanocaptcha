@@ -9,11 +9,6 @@ package net.logicsquad.nanocaptcha.content;
  */
 public class ArabicContentProducer extends AbstractContentProducer implements ContentProducer {
 	/**
-	 * Default length for produced content
-	 */
-	private static final int DEFAULT_LENGTH = 5;
-
-	/**
 	 * Array containing some Arabic characters
 	 */
 	private static char[] ARABIC_CHARS = { '\u0627', '\u0628', '\u062a', '\u062b', '\u062c', '\u062d', '\u062e',

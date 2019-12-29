@@ -9,18 +9,12 @@ package net.logicsquad.nanocaptcha.content;
  */
 public class NumbersContentProducer extends AbstractContentProducer implements ContentProducer {
 	/**
-	 * Default length
-	 */
-	private static final int DEFAULT_LENGTH = 5;
-
-	/**
 	 * Character set
 	 */
 	private static final char[] NUMBERS = { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9' };
 
 	/**
-	 * Constructor producing an object that will return content strings of
-	 * {@link #DEFAULT_LENGTH}.
+	 * Constructor for object returning content of default length.
 	 */
 	public NumbersContentProducer() {
 		this(DEFAULT_LENGTH);

@@ -7,11 +7,6 @@ package net.logicsquad.nanocaptcha.content;
  * @since 1.0
  */
 public class LatinContentProducer extends AbstractContentProducer implements ContentProducer {
-	/**
-	 * Default length for produced content
-	 */
-    private static final int DEFAULT_LENGTH = 5;
-
     /**
      * Source characters
      */

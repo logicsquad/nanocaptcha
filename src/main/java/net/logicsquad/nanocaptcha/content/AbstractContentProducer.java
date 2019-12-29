@@ -14,6 +14,11 @@ import java.util.Random;
  */
 public abstract class AbstractContentProducer implements ContentProducer {
 	/**
+	 * Default length for produced content
+	 */
+	protected static final int DEFAULT_LENGTH = 5;
+
+	/**
 	 * Random number generator
 	 */
 	private static final Random RAND = new SecureRandom();

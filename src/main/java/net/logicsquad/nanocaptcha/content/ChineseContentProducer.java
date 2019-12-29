@@ -9,11 +9,6 @@ package net.logicsquad.nanocaptcha.content;
  */
 public class ChineseContentProducer extends AbstractContentProducer implements ContentProducer {
 	/**
-	 * Default length for produced content
-	 */
-	static final int DEFAULT_LENGTH = 5;
-
-	/**
 	 * Code point at start of range
 	 */
 	static final int CODE_POINT_START = 0x4E00;
