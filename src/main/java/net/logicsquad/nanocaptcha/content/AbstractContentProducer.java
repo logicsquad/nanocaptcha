@@ -21,12 +21,12 @@ public abstract class AbstractContentProducer implements ContentProducer {
 	/**
 	 * Length of strings produced by this object
 	 */
-	private final int _length;
+	private final int length;
 
 	/**
 	 * Source characters
 	 */
-	private final char[] _srcChars;
+	private final char[] srcChars;
 
 	/**
 	 * Constructor taking a length and an array of source characters.
@@ -35,15 +35,15 @@ public abstract class AbstractContentProducer implements ContentProducer {
 	 * @param srcChars source characters
 	 */
 	public AbstractContentProducer(int length, char[] srcChars) {
-		_length = length;
-		_srcChars = copyOf(srcChars, srcChars.length);
+		this.length = length;
+		this.srcChars = copyOf(srcChars, srcChars.length);
 	}
 
 	@Override
 	public String getContent() {
 		String capText = "";
-		for (int i = 0; i < _length; i++) {
-			capText += _srcChars[RAND.nextInt(_srcChars.length)];
+		for (int i = 0; i < length; i++) {
+			capText += srcChars[RAND.nextInt(srcChars.length)];
 		}
 
 		return capText;
