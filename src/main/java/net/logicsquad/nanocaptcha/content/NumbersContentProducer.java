@@ -7,7 +7,7 @@ package net.logicsquad.nanocaptcha.content;
  * @author <a href="mailto:paulh@logicsquad.net">Paul Hoadley</a>
  * @since 1.0
  */
-public class NumbersContentProducer extends DefaultContentProducer implements ContentProducer {
+public class NumbersContentProducer extends AbstractContentProducer implements ContentProducer {
 	/**
 	 * Default length
 	 */

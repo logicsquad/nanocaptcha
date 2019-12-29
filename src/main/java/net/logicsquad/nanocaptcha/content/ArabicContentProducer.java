@@ -6,7 +6,7 @@ package net.logicsquad.nanocaptcha.content;
  * @author <a href="mailto:paulh@logicsquad.net">Paul Hoadley</a>
  * @since 1.0
  */
-public class ArabicContentProducer extends DefaultContentProducer implements ContentProducer {
+public class ArabicContentProducer extends AbstractContentProducer implements ContentProducer {
     static final int DEFAULT_LENGTH = 5;
 
     private static char[] ARABIC_CHARS = { '\u0627', '\u0628', '\u062a',

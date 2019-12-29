@@ -6,7 +6,7 @@ package net.logicsquad.nanocaptcha.content;
  * @author <a href="mailto:paulh@logicsquad.net">Paul Hoadley</a>
  * @since 1.0
  */
-public class LatinContentProducer extends DefaultContentProducer implements ContentProducer {
+public class LatinContentProducer extends AbstractContentProducer implements ContentProducer {
     private static final int DEFAULT_LENGTH = 5;
     private static final char[] DEFAULT_CHARS = new char[] { 'a', 'b', 'c', 'd',
             'e', 'f', 'g', 'h', 'k', 'm', 'n', 'p', 'r', 'w', 'x', 'y',

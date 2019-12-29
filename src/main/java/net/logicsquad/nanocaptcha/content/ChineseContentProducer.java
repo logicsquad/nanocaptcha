@@ -7,7 +7,7 @@ package net.logicsquad.nanocaptcha.content;
  * @author <a href="mailto:paulh@logicsquad.net">Paul Hoadley</a>
  * @since 1.0
  */
-public class ChineseContentProducer extends DefaultContentProducer implements ContentProducer {
+public class ChineseContentProducer extends AbstractContentProducer implements ContentProducer {
     
 	static final int DEFAULT_LENGTH = 5;    
     // Here's hoping none of the characters in this range are offensive.
