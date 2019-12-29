@@ -41,12 +41,11 @@ public abstract class AbstractContentProducer implements ContentProducer {
 
 	@Override
 	public String getContent() {
-		String capText = "";
+		StringBuilder sb = new StringBuilder();
 		for (int i = 0; i < length; i++) {
-			capText += srcChars[RAND.nextInt(srcChars.length)];
+			sb.append(srcChars[RAND.nextInt(srcChars.length)]);
 		}
-
-		return capText;
+		return sb.toString();
 	}
 
 	/**
