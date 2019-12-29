@@ -7,9 +7,10 @@ import java.util.Random;
  * Produces text of a given length from a given array of characters.
  * 
  * @author <a href="mailto:james.childers@gmail.com">James Childers</a>
- * 
+ * @author <a href="mailto:paulh@logicsquad.net">Paul Hoadley</a>
+ * @since 1.0
  */
-public class DefaultContentProducer implements ContentProducer {
+public abstract class DefaultContentProducer implements ContentProducer {
 
     private static final Random RAND = new SecureRandom();
     

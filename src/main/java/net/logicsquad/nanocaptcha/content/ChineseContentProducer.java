@@ -4,9 +4,10 @@ package net.logicsquad.nanocaptcha.content;
  * TextProducer implementation that will return Chinese characters.
  * 
  * @author <a href="mailto:james.childers@gmail.com">James Childers</a>
- * 
+ * @author <a href="mailto:paulh@logicsquad.net">Paul Hoadley</a>
+ * @since 1.0
  */
-public class ChineseContentProducer implements ContentProducer {
+public class ChineseContentProducer extends DefaultContentProducer implements ContentProducer {
     
 	static final int DEFAULT_LENGTH = 5;    
     // Here's hoping none of the characters in this range are offensive.
@@ -21,19 +22,12 @@ public class ChineseContentProducer implements ContentProducer {
     		CHARS[i] = Character.valueOf(c);
     	}
     }
-
-    private final ContentProducer _txtProd;	// Decorator
     
     public ChineseContentProducer() {
     	this(DEFAULT_LENGTH);
     }
     
     public ChineseContentProducer(int length) {
-    	_txtProd = new DefaultContentProducer(length, CHARS);
-    }
-
-    @Override
-    public String getContent() {
-    	return _txtProd.getContent();
+    	super(length, CHARS);
     }
 }
