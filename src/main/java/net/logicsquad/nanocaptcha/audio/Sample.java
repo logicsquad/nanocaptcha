@@ -203,6 +203,8 @@ public class Sample {
 
 	@Override
 	public String toString() {
-		return "[Sample] samples: " + getSampleCount() + ", format: " + getFormat();
+		StringBuilder sb = new StringBuilder();
+		sb.append("[Sample: samples=").append(getSampleCount()).append(" format=").append(getFormat()).append("]");
+		return sb.toString();
 	}
 }
