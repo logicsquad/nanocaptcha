@@ -5,6 +5,7 @@
   <version>0.0.1-SNAPSHOT</version>
   <name>NanoCaptcha</name>
   <description>A Java-based CAPTCHA implementation with a minimum of dependencies.</description>
+  <url>https://github.com/logicsquad/nanocaptcha</url>
 
   <organization>
     <name>Logic Squad</name>
@@ -29,6 +30,12 @@
       <timezone>Australia/Adelaide</timezone>
     </developer>
   </developers>
+
+  <scm>
+    <connection>scm:git:git://github.com/logicsquad/nanocaptcha.git</connection>
+    <developerConnection>scm:git:ssh://github.com:logicsquad/nanocaptcha.git</developerConnection>
+    <url>https://github.com/logicsquad/nanocaptcha/tree/master</url>
+  </scm>
 
   <properties>
     <main.class></main.class>
