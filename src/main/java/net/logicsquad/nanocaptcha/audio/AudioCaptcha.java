@@ -70,12 +70,12 @@ public final class AudioCaptcha {
 		/**
 		 * {@link VoiceProducer}s
 		 */
-		private List<VoiceProducer> voiceProducers;
+		private final List<VoiceProducer> voiceProducers;
 
 		/**
 		 * {@link NoiseProducer}s
 		 */
-		private List<NoiseProducer> noiseProducers;
+		private final List<NoiseProducer> noiseProducers;
 
 		/**
 		 * Constructor
@@ -156,7 +156,7 @@ public final class AudioCaptcha {
 		 */
 		public AudioCaptcha build() {
 			// Make sure we have at least one voiceProducer
-			if (voiceProducers.size() == 0) {
+			if (voiceProducers.isEmpty()) {
 				addVoice();
 			}
 
@@ -166,20 +166,17 @@ public final class AudioCaptcha {
 			// Make a List of Samples for each character
 			VoiceProducer vProd;
 			List<Sample> samples = new ArrayList<Sample>();
-			Sample sample;
-			for (int i = 0; i < ansAry.length; i++) {
+			for (char c : ansAry) {
 				// Create Sample for this character from one of the
 				// VoiceProducers
 				vProd = voiceProducers.get(RAND.nextInt(voiceProducers.size()));
-				sample = vProd.getVocalization(ansAry[i]);
-				samples.add(sample);
+				samples.add(vProd.getVocalization(c));
 			}
 
 			// 3. Add noise, if any, and return the result
-			if (noiseProducers.size() > 0) {
+			if (!noiseProducers.isEmpty()) {
 				NoiseProducer nProd = noiseProducers.get(RAND.nextInt(noiseProducers.size()));
 				audio = nProd.addNoise(samples);
-
 				return new AudioCaptcha(this);
 			}
 
@@ -219,7 +216,7 @@ public final class AudioCaptcha {
 
 	@Override
 	public String toString() {
-		StringBuilder sb = new StringBuilder();
+		StringBuilder sb = new StringBuilder(35);
 		sb.append("[AudioCaptcha: created=").append(created).append(" content='").append(content).append("']");
 		return sb.toString();
 	}

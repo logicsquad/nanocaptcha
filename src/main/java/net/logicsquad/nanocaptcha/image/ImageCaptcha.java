@@ -85,7 +85,7 @@ public final class ImageCaptcha implements Serializable {
 		/**
 		 * Should we add a border?
 		 */
-		private boolean addBorder = false;
+		private boolean addBorder;
 
 		/**
 		 * Constructor taking a width and height (in pixels) for the generated image.
@@ -275,7 +275,7 @@ public final class ImageCaptcha implements Serializable {
 
 	@Override
 	public String toString() {
-		StringBuilder sb = new StringBuilder();
+		StringBuilder sb = new StringBuilder(35);
 		sb.append("[ImageCaptcha: created=").append(created).append(" content='").append(content).append("']");
 		return sb.toString();
 	}
