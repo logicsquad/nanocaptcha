@@ -3,7 +3,6 @@ package net.logicsquad.nanocaptcha.audio.producer;
 import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -83,10 +82,6 @@ public class RandomNumberVoiceProducer implements VoiceProducer {
 	public RandomNumberVoiceProducer(Map<Integer, List<String>> voices) {
 		_voices = voices;
 	}
-
-//	public Map<Integer, String[]> getVoices() {
-//		return Collections.unmodifiableMap(_voices);
-//	}
 
 	@Override
 	public final Sample getVocalization(char num) {
