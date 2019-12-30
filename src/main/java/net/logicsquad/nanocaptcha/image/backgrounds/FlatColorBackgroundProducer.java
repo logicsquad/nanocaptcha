@@ -1,4 +1,4 @@
-package net.logicsquad.nanocaptcha.text.backgrounds;
+package net.logicsquad.nanocaptcha.image.backgrounds;
 
 import java.awt.Color;
 import java.awt.Graphics2D;

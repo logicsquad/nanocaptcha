@@ -1,4 +1,4 @@
-package net.logicsquad.nanocaptcha.text;
+package net.logicsquad.nanocaptcha.image;
 
 import java.awt.AlphaComposite;
 import java.awt.Color;
@@ -14,15 +14,15 @@ import javax.imageio.ImageIO;
 
 import net.logicsquad.nanocaptcha.content.AbstractContentProducer;
 import net.logicsquad.nanocaptcha.content.LatinContentProducer;
+import net.logicsquad.nanocaptcha.image.backgrounds.BackgroundProducer;
+import net.logicsquad.nanocaptcha.image.backgrounds.TransparentBackgroundProducer;
+import net.logicsquad.nanocaptcha.image.filter.ImageFilter;
+import net.logicsquad.nanocaptcha.image.filter.RippleImageFilter;
+import net.logicsquad.nanocaptcha.image.noise.CurvedLineNoiseProducer;
+import net.logicsquad.nanocaptcha.image.noise.NoiseProducer;
+import net.logicsquad.nanocaptcha.image.renderer.DefaultWordRenderer;
+import net.logicsquad.nanocaptcha.image.renderer.WordRenderer;
 import net.logicsquad.nanocaptcha.content.ContentProducer;
-import net.logicsquad.nanocaptcha.text.backgrounds.BackgroundProducer;
-import net.logicsquad.nanocaptcha.text.backgrounds.TransparentBackgroundProducer;
-import net.logicsquad.nanocaptcha.text.filter.ImageFilter;
-import net.logicsquad.nanocaptcha.text.filter.RippleImageFilter;
-import net.logicsquad.nanocaptcha.text.noise.CurvedLineNoiseProducer;
-import net.logicsquad.nanocaptcha.text.noise.NoiseProducer;
-import net.logicsquad.nanocaptcha.text.renderer.DefaultWordRenderer;
-import net.logicsquad.nanocaptcha.text.renderer.WordRenderer;
 
 /**
  * A builder for generating a CAPTCHA image/answer pair.
@@ -52,13 +52,13 @@ import net.logicsquad.nanocaptcha.text.renderer.WordRenderer;
  * @author <a href="mailto:james.childers@gmail.com">James Childers</a>
  * 
  */
-public final class Captcha implements Serializable {
+public final class ImageCaptcha implements Serializable {
 
     private static final long serialVersionUID = 617511236L;
     public static final String NAME = "simpleCaptcha";
     private Builder _builder;
 
-    private Captcha(Builder builder) {
+    private ImageCaptcha(Builder builder) {
         _builder = builder;
     }
 
@@ -197,7 +197,7 @@ public final class Captcha implements Serializable {
          * 
          * @return The constructed CAPTCHA.
          */
-        public Captcha build() {
+        public ImageCaptcha build() {
         	if (_bg == null) {
         		_bg = new TransparentBackgroundProducer().getBackground(_img.getWidth(), _img.getHeight());
         	}
@@ -222,7 +222,7 @@ public final class Captcha implements Serializable {
 
             _timeStamp = new Date();
 
-            return new Captcha(this);
+            return new ImageCaptcha(this);
         }
 
         @Override

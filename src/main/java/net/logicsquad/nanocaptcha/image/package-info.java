@@ -1,4 +1,4 @@
 /**
  * Provides text CAPTCHA generation.
  */
-package net.logicsquad.nanocaptcha.text;
+package net.logicsquad.nanocaptcha.image;

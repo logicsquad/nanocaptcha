@@ -1,4 +1,4 @@
-package net.logicsquad.nanocaptcha.text.renderer;
+package net.logicsquad.nanocaptcha.image.renderer;
 
 import java.awt.image.BufferedImage;
 

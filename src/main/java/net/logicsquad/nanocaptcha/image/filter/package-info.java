@@ -1,4 +1,4 @@
 /**
  * Provides filters for image CAPTCHAs.
  */
-package net.logicsquad.nanocaptcha.text.filter;
+package net.logicsquad.nanocaptcha.image.filter;

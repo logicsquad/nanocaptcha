@@ -6,7 +6,7 @@ NanoCaptcha
 
 What is this?
 -------------
-NanoCaptcha is a Java library for generating text and audio
+NanoCaptcha is a Java library for generating image and audio
 CAPTCHAs. NanoCaptcha is intended to be:
 
 * Self-contained: no network API hits to any external services.
@@ -18,7 +18,7 @@ Getting started
 ---------------
 You can build a minimal image CAPTCHA very easily:
 
-    Captcha captcha = new Captcha.Builder(200, 50).addText().build();
+    ImageCaptcha captcha = new ImageCaptcha.Builder(200, 50).addText().build();
 
 This creates a 200 x 50 pixel image and adds five random characters
 from the Latin alphabet.  The `getImage()` method returns the image as

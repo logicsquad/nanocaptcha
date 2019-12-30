@@ -1,4 +1,4 @@
-package net.logicsquad.nanocaptcha.text.filter;
+package net.logicsquad.nanocaptcha.image.filter;
 
 import java.awt.Graphics2D;
 import java.awt.Image;
