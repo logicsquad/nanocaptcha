@@ -8,7 +8,7 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
-import java.util.Date;
+import java.time.OffsetDateTime;
 
 import javax.imageio.ImageIO;
 
@@ -79,7 +79,7 @@ public final class ImageCaptcha implements Serializable {
         /**
          * @serial
          */
-        private Date _timeStamp;
+        private OffsetDateTime created;
 
         private boolean _addBorder = false;
 
@@ -220,7 +220,7 @@ public final class ImageCaptcha implements Serializable {
 
         	_img = _bg;
 
-            _timeStamp = new Date();
+            created = OffsetDateTime.now();
 
             return new ImageCaptcha(this);
         }
@@ -231,7 +231,7 @@ public final class ImageCaptcha implements Serializable {
             sb.append("[Answer: ");
             sb.append(_answer);
             sb.append("][Timestamp: ");
-            sb.append(_timeStamp);
+            sb.append(created);
             sb.append("][Image: ");
             sb.append(_img);
             sb.append("]");
@@ -241,14 +241,14 @@ public final class ImageCaptcha implements Serializable {
         
         private void writeObject(ObjectOutputStream out) throws IOException {
             out.writeObject(_answer);
-            out.writeObject(_timeStamp);
+            out.writeObject(created);
             ImageIO.write(_img, "png", ImageIO.createImageOutputStream(out));
         }
 
         private void readObject(ObjectInputStream in) throws IOException,
                 ClassNotFoundException {
             _answer = (String) in.readObject();
-            _timeStamp = (Date) in.readObject();
+            created = (OffsetDateTime) in.readObject();
             _img = ImageIO.read(ImageIO.createImageInputStream(in));
         }
     }
@@ -270,8 +270,8 @@ public final class ImageCaptcha implements Serializable {
         return _builder._img;
     }
 
-    public Date getTimeStamp() {
-        return new Date(_builder._timeStamp.getTime());
+    public OffsetDateTime getCreated() {
+        return _builder.created;
     }
 
     @Override
