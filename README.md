@@ -51,7 +51,8 @@ At the moment you'll need to build NanoCaptcha from source:
 
 Note that _the API may change prior to a 1.0 release,_ at which time
 it will remain stable, consistent with [semantic
-versioning](https://semver.org).
+versioning](https://semver.org). Once we ship a 1.0 release, NanoCaptcha
+will be available from Maven Central.
 
 Contributing
 ------------
