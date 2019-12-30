@@ -1,5 +1,6 @@
 package net.logicsquad.nanocaptcha.audio;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
 import java.io.IOException;
@@ -22,7 +23,13 @@ public class SampleTest {
 	private static final String MP3_FILENAME = "/hello.mp3";
 
 	// This sample has the wrong encoding parameters for Sample
-	private static final String WAV_FILENAME = "/hello.wav";
+	private static final String WAV_BAD_FILENAME = "/hello.wav";
+
+	// This sample is a copy of one of the known-good samples
+	private static final String WAV_GOOD_FILENAME = "/0-alex.wav";
+
+	// Known sample count
+	private static final int WAV_GOOD_SAMPLES = 9847;
 
 	@Test(expected = NullPointerException.class)
 	public void stringConstructorThrowsOnNull() {
@@ -44,16 +51,24 @@ public class SampleTest {
 
 	@Test(expected = IllegalArgumentException.class)
 	public void stringConstructorThrowsOnWrongAudioParameters() {
-		new Sample(WAV_FILENAME);
+		new Sample(WAV_BAD_FILENAME);
 		return;
 	}
 
 	@Test(expected = IllegalArgumentException.class)
 	public void inputStreamConstructorThrowsOnWrongAudioParameters() throws UnsupportedAudioFileException, IOException {
 		AudioInputStream audioInputStream = AudioSystem
-				.getAudioInputStream(SampleTest.class.getResourceAsStream(WAV_FILENAME));
+				.getAudioInputStream(SampleTest.class.getResourceAsStream(WAV_BAD_FILENAME));
 		assertNotNull(audioInputStream);
 		new Sample(audioInputStream);
+		return;
+	}
+
+	@Test
+	public void canCreateSampleFromSuitableInput() {
+		Sample sample = new Sample(WAV_GOOD_FILENAME);
+		assertNotNull(sample);
+		assertEquals(WAV_GOOD_SAMPLES, sample.getSampleCount());
 		return;
 	}
 }
