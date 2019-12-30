@@ -1,4 +1,4 @@
-package net.logicsquad.nanocaptcha.text.gimpy;
+package net.logicsquad.nanocaptcha.text.filter;
 
 import java.awt.Graphics2D;
 import java.awt.Image;
@@ -15,13 +15,13 @@ import java.awt.image.FilteredImageSource;
  * @author <a href="mailto:paulh@logicsquad.net">Paul Hoadley</a>
  * @since 1.0
  */
-public interface GimpyRenderer {
+public interface ImageFilter {
 	/**
 	 * Transforms {@code image} in-place.
 	 * 
 	 * @param image {@link BufferedImage} to transform
 	 */
-	void gimp(BufferedImage image);
+	void filter(BufferedImage image);
 
 	/**
 	 * Applies {@code filter} to {@code img}.

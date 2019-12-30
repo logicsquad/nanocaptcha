@@ -17,8 +17,8 @@ import net.logicsquad.nanocaptcha.content.LatinContentProducer;
 import net.logicsquad.nanocaptcha.content.ContentProducer;
 import net.logicsquad.nanocaptcha.text.backgrounds.BackgroundProducer;
 import net.logicsquad.nanocaptcha.text.backgrounds.TransparentBackgroundProducer;
-import net.logicsquad.nanocaptcha.text.gimpy.GimpyRenderer;
-import net.logicsquad.nanocaptcha.text.gimpy.RippleGimpyRenderer;
+import net.logicsquad.nanocaptcha.text.filter.ImageFilter;
+import net.logicsquad.nanocaptcha.text.filter.RippleImageFilter;
 import net.logicsquad.nanocaptcha.text.noise.CurvedLineNoiseProducer;
 import net.logicsquad.nanocaptcha.text.noise.NoiseProducer;
 import net.logicsquad.nanocaptcha.text.renderer.DefaultWordRenderer;
@@ -166,19 +166,19 @@ public final class Captcha implements Serializable {
         }
 
         /**
-         * Gimp the image using the default {@link GimpyRenderer} (a {@link RippleGimpyRenderer}).
+         * Filter the image using the default {@link ImageFilter} (a {@link RippleImageFilter}).
          */
-        public Builder gimp() {
-            return gimp(new RippleGimpyRenderer());
+        public Builder filter() {
+            return filter(new RippleImageFilter());
         }
 
         /**
-         * Gimp the image using the given {@link GimpyRenderer}.
+         * Filter the image using the given {@link ImageFilter}.
          * 
-         * @param gimpy
+         * @param filter
          */
-        public Builder gimp(GimpyRenderer gimpy) {
-            gimpy.gimp(_img);
+        public Builder filter(ImageFilter filter) {
+            filter.filter(_img);
             return this;
         }
 

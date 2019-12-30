@@ -1,4 +1,4 @@
-package net.logicsquad.nanocaptcha.text.gimpy;
+package net.logicsquad.nanocaptcha.text.filter;
 
 import java.awt.Color;
 import java.awt.Graphics2D;
@@ -10,21 +10,21 @@ import java.awt.image.BufferedImage;
  * @author <a href="mailto:james.childers@gmail.com">James Childers</a>
  * 
  */
-public class FishEyeGimpyRenderer implements GimpyRenderer {
+public class FishEyeImageFilter implements ImageFilter {
 	private final Color _hColor;
 	private final Color _vColor;
 	
-	public FishEyeGimpyRenderer() {
+	public FishEyeImageFilter() {
 		this(Color.BLACK, Color.BLACK);
 	}
 	
-	public FishEyeGimpyRenderer(Color hColor, Color vColor) {
+	public FishEyeImageFilter(Color hColor, Color vColor) {
 		_hColor = hColor;
 		_vColor = vColor;
 	}
 
 	@Override
-    public void gimp(BufferedImage image) {
+    public void filter(BufferedImage image) {
         int height = image.getHeight();
         int width = image.getWidth();
 

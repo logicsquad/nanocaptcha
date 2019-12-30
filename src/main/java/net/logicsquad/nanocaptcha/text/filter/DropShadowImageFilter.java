@@ -1,4 +1,4 @@
-package net.logicsquad.nanocaptcha.text.gimpy;
+package net.logicsquad.nanocaptcha.text.filter;
 
 import java.awt.image.BufferedImage;
 import com.jhlabs.image.ShadowFilter;
@@ -9,27 +9,27 @@ import com.jhlabs.image.ShadowFilter;
  * @author <a href="mailto:james.childers@gmail.com">James Childers</a>
  * @author <a href="mailto:paulh@logicsquad.net">Paul Hoadley</a>
  */
-public class DropShadowGimpyRenderer implements GimpyRenderer {
+public class DropShadowImageFilter implements ImageFilter {
 	private static final int DEFAULT_RADIUS = 3;
 	private static final int DEFAULT_OPACITY = 75;
 	
 	private final int _radius;
 	private final int _opacity;
 	
-	public DropShadowGimpyRenderer() {
+	public DropShadowImageFilter() {
 		this(DEFAULT_RADIUS, DEFAULT_OPACITY);
 	}
 	
-	public DropShadowGimpyRenderer(int radius, int opacity) {
+	public DropShadowImageFilter(int radius, int opacity) {
 		_radius = radius;
 		_opacity = opacity;
 	}
 
 	@Override
-    public void gimp(BufferedImage image) {
+    public void filter(BufferedImage image) {
         ShadowFilter sFilter = new ShadowFilter();
         sFilter.setRadius(_radius);
         sFilter.setOpacity(_opacity);
-        GimpyRenderer.applyFilter(image, sFilter);
+        ImageFilter.applyFilter(image, sFilter);
     }
 }

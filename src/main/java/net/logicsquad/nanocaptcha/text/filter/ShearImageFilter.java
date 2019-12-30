@@ -1,4 +1,4 @@
-package net.logicsquad.nanocaptcha.text.gimpy;
+package net.logicsquad.nanocaptcha.text.filter;
 
 import java.awt.Color;
 import java.awt.Graphics2D;
@@ -6,21 +6,21 @@ import java.awt.image.BufferedImage;
 import java.security.SecureRandom;
 import java.util.Random;
 
-public class ShearGimpyRenderer implements GimpyRenderer {
+public class ShearImageFilter implements ImageFilter {
 
     private static final Random RAND = new SecureRandom();
     private final Color _color;
 
-    public ShearGimpyRenderer() {
+    public ShearImageFilter() {
         this(Color.GRAY);
     }
 
-    public ShearGimpyRenderer(Color color) {
+    public ShearImageFilter(Color color) {
         _color = color;
     }
 
     @Override
-    public void gimp(BufferedImage bi) {
+    public void filter(BufferedImage bi) {
         Graphics2D g = bi.createGraphics();
         shearX(g, bi.getWidth(), bi.getHeight());
         shearY(g, bi.getWidth(), bi.getHeight());
