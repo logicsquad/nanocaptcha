@@ -39,8 +39,12 @@ public abstract class AbstractContentProducer implements ContentProducer {
 	 * 
 	 * @param length   text length
 	 * @param srcChars source characters
+	 * @throws IllegalArgumentException if {@code length} is not positive
 	 */
 	public AbstractContentProducer(int length, char[] srcChars) {
+		if (length <= 0) {
+			throw new IllegalArgumentException("Content length must be positive.");
+		}
 		this.length = length;
 		this.srcChars = Arrays.copyOf(srcChars, srcChars.length);
 		return;
