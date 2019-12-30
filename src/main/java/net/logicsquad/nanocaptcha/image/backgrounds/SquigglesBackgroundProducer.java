@@ -7,6 +7,7 @@ import java.awt.geom.Arc2D;
 import java.awt.image.BufferedImage;
 
 /**
+ * Adds squiggles to background.
  * 
  * @author <a href="mailto:james.childers@gmail.com">James Childers</a>
  * @author <a href="mailto:paulh@logicsquad.net">Paul Hoadley</a>
