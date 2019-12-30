@@ -34,7 +34,7 @@ public final class Mixer {
 	 * @return concatenation {@link Sample}
 	 * @throws NullPointerException if {@code samples} is {@code null}
 	 */
-	public static Sample append(List<Sample> samples) {
+	public static Sample concatenate(List<Sample> samples) {
 		Objects.requireNonNull(samples);
 
 		// If we have no samples, return an empty Sample
@@ -50,7 +50,7 @@ public final class Mixer {
 				samplesArray[i] = samples.get(i + 1).getInterleavedSamples();
 				sampleCount += samples.get(i + 1).getSampleCount();
 			}
-			double[] appended = concatAll(first, samplesArray);
+			double[] appended = concatenate(first, samplesArray);
 			return buildSample(sampleCount, appended);
 		}
 	}
@@ -85,7 +85,7 @@ public final class Mixer {
 	 * @param rest  additional arrays of {@code double}s
 	 * @return concatenated array
 	 */
-	private static double[] concatAll(double[] first, double[]... rest) {
+	private static double[] concatenate(double[] first, double[]... rest) {
 		int totalLength = first.length;
 		for (double[] array : rest) {
 			totalLength += array.length;

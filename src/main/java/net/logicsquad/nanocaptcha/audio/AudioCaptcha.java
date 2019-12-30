@@ -180,7 +180,7 @@ public final class AudioCaptcha {
 				return new AudioCaptcha(this);
 			}
 
-			audio = Mixer.append(samples);
+			audio = Mixer.concatenate(samples);
 			return new AudioCaptcha(this);
 		}
 	}

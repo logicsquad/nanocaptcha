@@ -46,7 +46,7 @@ public class RandomNoiseProducer implements NoiseProducer {
      * 
      */
     @Override public Sample addNoise(List<Sample> samples) {
-        Sample appended = Mixer.append(samples);
+        Sample appended = Mixer.concatenate(samples);
         String noiseFile = _noiseFiles[RAND.nextInt(_noiseFiles.length)];
         Sample noise = new Sample(noiseFile);
 
