@@ -53,12 +53,4 @@ public class GradiatedBackgroundProducer implements BackgroundProducer {
 
 		return img;
 	}
-
-	public void setFromColor(Color fromColor) {
-		_fromColor = fromColor;
-	}
-
-	public void setToColor(Color toColor) {
-		_toColor = toColor;
-	}
 }
