@@ -160,29 +160,6 @@ public class Sample {
         }
     }
 
-    /**
-     * Helper method to convert a double[] to a byte[] in a format that can be
-     * used by {@link AudioInputStream}. Typically this will be used with
-     * a {@link Sample} that has been modified from its original.
-     *
-     * @see <a href="http://en.wiktionary.org/wiki/yak_shaving">Yak Shaving</a>
-     *
-     * @return A byte[] representing a sample
-     */
-    public static final byte[] asByteArray(long sampleCount, double[] sample) {
-        int b_len = (int) sampleCount
-                * (SC_AUDIO_FORMAT.getSampleSizeInBits() / 8);
-        byte[] buffer = new byte[b_len];
-
-        int in;
-        for (int i = 0; i < sample.length; i++) {
-            in = (int) (sample[i] * 32767);
-            buffer[2 * i] = (byte) (in & 255);
-            buffer[2 * i + 1] = (byte) (in >> 8);
-        }
-
-        return buffer;
-    }
 
     @Override public String toString() {
         return "[Sample] samples: " + getSampleCount() + ", format: "

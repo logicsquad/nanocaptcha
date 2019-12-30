@@ -129,9 +129,28 @@ public final class Mixer {
 	private static Sample buildSample(long sampleCount, double[] sample) {
 		// I'm reasonably sure we don't need to ask for sampleCount here: it's just
 		// going to match sample.length, isn't it?
-		byte[] buffer = Sample.asByteArray(sampleCount, sample);
+		byte[] buffer = asByteArray(sampleCount, sample);
 		InputStream bais = new ByteArrayInputStream(buffer);
 		AudioInputStream ais = new AudioInputStream(bais, Sample.SC_AUDIO_FORMAT, sampleCount);
 		return new Sample(ais);
+	}
+
+	/**
+	 * Returns a sample encoded as {@code double[]} as a {@code byte[]}.
+	 *
+	 * @param sampleCount number of samples
+	 * @param sample      raw sample data
+	 * @return sample encoded as {@code byte[]}
+	 */
+	private static byte[] asByteArray(long sampleCount, double[] sample) {
+		int b_len = (int) sampleCount * (Sample.SC_AUDIO_FORMAT.getSampleSizeInBits() / 8);
+		byte[] buffer = new byte[b_len];
+		int in;
+		for (int i = 0; i < sample.length; i++) {
+			in = (int) (sample[i] * 32767);
+			buffer[2 * i] = (byte) (in & 255);
+			buffer[2 * i + 1] = (byte) (in >> 8);
+		}
+		return buffer;
 	}
 }
