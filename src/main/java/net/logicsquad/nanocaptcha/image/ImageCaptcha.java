@@ -12,7 +12,6 @@ import java.time.OffsetDateTime;
 
 import javax.imageio.ImageIO;
 
-import net.logicsquad.nanocaptcha.content.AbstractContentProducer;
 import net.logicsquad.nanocaptcha.content.LatinContentProducer;
 import net.logicsquad.nanocaptcha.image.backgrounds.BackgroundProducer;
 import net.logicsquad.nanocaptcha.image.backgrounds.TransparentBackgroundProducer;
@@ -106,10 +105,10 @@ public final class ImageCaptcha implements Serializable {
         }
 
         /**
-         * Generate the answer to the CAPTCHA using the {@link AbstractContentProducer}.
-         */
-        public Builder addText() {
-            return addText(new LatinContentProducer());
+		 * Generate the answer to the CAPTCHA using the default {@link ContentProducer}.
+		 */
+        public Builder addContent() {
+            return addContent(new LatinContentProducer());
         }
 
         /**
@@ -118,8 +117,8 @@ public final class ImageCaptcha implements Serializable {
          * 
          * @param txtProd
          */
-        public Builder addText(ContentProducer txtProd) {
-            return addText(txtProd, new DefaultWordRenderer());
+        public Builder addContent(ContentProducer txtProd) {
+            return addContent(txtProd, new DefaultWordRenderer());
         }
 
         /**
@@ -129,8 +128,8 @@ public final class ImageCaptcha implements Serializable {
          *
          * @param wRenderer
          */
-        public Builder addText(WordRenderer wRenderer) {
-        	return addText(new LatinContentProducer(), wRenderer);
+        public Builder addContent(WordRenderer wRenderer) {
+        	return addContent(new LatinContentProducer(), wRenderer);
         }
 
         /**
@@ -141,7 +140,7 @@ public final class ImageCaptcha implements Serializable {
          * @param txtProd
          * @param wRenderer
          */
-        public Builder addText(ContentProducer txtProd, WordRenderer wRenderer) {
+        public Builder addContent(ContentProducer txtProd, WordRenderer wRenderer) {
         	_answer += txtProd.getContent();
         	wRenderer.render(_answer, _img);
         	

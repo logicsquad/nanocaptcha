@@ -56,11 +56,11 @@ public final class AudioCaptcha {
             _noiseProds = new ArrayList<NoiseProducer>();
         }
 
-        public Builder addAnswer() {
-            return addAnswer(new NumbersContentProducer());
+        public Builder addContent() {
+            return addContent(new NumbersContentProducer());
         }
 
-        public Builder addAnswer(ContentProducer ansProd) {
+        public Builder addContent(ContentProducer ansProd) {
             _answer += ansProd.getContent();
 
             return this;
