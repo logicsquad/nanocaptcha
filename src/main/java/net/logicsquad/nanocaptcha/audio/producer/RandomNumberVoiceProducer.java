@@ -6,6 +6,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Random;
 
 import net.logicsquad.nanocaptcha.audio.Sample;
@@ -68,19 +69,21 @@ public class RandomNumberVoiceProducer implements VoiceProducer {
 	}
 
 	/**
-	 * Creates a <code>RandomNumberVoiceProducer</code> for the given
-	 * <code>voices</code>, a map of numbers to their corresponding filenames.
-	 * Conceptually the map must look like the following:
+	 * Creates a {@code RandomNumberVoiceProducer} for the given {@code voices}, a
+	 * map of numbers to their corresponding filename options. Conceptually the map
+	 * must look like the following:
 	 * 
 	 * <pre>
 	 * {1 => ["/my_sounds/1-quiet.wav", "/my_sounds/1-loud.wav"],
 	 *  2 => ["/my_sounds/2-quiet.wav", "/my_sounds/2-loud.wav"]}
 	 * </pre>
 	 * 
-	 * @param voices
+	 * @param voices map of digits to list of vocalizations of that digit
+	 * @throws NullPointerException if {@code voices} is {@code null}
 	 */
 	public RandomNumberVoiceProducer(Map<Integer, List<String>> voices) {
-		this.voices = voices;
+		this.voices = Objects.requireNonNull(voices);
+		return;
 	}
 
 	@Override
