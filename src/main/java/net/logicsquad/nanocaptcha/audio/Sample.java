@@ -126,41 +126,6 @@ public class Sample {
         return samples;
     }
 
-    /**
-     * Extract samples of a particular channel from interleavedSamples and copy
-     * them into channelSamples
-     * 
-     * @param channel
-     * @param interleavedSamples
-     * @param channelSamples
-     */
-    public void getChannelSamples(int channel, double[] interleavedSamples,
-            double[] channelSamples) {
-        int nbChannels = getFormat().getChannels();
-        for (int i = 0; i < channelSamples.length; i++) {
-            channelSamples[i] = interleavedSamples[nbChannels * i + channel];
-        }
-    }
-
-    /**
-     * Convenience method. Extract left and right channels for common stereo
-     * files. leftSamples and rightSamples must be of size getSampleCount()
-     * 
-     * @param leftSamples
-     * @param rightSamples
-     * @throws IOException
-     */
-    public void getStereoSamples(double[] leftSamples, double[] rightSamples)
-            throws IOException {
-        long sampleCount = getSampleCount();
-        double[] interleavedSamples = new double[(int) sampleCount * 2];
-        getInterleavedSamples(0, sampleCount, interleavedSamples);
-        for (int i = 0; i < leftSamples.length; i++) {
-            leftSamples[i] = interleavedSamples[2 * i];
-            rightSamples[i] = interleavedSamples[2 * i + 1];
-        }
-    }
-
     // Decode bytes of audioBytes into audioSamples
     public void decodeBytes(byte[] audioBytes, double[] audioSamples) {
         int sampleSizeInBytes = getFormat().getSampleSizeInBits() / 8;
@@ -193,15 +158,6 @@ public class Sample {
             double val = ((double) ival) / ratio;
             audioSamples[i] = val;
         }
-    }
-
-    /**
-     * Return the interleaved samples as a <code>byte[]</code>.
-     * 
-     * @return The interleaved samples
-     */
-    public final byte[] asByteArray() {
-        return asByteArray(getSampleCount(), getInterleavedSamples());
     }
 
     /**
