@@ -87,15 +87,15 @@ public class RandomNumberVoiceProducer implements VoiceProducer {
 	}
 
 	@Override
-	public final Sample getVocalization(char num) {
+	public final Sample getVocalization(char number) {
+		String stringNumber = Character.toString(number);
 		try {
-			Integer.parseInt(num + "");
+			int idx = Integer.parseInt(stringNumber);
+			List<String> files = voices.get(idx);
+			String filename = files.get(RAND.nextInt(files.size()));
+			return new Sample(filename);
 		} catch (NumberFormatException e) {
-			throw new IllegalArgumentException("Expected <num> to be a number, got '" + num + "' instead.", e);
+			throw new IllegalArgumentException("RandomNumberVoiceProducer can only vocalize numbers.");
 		}
-		int idx = Integer.parseInt(num + "");
-		List<String> files = voices.get(idx);
-		String filename = files.get(RAND.nextInt(files.size()));
-		return new Sample(filename);
 	}
 }
