@@ -13,5 +13,5 @@ public interface ContentProducer {
 	 * 
 	 * @return CAPTCHA content
 	 */
-	public String getContent();
+	String getContent();
 }
