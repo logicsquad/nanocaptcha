@@ -64,6 +64,7 @@ public class Sample {
 		Objects.requireNonNull(is);
 		if (is instanceof AudioInputStream) {
 			audioInputStream = (AudioInputStream) is;
+			checkFormat(audioInputStream.getFormat());
 			return;
 		}
 
