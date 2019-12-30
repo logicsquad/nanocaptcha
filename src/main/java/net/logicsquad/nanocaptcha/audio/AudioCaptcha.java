@@ -1,6 +1,7 @@
 package net.logicsquad.nanocaptcha.audio;
 
 import java.security.SecureRandom;
+import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -48,6 +49,7 @@ public final class AudioCaptcha {
         private Sample _challenge;
         private List<VoiceProducer> _voiceProds;
         private List<NoiseProducer> _noiseProds;
+        private OffsetDateTime created;
 
         public Builder() {
             _voiceProds = new ArrayList<VoiceProducer>();
@@ -117,7 +119,7 @@ public final class AudioCaptcha {
             }
 
             _challenge = Mixer.append(samples);
-
+            created = OffsetDateTime.now();
             return new AudioCaptcha(this);
         }
 
@@ -145,5 +147,9 @@ public final class AudioCaptcha {
 
     @Override public String toString() {
         return _builder.toString();
+    }
+
+    public OffsetDateTime getCreated() {
+        return _builder.created;
     }
 }
