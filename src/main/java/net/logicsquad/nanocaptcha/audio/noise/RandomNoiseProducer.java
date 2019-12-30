@@ -1,8 +1,10 @@
 package net.logicsquad.nanocaptcha.audio.noise;
 
 import java.security.SecureRandom;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
+import java.util.stream.Collectors;
 
 import net.logicsquad.nanocaptcha.audio.Mixer;
 import net.logicsquad.nanocaptcha.audio.Sample;
@@ -23,43 +25,63 @@ import net.logicsquad.nanocaptcha.audio.Sample;
  * @since 1.0
  */
 public class RandomNoiseProducer implements NoiseProducer {
-
+	/**
+	 * Random number generator
+	 */
     private static final Random RAND = new SecureRandom();
-    private static final String[] DEFAULT_NOISES = {
-            "/sounds/noises/radio_tuning.wav", 
-            "/sounds/noises/restaurant.wav",
-            "/sounds/noises/swimming.wav", };
 
-    private final String _noiseFiles[];
+    /**
+     * Built-in noise samples
+     */
+	private static final String[] BUILT_IN_NOISES = {
+			"/sounds/noises/radio_tuning.wav",
+			"/sounds/noises/restaurant.wav",
+			"/sounds/noises/swimming.wav", };
 
-    public RandomNoiseProducer() {
-        this(DEFAULT_NOISES);
-    }
+	/**
+	 * Noise files to use
+	 */
+    private final String noiseFiles[];
 
+	/**
+	 * Constructor: object will use built-in noise files.
+	 */
+	public RandomNoiseProducer() {
+		this(BUILT_IN_NOISES);
+	}
+
+	/**
+	 * Constructor taking an array of noise filenames.
+	 * 
+	 * @param noiseFiles noise filenames
+	 */
     public RandomNoiseProducer(String[] noiseFiles) {
-        _noiseFiles = noiseFiles;
+        this.noiseFiles = noiseFiles;
+        return;
     }
 
     /**
-     * Append the given <code>samples</code> to each other, then add random
-     * noise to the result.
-     * 
-     */
-    @Override public Sample addNoise(List<Sample> samples) {
-        Sample appended = Mixer.concatenate(samples);
-        String noiseFile = _noiseFiles[RAND.nextInt(_noiseFiles.length)];
-        Sample noise = new Sample(noiseFile);
+	 * Concatenates {@code samples}, then adds a random background noise sample
+	 * (from this object's list of samples), returning the resulting {@link Sample}.
+	 * 
+	 * @param samples a list of {@link Sample}s
+	 * @return concatenated {@link Sample}s with added noise
+	 */
+	@Override
+	public Sample addNoise(List<Sample> samples) {
+		Sample appended = Mixer.concatenate(samples);
+		String noiseFile = noiseFiles[RAND.nextInt(noiseFiles.length)];
+		Sample noise = new Sample(noiseFile);
+		// Decrease the volume of the noise to make sure the voices can be heard
+		return Mixer.mix(appended, 1.0, noise, 0.6);
+	}
 
-        // Decrease the volume of the noise to make sure the voices can be heard
-        return Mixer.mix(appended, 1.0, noise, 0.6);
-    }
-
-    @Override public String toString() {
-        StringBuffer sb = new StringBuffer();
-        sb.append("[Noise files: ");
-        sb.append(_noiseFiles);
-        sb.append("]");
-
-        return sb.toString();
-    }
+	@Override
+	public String toString() {
+		StringBuffer sb = new StringBuffer();
+		sb.append("[RandomNoiseProducer: noiseFiles=");
+		sb.append(Arrays.asList(noiseFiles).stream().collect(Collectors.joining(",")));
+		sb.append("]");
+		return sb.toString();
+	}
 }
