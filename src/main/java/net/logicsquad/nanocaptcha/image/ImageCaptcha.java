@@ -12,6 +12,7 @@ import java.time.OffsetDateTime;
 
 import javax.imageio.ImageIO;
 
+import net.logicsquad.nanocaptcha.content.ContentProducer;
 import net.logicsquad.nanocaptcha.content.LatinContentProducer;
 import net.logicsquad.nanocaptcha.image.backgrounds.BackgroundProducer;
 import net.logicsquad.nanocaptcha.image.backgrounds.TransparentBackgroundProducer;
@@ -21,260 +22,286 @@ import net.logicsquad.nanocaptcha.image.noise.CurvedLineNoiseProducer;
 import net.logicsquad.nanocaptcha.image.noise.NoiseProducer;
 import net.logicsquad.nanocaptcha.image.renderer.DefaultWordRenderer;
 import net.logicsquad.nanocaptcha.image.renderer.WordRenderer;
-import net.logicsquad.nanocaptcha.content.ContentProducer;
 
 /**
- * A builder for generating a CAPTCHA image/answer pair.
- * 
- * <p>
- * Example for generating a new CAPTCHA:
- * </p>
- * <pre>Captcha captcha = new Captcha.Builder(200, 50)
- * 	.addText()
- * 	.addBackground()
- * 	.build();</pre>
- * <p>Note that the <code>build()</code> must always be called last. Other methods are optional,
- * and can sometimes be repeated. For example:</p>
- * <pre>Captcha captcha = new Captcha.Builder(200, 50)
- * 	.addText()
- * 	.addNoise()
- * 	.addNoise()
- * 	.addNoise()
- * 	.addBackground()
- * 	.build();</pre>
- * <p>Adding multiple backgrounds has no affect; the last background added will simply be the
- * one that is eventually rendered.</p>
- * <p>To validate that <code>answerStr</code> is a correct answer to the CAPTCHA:</p>
- * 
- * <code>captcha.isCorrect(answerStr);</code>
+ * An image CAPTCHA.
  * 
  * @author <a href="mailto:james.childers@gmail.com">James Childers</a>
- * 
+ * @author <a href="mailto:paulh@logicsquad.net">Paul Hoadley</a>
+ * @since 1.0
  */
 public final class ImageCaptcha implements Serializable {
+	/**
+	 * Serial version UID
+	 */
+	private static final long serialVersionUID = 1L;
 
-    private static final long serialVersionUID = 617511236L;
-    public static final String NAME = "simpleCaptcha";
-    private Builder _builder;
+	/**
+	 * Generated image
+	 */
+	private BufferedImage image;
 
-    private ImageCaptcha(Builder builder) {
-        _builder = builder;
-    }
+	/**
+	 * Text content of image
+	 */
+	private String content;
 
-    public static class Builder implements Serializable {
-        private static final long serialVersionUID = 12L;
-        /**
-         * @serial
-         */
-        private String _answer = "";
-        /**
-         * @serial
-         */
-        private BufferedImage _img;
-        /**
-         * @serial
-         */
-        private BufferedImage _bg;
-        /**
-         * @serial
-         */
-        private OffsetDateTime created;
+	/**
+	 * Creation timestamp
+	 */
+	private OffsetDateTime created;
 
-        private boolean _addBorder = false;
+	/**
+	 * Constructor
+	 * 
+	 * @param builder a {@link Builder} object
+	 */
+	private ImageCaptcha(Builder builder) {
+		image = builder.image;
+		content = builder.content;
+		created = OffsetDateTime.now();
+		return;
+	}
 
-        public Builder(int width, int height) {
-            _img = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
-        }
-
-        /**
-         * Add a background using the default {@link BackgroundProducer} (a {@link TransparentBackgroundProducer}).
-         */
-        public Builder addBackground() {
-            return addBackground(new TransparentBackgroundProducer());
-        }
-
-        /**
-         * Add a background using the given {@link BackgroundProducer}.
-         * 
-         * @param bgProd
-         */
-        public Builder addBackground(BackgroundProducer bgProd) {
-        	_bg = bgProd.getBackground(_img.getWidth(), _img.getHeight());
-            
-            return this;
-        }
-
-        /**
-		 * Generate the answer to the CAPTCHA using the default {@link ContentProducer}.
+	/**
+	 * Build for an {@link ImageCaptcha}.
+	 */
+	public static class Builder {
+		/**
+		 * Text content
 		 */
-        public Builder addContent() {
-            return addContent(new LatinContentProducer());
-        }
+		private String content = "";
 
-        /**
-         * Generate the answer to the CAPTCHA using the given
-         * {@link ContentProducer}.
-         * 
-         * @param txtProd
-         */
-        public Builder addContent(ContentProducer txtProd) {
-            return addContent(txtProd, new DefaultWordRenderer());
-        }
+		/**
+		 * Generated image
+		 */
+		private BufferedImage image;
 
-        /**
-         * Generate the answer to the CAPTCHA using the default
-         * {@link ContentProducer}, and render it to the image using the given
-         * {@link WordRenderer}.
-         *
-         * @param wRenderer
-         */
-        public Builder addContent(WordRenderer wRenderer) {
-        	return addContent(new LatinContentProducer(), wRenderer);
-        }
+		/**
+		 * Background for generated image
+		 */
+		private BufferedImage background;
 
-        /**
-         * Generate the answer to the CAPTCHA using the given
-         * {@link ContentProducer}, and render it to the image using the given
-         * {@link WordRenderer}.
-         *
-         * @param txtProd
-         * @param wRenderer
-         */
-        public Builder addContent(ContentProducer txtProd, WordRenderer wRenderer) {
-        	_answer += txtProd.getContent();
-        	wRenderer.render(_answer, _img);
-        	
-        	return this;
-        }
+		/**
+		 * Should we add a border?
+		 */
+		private boolean addBorder = false;
 
-        /**
-         * Add noise using the default {@link NoiseProducer} (a {@link CurvedLineNoiseProducer}).
-         */
-        public Builder addNoise() {
-            return this.addNoise(new CurvedLineNoiseProducer());
-        }
+		/**
+		 * Constructor taking a width and height (in pixels) for the generated image.
+		 * 
+		 * @param width  image width
+		 * @param height image height
+		 */
+		public Builder(int width, int height) {
+			image = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
+			return;
+		}
 
-        /**
-         * Add noise using the given NoiseProducer.
-         * 
-         * @param nProd
-         */
-        public Builder addNoise(NoiseProducer nProd) {
-            nProd.makeNoise(_img);
-            return this;
-        }
+		/**
+		 * Adds a background using the default {@link BackgroundProducer} (a
+		 * {@link TransparentBackgroundProducer}).
+		 * 
+		 * @return this
+		 */
+		public Builder addBackground() {
+			return addBackground(new TransparentBackgroundProducer());
+		}
 
-        /**
-         * Filter the image using the default {@link ImageFilter} (a {@link RippleImageFilter}).
-         */
-        public Builder filter() {
-            return filter(new RippleImageFilter());
-        }
+		/**
+		 * Adds a background using the given {@link BackgroundProducer}. Note that
+		 * adding more than one background does not have an additive effect: the last
+		 * background added is the winner.
+		 * 
+		 * @param backgroundProducer a {@link BackgroundProducer}
+		 * @return this
+		 */
+		public Builder addBackground(BackgroundProducer backgroundProducer) {
+			background = backgroundProducer.getBackground(image.getWidth(), image.getHeight());
+			return this;
+		}
 
-        /**
-         * Filter the image using the given {@link ImageFilter}.
-         * 
-         * @param filter
-         */
-        public Builder filter(ImageFilter filter) {
-            filter.filter(_img);
-            return this;
-        }
+		/**
+		 * Adds content to the CAPTCHA using the default {@link ContentProducer}.
+		 * 
+		 * @return this
+		 */
+		public Builder addContent() {
+			return addContent(new LatinContentProducer());
+		}
 
-        /**
-         * Draw a single-pixel wide black border around the image.
-         */
-        public Builder addBorder() {
-        	_addBorder = true;
+		/**
+		 * Adds content to the CAPTCHA using the given {@link ContentProducer}.
+		 * 
+		 * @param contentProducer a {@link ContentProducer}
+		 * @return this
+		 */
+		public Builder addContent(ContentProducer contentProducer) {
+			return addContent(contentProducer, new DefaultWordRenderer());
+		}
 
-            return this;
-        }
+		/**
+		 * Adds content to the CAPTCHA using the given {@link ContentProducer}, and
+		 * render it to the image using the given {@link WordRenderer}.
+		 *
+		 * @param contentProducer a {@link ContentProducer}
+		 * @param wordRenderer    a {@link WordRenderer}
+		 * @return this
+		 */
+		public Builder addContent(ContentProducer contentProducer, WordRenderer wordRenderer) {
+			content += contentProducer.getContent();
+			wordRenderer.render(content, image);
+			return this;
+		}
 
-        /**
-         * Build the CAPTCHA. This method should always be called, and should always
-         * be called last.
-         * 
-         * @return The constructed CAPTCHA.
-         */
-        public ImageCaptcha build() {
-        	if (_bg == null) {
-        		_bg = new TransparentBackgroundProducer().getBackground(_img.getWidth(), _img.getHeight());
-        	}
+		/**
+		 * Adds noise using the default {@link NoiseProducer} (a
+		 * {@link CurvedLineNoiseProducer}).
+		 * 
+		 * @return this
+		 */
+		public Builder addNoise() {
+			return addNoise(new CurvedLineNoiseProducer());
+		}
 
-        	// Paint the main image over the background
-        	Graphics2D g = _bg.createGraphics();
-        	g.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 1.0f));
-        	g.drawImage(_img, null, null);
-        	
-        	if (_addBorder) {
-        		int width = _img.getWidth();
-        		int height = _img.getHeight();
-        		
-	            g.setColor(Color.BLACK);
-	            g.drawLine(0, 0, 0, width);
-	            g.drawLine(0, 0, width, 0);
-	            g.drawLine(0, height - 1, width, height - 1);
-	            g.drawLine(width - 1, height - 1, width - 1, 0);
-        	}
+		/**
+		 * Adds noise using the given {@link NoiseProducer}.
+		 * 
+		 * @param noiseProducer a {@link NoiseProducer}
+		 * @return this
+		 */
+		public Builder addNoise(NoiseProducer noiseProducer) {
+			noiseProducer.makeNoise(image);
+			return this;
+		}
 
-        	_img = _bg;
+		/**
+		 * Filters the image using the default {@link ImageFilter} (a
+		 * {@link RippleImageFilter}).
+		 * 
+		 * @return this
+		 */
+		public Builder filter() {
+			return filter(new RippleImageFilter());
+		}
 
-            created = OffsetDateTime.now();
+		/**
+		 * Filters the image using the given {@link ImageFilter}.
+		 * 
+		 * @param filter an {@link ImageFilter}
+		 * @return this
+		 */
+		public Builder filter(ImageFilter filter) {
+			filter.filter(image);
+			return this;
+		}
 
-            return new ImageCaptcha(this);
-        }
+		/**
+		 * Draws a single-pixel wide black border around the image.
+		 * 
+		 * @return this
+		 */
+		public Builder addBorder() {
+			addBorder = true;
+			return this;
+		}
 
-        @Override
-        public String toString() {
-            StringBuffer sb = new StringBuffer();
-            sb.append("[Answer: ");
-            sb.append(_answer);
-            sb.append("][Timestamp: ");
-            sb.append(created);
-            sb.append("][Image: ");
-            sb.append(_img);
-            sb.append("]");
+		/**
+		 * Builds the image CAPTCHA described by this object.
+		 * 
+		 * @return {@link ImageCaptcha} as described by this {@code Builder}
+		 */
+		public ImageCaptcha build() {
+			if (background == null) {
+				background = new TransparentBackgroundProducer().getBackground(image.getWidth(), image.getHeight());
+			}
 
-            return sb.toString();
-        }
-        
-        private void writeObject(ObjectOutputStream out) throws IOException {
-            out.writeObject(_answer);
-            out.writeObject(created);
-            ImageIO.write(_img, "png", ImageIO.createImageOutputStream(out));
-        }
+			// Paint the main image over the background
+			Graphics2D g = background.createGraphics();
+			g.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 1.0f));
+			g.drawImage(image, null, null);
 
-        private void readObject(ObjectInputStream in) throws IOException,
-                ClassNotFoundException {
-            _answer = (String) in.readObject();
-            created = (OffsetDateTime) in.readObject();
-            _img = ImageIO.read(ImageIO.createImageInputStream(in));
-        }
-    }
+			if (addBorder) {
+				int width = image.getWidth();
+				int height = image.getHeight();
+				g.setColor(Color.BLACK);
+				g.drawLine(0, 0, 0, width);
+				g.drawLine(0, 0, width, 0);
+				g.drawLine(0, height - 1, width, height - 1);
+				g.drawLine(width - 1, height - 1, width - 1, 0);
+			}
+			image = background;
+			return new ImageCaptcha(this);
+		}
+	}
 
-    public boolean isCorrect(String answer) {
-        return answer.equals(_builder._answer);
-    }
-    
-    public String getContent() {
-    	return _builder._answer;
-    }
+	/**
+	 * Does CAPTCHA content match supplied {@code answer}?
+	 * 
+	 * @param answer a candidate content match
+	 * @return {@code true} if {@code answer} matches CAPTCHA content, otherwise
+	 *         {@code false}
+	 */
+	public boolean isCorrect(String answer) {
+		return answer.equals(content);
+	}
 
-    /**
-     * Get the CAPTCHA image, a PNG.
-     *
-     * @return A PNG CAPTCHA image.
-     */
-    public BufferedImage getImage() {
-        return _builder._img;
-    }
+	/**
+	 * Returns content of this CAPTCHA.
+	 * 
+	 * @return content
+	 */
+	public String getContent() {
+		return content;
+	}
 
-    public OffsetDateTime getCreated() {
-        return _builder.created;
-    }
+	/**
+	 * Returns the image for this {@code ImageCaptcha}.
+	 *
+	 * @return CAPTCHA image
+	 */
+	public BufferedImage getImage() {
+		return image;
+	}
 
-    @Override
-    public String toString() {
-        return _builder.toString();
-    }
+	/**
+	 * Returns creation timestamp.
+	 * 
+	 * @return creation timestamp
+	 */
+	public OffsetDateTime getCreated() {
+		return created;
+	}
+
+	@Override
+	public String toString() {
+		StringBuilder sb = new StringBuilder();
+		sb.append("[ImageCaptcha: created=").append(created).append(" content='").append(content).append("']");
+		return sb.toString();
+	}
+
+	/**
+	 * Writes object for serialization.
+	 * 
+	 * @param out {@link ObjectOutputStream}
+	 * @throws IOException if encountered
+	 */
+	private void writeObject(ObjectOutputStream out) throws IOException {
+		out.writeObject(content);
+		out.writeObject(created);
+		ImageIO.write(image, "png", ImageIO.createImageOutputStream(out));
+	}
+
+	/**
+	 * Reads seralized object from {@link ObjectInputStream}.
+	 * 
+	 * @param in {@link ObjectInputStream}
+	 * @throws IOException            if encountered
+	 * @throws ClassNotFoundException if encountered
+	 */
+	private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
+		content = (String) in.readObject();
+		created = (OffsetDateTime) in.readObject();
+		image = ImageIO.read(ImageIO.createImageInputStream(in));
+	}
 }

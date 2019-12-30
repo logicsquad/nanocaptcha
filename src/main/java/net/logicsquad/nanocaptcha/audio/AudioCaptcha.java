@@ -10,146 +10,226 @@ import net.logicsquad.nanocaptcha.audio.noise.NoiseProducer;
 import net.logicsquad.nanocaptcha.audio.noise.RandomNoiseProducer;
 import net.logicsquad.nanocaptcha.audio.producer.RandomNumberVoiceProducer;
 import net.logicsquad.nanocaptcha.audio.producer.VoiceProducer;
-import net.logicsquad.nanocaptcha.content.NumbersContentProducer;
 import net.logicsquad.nanocaptcha.content.ContentProducer;
+import net.logicsquad.nanocaptcha.content.NumbersContentProducer;
 
 /**
- * <p>
- * Represents an audio CAPTCHA. Example for generating a new CAPTCHA:
- * </p>
+ * An audio CAPTCHA.
  * 
- * <pre>
- * AudioCaptcha ac = new AudioCaptcha.Builder()
- *   .addAnswer()
- *   .addNoise()
- *   .build();
- * </pre>
- * <p>
- * Note that the <code>build()</code> method must always be called last. Other
- * methods are optional.
- * </p>
- *
  * @author <a href="mailto:james.childers@gmail.com">James Childers</a>
+ * @author <a href="mailto:paulh@logicsquad.net">Paul Hoadley</a>
  * @since 1.0
  */
 public final class AudioCaptcha {
+	/**
+	 * Generated audio
+	 */
+	private final Sample audio;
 
-    public static final String NAME = "audioCaptcha";
-    private static final Random RAND = new SecureRandom();
+	/**
+	 * Text content of audio
+	 */
+	private final String content;
 
-    private Builder _builder;
+	/**
+	 * Creation timestamp
+	 */
+	private final OffsetDateTime created;
 
-    private AudioCaptcha(Builder builder) {
-        _builder = builder;
-    }
+	/**
+	 * Constructor
+	 * 
+	 * @param builder a {@link Builder} object
+	 */
+	private AudioCaptcha(Builder builder) {
+		audio = builder.audio;
+		content = builder.content;
+		created = OffsetDateTime.now();
+		return;
+	}
 
-    public static class Builder {
+	/**
+	 * Build for an {@link AudioCaptcha}.
+	 */
+	public static class Builder {
+		/**
+		 * Random number generator
+		 */
+		private static final Random RAND = new SecureRandom();
 
-        private String _answer = "";
-        private Sample _challenge;
-        private List<VoiceProducer> _voiceProds;
-        private List<NoiseProducer> _noiseProds;
-        private OffsetDateTime created;
+		/**
+		 * Text content
+		 */
+		private String content = "";
 
-        public Builder() {
-            _voiceProds = new ArrayList<VoiceProducer>();
-            _noiseProds = new ArrayList<NoiseProducer>();
-        }
+		/**
+		 * Generated audio sample
+		 */
+		private Sample audio;
 
-        public Builder addContent() {
-            return addContent(new NumbersContentProducer());
-        }
+		/**
+		 * {@link VoiceProducer}s
+		 */
+		private List<VoiceProducer> voiceProducers;
 
-        public Builder addContent(ContentProducer ansProd) {
-            _answer += ansProd.getContent();
+		/**
+		 * {@link NoiseProducer}s
+		 */
+		private List<NoiseProducer> noiseProducers;
 
-            return this;
-        }
+		/**
+		 * Constructor
+		 */
+		public Builder() {
+			voiceProducers = new ArrayList<VoiceProducer>();
+			noiseProducers = new ArrayList<NoiseProducer>();
+			return;
+		}
 
-        public Builder addVoice() {
-            _voiceProds.add(new RandomNumberVoiceProducer());
+		/**
+		 * Adds content using the default {@link ContentProducer}
+		 * ({@link NumbersContentProducer}).
+		 * 
+		 * @return this
+		 */
+		public Builder addContent() {
+			return addContent(new NumbersContentProducer());
+		}
 
-            return this;
-        }
+		/**
+		 * Adds content using {@code contentProducer}.
+		 * 
+		 * @param contentProducer a {@link ContentProducer}
+		 * @return this
+		 */
+		public Builder addContent(ContentProducer contentProducer) {
+			content += contentProducer.getContent();
+			return this;
+		}
 
-        public Builder addVoice(VoiceProducer vProd) {
-            _voiceProds.add(vProd);
+		/**
+		 * Adds the default {@link VoiceProducer} ({@link RandomNumberVoiceProducer}).
+		 * 
+		 * @return this
+		 */
+		public Builder addVoice() {
+			voiceProducers.add(new RandomNumberVoiceProducer());
+			return this;
+		}
 
-            return this;
-        }
+		/**
+		 * Adds {@code voiceProducer}.
+		 * 
+		 * @param voiceProducer a {@link VoiceProducer}
+		 * @return this
+		 */
+		public Builder addVoice(VoiceProducer voiceProducer) {
+			voiceProducers.add(voiceProducer);
+			return this;
+		}
 
-        public Builder addNoise() {
-            return addNoise(new RandomNoiseProducer());
-        }
+		/**
+		 * Adds background noise using default {@link NoiseProducer}
+		 * ({@link RandomNoiseProducer}).
+		 * 
+		 * @return this
+		 */
+		public Builder addNoise() {
+			return addNoise(new RandomNoiseProducer());
+		}
 
-        public Builder addNoise(NoiseProducer noiseProd) {
-            _noiseProds.add(noiseProd);
+		/**
+		 * Adds noise using {@code noiseProducer}.
+		 * 
+		 * @param noiseProducer a {@link NoiseProducer}
+		 * @return this
+		 */
+		public Builder addNoise(NoiseProducer noiseProducer) {
+			noiseProducers.add(noiseProducer);
+			return this;
+		}
 
-            return this;
-        }
+		/**
+		 * Builds the audio CAPTCHA described by this object.
+		 * 
+		 * @return {@link AudioCaptcha} as described by this {@code Builder}
+		 */
+		public AudioCaptcha build() {
+			// Make sure we have at least one voiceProducer
+			if (voiceProducers.size() == 0) {
+				addVoice();
+			}
 
-        public AudioCaptcha build() {
-            // Make sure we have at least one voiceProducer
-            if (_voiceProds.size() == 0) {
-                addVoice();
-            }
+			// Convert answer to an array
+			char[] ansAry = content.toCharArray();
 
-            // Convert answer to an array
-            char[] ansAry = _answer.toCharArray();
+			// Make a List of Samples for each character
+			VoiceProducer vProd;
+			List<Sample> samples = new ArrayList<Sample>();
+			Sample sample;
+			for (int i = 0; i < ansAry.length; i++) {
+				// Create Sample for this character from one of the
+				// VoiceProducers
+				vProd = voiceProducers.get(RAND.nextInt(voiceProducers.size()));
+				sample = vProd.getVocalization(ansAry[i]);
+				samples.add(sample);
+			}
 
-            // Make a List of Samples for each character
-            VoiceProducer vProd;
-            List<Sample> samples = new ArrayList<Sample>();
-            Sample sample;
-            for (int i = 0; i < ansAry.length; i++) {
-                // Create Sample for this character from one of the
-                // VoiceProducers
-                vProd = _voiceProds.get(RAND.nextInt(_voiceProds.size()));
-                sample = vProd.getVocalization(ansAry[i]);
-                samples.add(sample);
-            }
+			// 3. Add noise, if any, and return the result
+			if (noiseProducers.size() > 0) {
+				NoiseProducer nProd = noiseProducers.get(RAND.nextInt(noiseProducers.size()));
+				audio = nProd.addNoise(samples);
 
-            // 3. Add noise, if any, and return the result
-            if (_noiseProds.size() > 0) {
-                NoiseProducer nProd = _noiseProds.get(RAND.nextInt(_noiseProds
-                        .size()));
-                _challenge = nProd.addNoise(samples);
+				return new AudioCaptcha(this);
+			}
 
-                return new AudioCaptcha(this);
-            }
+			audio = Mixer.append(samples);
+			return new AudioCaptcha(this);
+		}
+	}
 
-            _challenge = Mixer.append(samples);
-            created = OffsetDateTime.now();
-            return new AudioCaptcha(this);
-        }
+	/**
+	 * Does CAPTCHA content match supplied {@code answer}?
+	 * 
+	 * @param answer a candidate content match
+	 * @return {@code true} if {@code answer} matches CAPTCHA content, otherwise
+	 *         {@code false}
+	 */
+	public boolean isCorrect(String answer) {
+		return answer.equals(content);
+	}
 
-        @Override public String toString() {
-            StringBuffer sb = new StringBuffer();
-            sb.append("[Answer: ");
-            sb.append(_answer);
-            sb.append("]");
+	/**
+	 * Returns content of this CAPTCHA.
+	 * 
+	 * @return content
+	 */
+	public String getContent() {
+		return content;
+	}
 
-            return sb.toString();
-        }
-    }
+	/**
+	 * Returns the audio for this {@code AudioCaptcha}.
+	 *
+	 * @return CAPTCHA audio
+	 */
+	public Sample getAudio() {
+		return audio;
+	}
 
-    public boolean isCorrect(String answer) {
-        return answer.equals(_builder._answer);
-    }
+	@Override
+	public String toString() {
+		StringBuilder sb = new StringBuilder();
+		sb.append("[AudioCaptcha: created=").append(created).append(" content='").append(content).append("']");
+		return sb.toString();
+	}
 
-    public String getContent() {
-        return _builder._answer;
-    }
-
-    public Sample getAudio() {
-        return _builder._challenge;
-    }
-
-    @Override public String toString() {
-        return _builder.toString();
-    }
-
-    public OffsetDateTime getCreated() {
-        return _builder.created;
-    }
+	/**
+	 * Returns creation timestamp.
+	 * 
+	 * @return creation timestamp
+	 */
+	public OffsetDateTime getCreated() {
+		return created;
+	}
 }
