@@ -4,8 +4,8 @@ import java.awt.image.BufferedImage;
 
 /**
  * @author <a href="mailto:james.childers@gmail.com">James Childers</a>
- * 
+ * @since 1.0
  */
 public interface NoiseProducer {
-    public void makeNoise(BufferedImage image);
+    void makeNoise(BufferedImage image);
 }

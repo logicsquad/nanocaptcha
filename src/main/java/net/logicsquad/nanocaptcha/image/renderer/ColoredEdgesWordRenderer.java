@@ -18,6 +18,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
+/**
+ * @author <a href="mailto:james.childers@gmail.com">James Childers</a>
+ * @since 1.0
+ */
 public class ColoredEdgesWordRenderer implements WordRenderer {
 
     private static final Random RAND = new SecureRandom();

@@ -16,6 +16,7 @@ import java.util.Random;
  * Renders the answer onto the image.
  * 
  * @author <a href="mailto:james.childers@gmail.com">James Childers</a>
+ * @since 1.0
  */
 public class DefaultWordRenderer implements WordRenderer {
 

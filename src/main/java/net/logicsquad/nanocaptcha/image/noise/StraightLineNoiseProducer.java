@@ -10,7 +10,7 @@ import java.security.SecureRandom;
  * Draws a 4-pixel thick straight red line through the given image.
  * 
  * @author <a href="mailto:james.childers@gmail.com">James Childers</a>
- * 
+ * @since 1.0
  */
 public class StraightLineNoiseProducer implements NoiseProducer {
 

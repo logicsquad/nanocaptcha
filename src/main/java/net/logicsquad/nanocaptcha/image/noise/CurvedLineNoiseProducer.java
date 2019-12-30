@@ -15,7 +15,7 @@ import java.util.Random;
  * Adds a randomly curved line to the image.
  * 
  * @author <a href="mailto:james.childers@gmail.com">James Childers</a>
- * 
+ * @since 1.0
  */
 public class CurvedLineNoiseProducer implements NoiseProducer {
 

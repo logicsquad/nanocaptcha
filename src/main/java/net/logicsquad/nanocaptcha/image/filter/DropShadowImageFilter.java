@@ -8,6 +8,7 @@ import com.jhlabs.image.ShadowFilter;
  * 
  * @author <a href="mailto:james.childers@gmail.com">James Childers</a>
  * @author <a href="mailto:paulh@logicsquad.net">Paul Hoadley</a>
+ * @since 1.0
  */
 public class DropShadowImageFilter implements ImageFilter {
 	private static final int DEFAULT_RADIUS = 3;

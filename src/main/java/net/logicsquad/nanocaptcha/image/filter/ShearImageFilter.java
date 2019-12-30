@@ -6,6 +6,10 @@ import java.awt.image.BufferedImage;
 import java.security.SecureRandom;
 import java.util.Random;
 
+/**
+ * @author <a href="mailto:james.childers@gmail.com">James Childers</a>
+ * @since 1.0
+ */
 public class ShearImageFilter implements ImageFilter {
 
     private static final Random RAND = new SecureRandom();
