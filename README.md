@@ -33,6 +33,14 @@ customised by:
 * Adding various `ImageFilter`s.
 * Adding a background or a border.
 
+Building a minimal audio CAPTCHA is just as easy:
+
+    	AudioCaptcha audio = new AudioCaptcha.Builder().addAnswer().build();
+
+As with image CAPTCHAs, these can be further customised by:
+
+* Adding background noise with a `NoiseProducer`.
+
 Using NanoCaptcha
 -----------------
 At the moment you'll need to build NanoCaptcha from source:
@@ -40,6 +48,10 @@ At the moment you'll need to build NanoCaptcha from source:
     $ git clone https://github.com/logicsquad/nanocaptcha.git NanoCaptcha
     $ cd NanoCaptcha
     $ mvn package
+
+Note that _the API may change prior to a 1.0 release,_ at which time
+it will remain stable, consistent with [semantic
+versioning](https://semver.org).
 
 Contributing
 ------------
