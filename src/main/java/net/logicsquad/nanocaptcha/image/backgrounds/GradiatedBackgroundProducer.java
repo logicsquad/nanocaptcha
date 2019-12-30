@@ -8,68 +8,57 @@ import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 
 /**
- * Creates a gradiated background with the given <i>from</i> and <i>to</i>
- * Color values. If none are specified they default to light gray and white
+ * Creates a gradiated background with the given <i>from</i> and <i>to</i> Color
+ * values. If none are specified they default to light gray and white
  * respectively.
  * 
  * @author <a href="mailto:james.childers@gmail.com">James Childers</a>
- * 
+ * @author <a href="mailto:paulh@logicsquad.net">Paul Hoadley</a>
+ * @since 1.0
  */
 public class GradiatedBackgroundProducer implements BackgroundProducer {
 
-    private Color _fromColor = Color.DARK_GRAY;
-    private Color _toColor = Color.WHITE;
-    
-    public GradiatedBackgroundProducer() {
-        this(Color.DARK_GRAY, Color.WHITE);
-    }
-    
-    public GradiatedBackgroundProducer(Color from, Color to) {
-        _fromColor = from;
-        _toColor = to;
-    }
-    
-    @Override
-    public BufferedImage getBackground(int width, int height) {
-        // create an opaque image
-        BufferedImage img = new BufferedImage(width, height,
-                BufferedImage.TYPE_INT_RGB);
+	private Color _fromColor = Color.DARK_GRAY;
+	private Color _toColor = Color.WHITE;
 
-        Graphics2D g = img.createGraphics();
-        RenderingHints hints = new RenderingHints(
-                RenderingHints.KEY_ANTIALIASING,
-                RenderingHints.VALUE_ANTIALIAS_ON);
+	public GradiatedBackgroundProducer() {
+		this(Color.DARK_GRAY, Color.WHITE);
+	}
 
-        g.setRenderingHints(hints);
+	public GradiatedBackgroundProducer(Color from, Color to) {
+		_fromColor = from;
+		_toColor = to;
+	}
 
-        // create the gradient color
-        GradientPaint ytow = new GradientPaint(0, 0, _fromColor, width, height,
-                _toColor);
+	@Override
+	public BufferedImage getBackground(int width, int height) {
+		// create an opaque image
+		BufferedImage img = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
 
-        g.setPaint(ytow);
-        // draw gradient color
-        g.fill(new Rectangle2D.Double(0, 0, width, height));
+		Graphics2D g = img.createGraphics();
+		RenderingHints hints = new RenderingHints(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 
-        // draw the transparent image over the background
-        g.drawImage(img, 0, 0, null);
-        g.dispose();
+		g.setRenderingHints(hints);
 
-        return img;
-    }
+		// create the gradient color
+		GradientPaint ytow = new GradientPaint(0, 0, _fromColor, width, height, _toColor);
 
-    @Override
-    public BufferedImage addBackground(BufferedImage image) {
-        int width = image.getWidth();
-        int height = image.getHeight();
-        
-        return getBackground(width, height);
-    }
+		g.setPaint(ytow);
+		// draw gradient color
+		g.fill(new Rectangle2D.Double(0, 0, width, height));
 
-    public void setFromColor(Color fromColor) {
-        _fromColor = fromColor;
-    }
+		// draw the transparent image over the background
+		g.drawImage(img, 0, 0, null);
+		g.dispose();
 
-    public void setToColor(Color toColor) {
-        _toColor = toColor;
-    }
+		return img;
+	}
+
+	public void setFromColor(Color fromColor) {
+		_fromColor = fromColor;
+	}
+
+	public void setToColor(Color toColor) {
+		_toColor = toColor;
+	}
 }
