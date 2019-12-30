@@ -97,7 +97,7 @@ public class Sample {
 	 * 
 	 * @return {@link AudioFormat}
 	 */
-	public AudioFormat getFormat() {
+	private AudioFormat getFormat() {
 		return audioInputStream.getFormat();
 	}
 
@@ -106,7 +106,7 @@ public class Sample {
 	 * 
 	 * @return number of samples for all channels
 	 */
-	public long getSampleCount() {
+	long getSampleCount() {
 		long total = (audioInputStream.getFrameLength() * getFormat().getFrameSize() * 8)
 				/ getFormat().getSampleSizeInBits();
 		return total / getFormat().getChannels();
@@ -117,7 +117,7 @@ public class Sample {
 	 * 
 	 * @return interleaved samples
 	 */
-	public double[] getInterleavedSamples() {
+	double[] getInterleavedSamples() {
 		double[] samples = new double[(int) getSampleCount()];
 		try {
 			getInterleavedSamples(0, getSampleCount(), samples);
