@@ -58,26 +58,29 @@ public class Sample {
 	 * Constructor taking an {@link InputStream}.
 	 * 
 	 * @param is an {@link InputStream}
-	 * @throws NullPointerException if {@code is} is {@code null}
+	 * @throws NullPointerException     if {@code is} is {@code null}
+	 * @throws IllegalArgumentException if the audio format is unsupported
+	 * @throws RuntimeException         if
+	 *                                  {@link AudioSystem#getAudioInputStream(InputStream)}
+	 *                                  is unable to read the audio stream
 	 */
 	public Sample(InputStream is) {
 		Objects.requireNonNull(is);
 		if (is instanceof AudioInputStream) {
 			audioInputStream = (AudioInputStream) is;
-			checkFormat(audioInputStream.getFormat());
-			return;
+		} else {
+			try {
+				audioInputStream = AudioSystem.getAudioInputStream(is);
+			} catch (UnsupportedAudioFileException e) {
+				throw new RuntimeException(e);
+			} catch (IOException e) {
+				throw new RuntimeException(e);
+			}
 		}
-
-		try {
-			audioInputStream = AudioSystem.getAudioInputStream(is);
-
-		} catch (UnsupportedAudioFileException e) {
-			throw new RuntimeException(e);
-		} catch (IOException e) {
-			throw new RuntimeException(e);
+		if (!audioInputStream.getFormat().matches(SC_AUDIO_FORMAT)) {
+			throw new IllegalArgumentException("Unsupported audio format.");
 		}
-
-		checkFormat(audioInputStream.getFormat());
+		return;
 	}
 
 	/**
@@ -201,12 +204,5 @@ public class Sample {
 	@Override
 	public String toString() {
 		return "[Sample] samples: " + getSampleCount() + ", format: " + getFormat();
-	}
-
-	private static void checkFormat(AudioFormat af) {
-		if (!af.matches(SC_AUDIO_FORMAT)) {
-			throw new IllegalArgumentException(
-					"Unsupported audio format.\nReceived: " + af.toString() + "\nExpected: " + SC_AUDIO_FORMAT);
-		}
 	}
 }
