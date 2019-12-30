@@ -58,7 +58,7 @@ public class RandomNumberVoiceProducer implements VoiceProducer {
 	/**
 	 * Map from each single digit to list of vocalizations to choose from for that digit
 	 */
-	private final Map<Integer, List<String>> _voices;
+	private final Map<Integer, List<String>> voices;
 
 	/**
 	 * Constructor resulting in object providing built-in voices to vocalize digits.
@@ -80,7 +80,7 @@ public class RandomNumberVoiceProducer implements VoiceProducer {
 	 * @param voices
 	 */
 	public RandomNumberVoiceProducer(Map<Integer, List<String>> voices) {
-		_voices = voices;
+		this.voices = voices;
 	}
 
 	@Override
@@ -91,7 +91,7 @@ public class RandomNumberVoiceProducer implements VoiceProducer {
 			throw new IllegalArgumentException("Expected <num> to be a number, got '" + num + "' instead.", e);
 		}
 		int idx = Integer.parseInt(num + "");
-		List<String> files = _voices.get(idx);
+		List<String> files = voices.get(idx);
 		String filename = files.get(RAND.nextInt(files.size()));
 		return new Sample(filename);
 	}
