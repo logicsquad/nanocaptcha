@@ -9,13 +9,26 @@ import java.awt.image.BufferedImageOp;
 import java.awt.image.FilteredImageSource;
 
 /**
+ * A filter that can distort an image CAPTCHA in some way.
+ * 
  * @author <a href="mailto:james.childers@gmail.com">James Childers</a>
  * @author <a href="mailto:paulh@logicsquad.net">Paul Hoadley</a>
+ * @since 1.0
  */
-
 public interface GimpyRenderer {
-	public void gimp(BufferedImage image);
+	/**
+	 * Transforms {@code image} in-place.
+	 * 
+	 * @param image {@link BufferedImage} to transform
+	 */
+	void gimp(BufferedImage image);
 
+	/**
+	 * Applies {@code filter} to {@code img}.
+	 * 
+	 * @param img    a {@link BufferedImage}
+	 * @param filter a {@link BufferedImageOp}
+	 */
 	static void applyFilter(BufferedImage img, BufferedImageOp filter) {
 		FilteredImageSource src = new FilteredImageSource(img.getSource(), new BufferedImageFilter(filter));
 		Image fImg = Toolkit.getDefaultToolkit().createImage(src);
