@@ -257,7 +257,7 @@ public final class ImageCaptcha implements Serializable {
         return answer.equals(_builder._answer);
     }
     
-    public String getAnswer() {
+    public String getContent() {
     	return _builder._answer;
     }
 

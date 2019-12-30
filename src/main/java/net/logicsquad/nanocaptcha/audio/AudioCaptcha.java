@@ -135,11 +135,11 @@ public final class AudioCaptcha {
         return answer.equals(_builder._answer);
     }
 
-    public String getAnswer() {
+    public String getContent() {
         return _builder._answer;
     }
 
-    public Sample getChallenge() {
+    public Sample getAudio() {
         return _builder._challenge;
     }
 
