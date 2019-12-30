@@ -1,7 +1,5 @@
 package net.logicsquad.nanocaptcha.audio;
 
-import static net.logicsquad.nanocaptcha.audio.Sample.SC_AUDIO_FORMAT;
-
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.util.Arrays;
@@ -121,12 +119,6 @@ public final class Mixer {
 		return sample1;
 	}
 
-	private static AudioInputStream buildStream(long sampleCount, double[] sample) {
-		byte[] buffer = Sample.asByteArray(sampleCount, sample);
-		InputStream bais = new ByteArrayInputStream(buffer);
-		return new AudioInputStream(bais, SC_AUDIO_FORMAT, sampleCount);
-	}
-
 	/**
 	 * Returns a {@link Sample} created from the raw {@code sample} data.
 	 * 
@@ -135,7 +127,11 @@ public final class Mixer {
 	 * @return {@link Sample} from raw samples
 	 */
 	private static Sample buildSample(long sampleCount, double[] sample) {
-		AudioInputStream ais = buildStream(sampleCount, sample);
+		// I'm reasonably sure we don't need to ask for sampleCount here: it's just
+		// going to match sample.length, isn't it?
+		byte[] buffer = Sample.asByteArray(sampleCount, sample);
+		InputStream bais = new ByteArrayInputStream(buffer);
+		AudioInputStream ais = new AudioInputStream(bais, Sample.SC_AUDIO_FORMAT, sampleCount);
 		return new Sample(ais);
 	}
 }
