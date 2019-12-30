@@ -1,3 +1,4 @@
+[![Build Status](https://travis-ci.org/logicsquad/nanocaptcha.svg?branch=master)](https://travis-ci.org/logicsquad/nanocaptcha)
 [![License](https://img.shields.io/badge/License-BSD-blue.svg)](https://opensource.org/licenses/BSD-3-Clause)
 
 NanoCaptcha
