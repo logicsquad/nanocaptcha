@@ -64,7 +64,14 @@ public final class ImageCaptcha implements Serializable {
 	}
 
 	/**
-	 * Build for an {@link ImageCaptcha}.
+	 * <p>
+	 * Builder for an {@link ImageCaptcha}. Elements are added to the image on the
+	 * fly, so call the methods in an order that makes sense, e.g.:
+	 * </p>
+	 * 
+	 * <pre>
+	 * ImageCaptcha image = addBackground().addContent().addNoise().addFilter().addBorder().build();
+	 * </pre>
 	 */
 	public static class Builder {
 		/**
@@ -181,8 +188,8 @@ public final class ImageCaptcha implements Serializable {
 		 * 
 		 * @return this
 		 */
-		public Builder filter() {
-			return filter(new RippleImageFilter());
+		public Builder addFilter() {
+			return addFilter(new RippleImageFilter());
 		}
 
 		/**
@@ -191,7 +198,7 @@ public final class ImageCaptcha implements Serializable {
 		 * @param filter an {@link ImageFilter}
 		 * @return this
 		 */
-		public Builder filter(ImageFilter filter) {
+		public Builder addFilter(ImageFilter filter) {
 			filter.filter(image);
 			return this;
 		}
