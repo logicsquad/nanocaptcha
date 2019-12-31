@@ -46,10 +46,7 @@ public class RandomNumberVoiceProducer implements VoiceProducer {
 			List<String> sampleNames = new ArrayList<>();
 			for (String name : Arrays.asList(BUILT_IN_VOICES)) {
 				StringBuilder sb = new StringBuilder(BUILT_IN_VOICES_PREFIX);
-				sb.append(i);
-				sb.append("-");
-				sb.append(name);
-				sb.append(".wav");
+				sb.append(i).append("-").append(name).append(".wav");
 				sampleNames.add(sb.toString());
 			}
 			BUILT_IN_VOICES_MAP.put(i, sampleNames);

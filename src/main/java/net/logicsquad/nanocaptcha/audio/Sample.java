@@ -183,16 +183,18 @@ public class Sample {
 				// bytes start with LSB
 				for (int j = sampleSizeInBytes - 1; j >= 0; j--) {
 					sampleBytes[j] = audioBytes[k++];
-					if (sampleBytes[j] != 0)
+					if (sampleBytes[j] != 0) {
 						j = j + 0;
+					}
 				}
 			}
 			// get integer value from bytes
 			int ival = 0;
 			for (int j = 0; j < sampleSizeInBytes; j++) {
 				ival += sampleBytes[j];
-				if (j < sampleSizeInBytes - 1)
+				if (j < sampleSizeInBytes - 1) {
 					ival <<= 8;
+				}
 			}
 			// decode value
 			double ratio = Math.pow(2., getFormat().getSampleSizeInBits() - 1);
@@ -203,7 +205,7 @@ public class Sample {
 
 	@Override
 	public String toString() {
-		StringBuilder sb = new StringBuilder();
+		StringBuilder sb = new StringBuilder(26);
 		sb.append("[Sample: samples=").append(getSampleCount()).append(" format=").append(getFormat()).append("]");
 		return sb.toString();
 	}
