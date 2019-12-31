@@ -206,6 +206,13 @@
           </excludes>
         </configuration>
       </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-checkstyle-plugin</artifactId>
+        <configuration>
+          <configLocation>http://artefacts.logicsquad.net.s3.amazonaws.com/logicsquad_checks.xml</configLocation>
+        </configuration>
+      </plugin>
     </plugins>
   </reporting>
 
