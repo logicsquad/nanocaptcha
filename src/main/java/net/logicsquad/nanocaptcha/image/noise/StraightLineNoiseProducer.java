@@ -8,7 +8,7 @@ import java.security.SecureRandom;
 
 /**
  * Draws a straight line through the given image.
- * 
+ *
  * @author <a href="mailto:james.childers@gmail.com">James Childers</a>
  * @author <a href="mailto:paulh@logicsquad.net">Paul Hoadley</a>
  * @since 1.0
@@ -49,7 +49,7 @@ public class StraightLineNoiseProducer implements NoiseProducer {
 
 	/**
 	 * Constructor taking a line {@link Color} and line width.
-	 * 
+	 *
 	 * @param lineColor line {@link Color}
 	 * @param lineWidth line width
 	 */

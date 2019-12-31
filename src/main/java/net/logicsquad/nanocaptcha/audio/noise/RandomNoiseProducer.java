@@ -13,13 +13,13 @@ import net.logicsquad.nanocaptcha.audio.Sample;
  * <p>
  * Adds noise to a {@link Sample} from one of the built-in noise files:
  * </p>
- * 
+ *
  * <ul>
  * <li>{@code radio_tuning.wav}</li>
  * <li>{@code restaurant.wav}</li>
  * <li>{@code swimming.wav}</li>
  * </ul>
- * 
+ *
  * @author <a href="mailto:james.childers@gmail.com">James Childers</a>
  * @author <a href="mailto:paulh@logicsquad.net">Paul Hoadley</a>
  * @since 1.0
@@ -52,7 +52,7 @@ public class RandomNoiseProducer implements NoiseProducer {
 
 	/**
 	 * Constructor taking an array of noise filenames.
-	 * 
+	 *
 	 * @param noiseFiles noise filenames
 	 */
     public RandomNoiseProducer(String[] noiseFiles) {
@@ -63,7 +63,7 @@ public class RandomNoiseProducer implements NoiseProducer {
     /**
 	 * Concatenates {@code samples}, then adds a random background noise sample
 	 * (from this object's list of samples), returning the resulting {@link Sample}.
-	 * 
+	 *
 	 * @param samples a list of {@link Sample}s
 	 * @return concatenated {@link Sample}s with added noise
 	 */

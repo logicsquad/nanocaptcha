@@ -10,7 +10,7 @@ import java.awt.image.BufferedImage;
 /**
  * Creates a gradiated background between two {@link Color} values. Default
  * {@link Color}s are dark gray and white.
- * 
+ *
  * @author <a href="mailto:james.childers@gmail.com">James Childers</a>
  * @author <a href="mailto:paulh@logicsquad.net">Paul Hoadley</a>
  * @since 1.0
@@ -46,7 +46,7 @@ public class GradiatedBackgroundProducer implements BackgroundProducer {
 
 	/**
 	 * Constructor taking from and to {@link Color}s.
-	 * 
+	 *
 	 * @param fromColor from {@link Color}
 	 * @param toColor   to {@link Color}
 	 */

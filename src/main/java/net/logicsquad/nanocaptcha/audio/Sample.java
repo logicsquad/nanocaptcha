@@ -11,7 +11,7 @@ import javax.sound.sampled.*;
  * at this time this class only supports wav files with the following
  * characteristics:
  * </p>
- * 
+ *
  * <ul>
  * <li>Sample rate: 16KHz</li>
  * <li>Sample size: 16 bits</li>
@@ -19,12 +19,12 @@ import javax.sound.sampled.*;
  * <li>Signed: true</li>
  * <li>Big Endian: false</li>
  * </ul>
- * 
+ *
  * <p>
  * Data files in other formats will cause an
  * <code>IllegalArgumentException</code> to be thrown.
  * </p>
- * 
+ *
  * @author <a href="mailto:james.childers@gmail.com">James Childers</a>
  * @author <a href="mailto:paulh@logicsquad.net">Paul Hoadley</a>
  * @since 1.0
@@ -46,7 +46,7 @@ public class Sample {
 
 	/**
 	 * Constructor taking a filename.
-	 * 
+	 *
 	 * @param filename filename
 	 * @throws NullPointerException if {@code filename} is {@code null}
 	 */
@@ -56,7 +56,7 @@ public class Sample {
 
 	/**
 	 * Constructor taking an {@link InputStream}.
-	 * 
+	 *
 	 * @param is an {@link InputStream}
 	 * @throws NullPointerException     if {@code is} is {@code null}
 	 * @throws IllegalArgumentException if the audio format is unsupported
@@ -85,7 +85,7 @@ public class Sample {
 
 	/**
 	 * Returns {@link AudioInputStream} for this {@code Sample}.
-	 * 
+	 *
 	 * @return {@link AudioInputStream}
 	 */
 	public AudioInputStream getAudioInputStream() {
@@ -94,7 +94,7 @@ public class Sample {
 
 	/**
 	 * Returns {@link AudioFormat} for this {@code Sample}.
-	 * 
+	 *
 	 * @return {@link AudioFormat}
 	 */
 	private AudioFormat getFormat() {
@@ -103,7 +103,7 @@ public class Sample {
 
 	/**
 	 * Return the number of samples for all channels.
-	 * 
+	 *
 	 * @return number of samples for all channels
 	 */
 	long getSampleCount() {
@@ -114,7 +114,7 @@ public class Sample {
 
 	/**
 	 * Returns interleaved samples for this {@code Sample}.
-	 * 
+	 *
 	 * @return interleaved samples
 	 */
 	double[] getInterleavedSamples() {
@@ -136,7 +136,7 @@ public class Sample {
 	 * into {@code samples}. {@code end} must not exceed {@code getSampleCount()},
 	 * and the number of samples must not be so large that the associated byte array
 	 * cannot be allocated.
-	 * 
+	 *
 	 * @param start   start index
 	 * @param end     end index
 	 * @param samples destination array
@@ -164,7 +164,7 @@ public class Sample {
 	/**
 	 * Decodes audio as bytes in {@code audioBytes} into audio as samples and writes
 	 * the result into {@code audioSamples}.
-	 * 
+	 *
 	 * @param audioBytes   source audio as bytes
 	 * @param audioSamples destination audio as samples
 	 */

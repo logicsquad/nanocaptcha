@@ -6,7 +6,7 @@ import java.awt.image.BufferedImage;
 
 /**
  * Overlays a warped grid to the image.
- * 
+ *
  * @author <a href="mailto:james.childers@gmail.com">James Childers</a>
  * @author <a href="mailto:paulh@logicsquad.net">Paul Hoadley</a>
  * @since 1.0
@@ -37,7 +37,7 @@ public class FishEyeImageFilter implements ImageFilter {
 
 	/**
 	 * Constructor taking colours for lines.
-	 * 
+	 *
 	 * @param hColor horizontal line {@link Color}
 	 * @param vColor vertical line {@link Color}
 	 */

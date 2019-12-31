@@ -8,7 +8,7 @@ import java.awt.image.BufferedImage;
  * Stretches the given image over the x- and y-axes. If no scale is given,
  * defaults to an x-axis scale of 1.0 and a y-axis scale of 3.0 (i.e. make the
  * image tall but do not affect the width).
- * 
+ *
  * @author <a href="mailto:james.childers@gmail.com">James Childers</a>
  * @author <a href="mailto:paulh@logicsquad.net">Paul Hoadley</a>
  * @since 1.0
@@ -43,7 +43,7 @@ public class StretchImageFilter implements ImageFilter {
 
 	/**
 	 * Constructor taking x- and y-axis scale multipliers.
-	 * 
+	 *
 	 * @param xScale x-axis scale
 	 * @param yScale y-axis scale
 	 */

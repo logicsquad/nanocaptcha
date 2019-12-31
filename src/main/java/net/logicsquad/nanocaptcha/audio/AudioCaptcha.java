@@ -15,7 +15,7 @@ import net.logicsquad.nanocaptcha.content.NumbersContentProducer;
 
 /**
  * An audio CAPTCHA.
- * 
+ *
  * @author <a href="mailto:james.childers@gmail.com">James Childers</a>
  * @author <a href="mailto:paulh@logicsquad.net">Paul Hoadley</a>
  * @since 1.0
@@ -38,7 +38,7 @@ public final class AudioCaptcha {
 
 	/**
 	 * Constructor
-	 * 
+	 *
 	 * @param builder a {@link Builder} object
 	 */
 	private AudioCaptcha(Builder builder) {
@@ -89,7 +89,7 @@ public final class AudioCaptcha {
 		/**
 		 * Adds content using the default {@link ContentProducer}
 		 * ({@link NumbersContentProducer}).
-		 * 
+		 *
 		 * @return this
 		 */
 		public Builder addContent() {
@@ -98,7 +98,7 @@ public final class AudioCaptcha {
 
 		/**
 		 * Adds content using {@code contentProducer}.
-		 * 
+		 *
 		 * @param contentProducer a {@link ContentProducer}
 		 * @return this
 		 */
@@ -109,7 +109,7 @@ public final class AudioCaptcha {
 
 		/**
 		 * Adds the default {@link VoiceProducer} ({@link RandomNumberVoiceProducer}).
-		 * 
+		 *
 		 * @return this
 		 */
 		public Builder addVoice() {
@@ -119,7 +119,7 @@ public final class AudioCaptcha {
 
 		/**
 		 * Adds {@code voiceProducer}.
-		 * 
+		 *
 		 * @param voiceProducer a {@link VoiceProducer}
 		 * @return this
 		 */
@@ -131,7 +131,7 @@ public final class AudioCaptcha {
 		/**
 		 * Adds background noise using default {@link NoiseProducer}
 		 * ({@link RandomNoiseProducer}).
-		 * 
+		 *
 		 * @return this
 		 */
 		public Builder addNoise() {
@@ -140,7 +140,7 @@ public final class AudioCaptcha {
 
 		/**
 		 * Adds noise using {@code noiseProducer}.
-		 * 
+		 *
 		 * @param noiseProducer a {@link NoiseProducer}
 		 * @return this
 		 */
@@ -151,7 +151,7 @@ public final class AudioCaptcha {
 
 		/**
 		 * Builds the audio CAPTCHA described by this object.
-		 * 
+		 *
 		 * @return {@link AudioCaptcha} as described by this {@code Builder}
 		 */
 		public AudioCaptcha build() {
@@ -187,7 +187,7 @@ public final class AudioCaptcha {
 
 	/**
 	 * Does CAPTCHA content match supplied {@code answer}?
-	 * 
+	 *
 	 * @param answer a candidate content match
 	 * @return {@code true} if {@code answer} matches CAPTCHA content, otherwise
 	 *         {@code false}
@@ -198,7 +198,7 @@ public final class AudioCaptcha {
 
 	/**
 	 * Returns content of this CAPTCHA.
-	 * 
+	 *
 	 * @return content
 	 */
 	public String getContent() {
@@ -223,7 +223,7 @@ public final class AudioCaptcha {
 
 	/**
 	 * Returns creation timestamp.
-	 * 
+	 *
 	 * @return creation timestamp
 	 */
 	public OffsetDateTime getCreated() {

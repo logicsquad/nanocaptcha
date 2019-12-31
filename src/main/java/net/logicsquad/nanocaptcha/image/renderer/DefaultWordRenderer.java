@@ -14,7 +14,7 @@ import java.util.Random;
 
 /**
  * Renders the content onto the image.
- * 
+ *
  * @author <a href="mailto:james.childers@gmail.com">James Childers</a>
  * @author <a href="mailto:paulh@logicsquad.net">Paul Hoadley</a>
  * @since 1.0
@@ -74,7 +74,7 @@ public class DefaultWordRenderer implements WordRenderer {
 
 	/**
 	 * Constructor taking a list of {@link Color}s and {@link Font}s to choose from.
-	 * 
+	 *
 	 * @param colors {@link Color}s
 	 * @param fonts  {@link Font}s
 	 */

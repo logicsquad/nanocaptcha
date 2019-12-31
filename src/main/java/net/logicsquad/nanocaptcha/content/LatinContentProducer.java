@@ -2,7 +2,7 @@ package net.logicsquad.nanocaptcha.content;
 
 /**
  * Generates random strings using a subset of the Latin alphabet.
- * 
+ *
  * @author <a href="mailto:paulh@logicsquad.net">Paul Hoadley</a>
  * @since 1.0
  */
@@ -23,7 +23,7 @@ public class LatinContentProducer extends AbstractContentProducer implements Con
 
 	/**
 	 * Constructor taking a length specifier.
-	 * 
+	 *
 	 * @param length content length
 	 */
 	public LatinContentProducer(int length) {

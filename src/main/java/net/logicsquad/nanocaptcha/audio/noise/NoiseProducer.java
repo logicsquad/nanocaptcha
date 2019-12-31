@@ -14,7 +14,7 @@ import net.logicsquad.nanocaptcha.audio.Sample;
 public interface NoiseProducer {
 	/**
 	 * Concatenates {@code samples}, adds background noise and returns the result.
-	 * 
+	 *
 	 * @param samples a list of {@link Sample}s
 	 * @return concatenated {@link Sample}s with added noise
 	 */

@@ -7,7 +7,7 @@ import java.awt.image.BufferedImage;
 
 /**
  * A {@link BackgroundProducer} that generates a solid colour background.
- * 
+ *
  * @author <a href="mailto:james.childers@gmail.com">James Childers</a>
  * @author <a href="mailto:paulh@logicsquad.net">Paul Hoadley</a>
  * @since 1.0
@@ -34,7 +34,7 @@ public final class FlatColorBackgroundProducer implements BackgroundProducer {
 
 	/**
 	 * Constructor taking a {@link Color}.
-	 * 
+	 *
 	 * @param color {@link Color} to set for this {@link BackgroundProducer}
 	 */
 	public FlatColorBackgroundProducer(Color color) {

@@ -10,7 +10,7 @@ import com.jhlabs.image.ShearFilter;
 
 /**
  * Applies a {@link ShearFilter} to the image.
- * 
+ *
  * @author <a href="mailto:james.childers@gmail.com">James Childers</a>
  * @author <a href="mailto:paulh@logicsquad.net">Paul Hoadley</a>
  * @since 1.0
@@ -41,7 +41,7 @@ public class ShearImageFilter implements ImageFilter {
 
 	/**
 	 * Constructor taking a {@link Color} for the effect.
-	 * 
+	 *
 	 * @param color effect {@link Color}
 	 */
 	public ShearImageFilter(Color color) {

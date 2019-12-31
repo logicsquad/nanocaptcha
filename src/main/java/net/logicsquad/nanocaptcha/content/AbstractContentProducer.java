@@ -8,7 +8,7 @@ import java.util.Random;
  * Parent class for {@link ContentProducer}s that produce text of a given length
  * from a given array of characters. Subclasses just need to supply the
  * permitted characters.
- * 
+ *
  * @author <a href="mailto:james.childers@gmail.com">James Childers</a>
  * @author <a href="mailto:paulh@logicsquad.net">Paul Hoadley</a>
  * @since 1.0
@@ -36,7 +36,7 @@ public abstract class AbstractContentProducer implements ContentProducer {
 
 	/**
 	 * Constructor taking a length and an array of source characters.
-	 * 
+	 *
 	 * @param length   text length
 	 * @param srcChars source characters
 	 * @throws IllegalArgumentException if {@code length} is not positive

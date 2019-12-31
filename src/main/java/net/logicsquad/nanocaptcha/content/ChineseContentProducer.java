@@ -2,7 +2,7 @@ package net.logicsquad.nanocaptcha.content;
 
 /**
  * Generates random strings using a subset of the Chinese alphabet.
- * 
+ *
  * @author <a href="mailto:james.childers@gmail.com">James Childers</a>
  * @author <a href="mailto:paulh@logicsquad.net">Paul Hoadley</a>
  * @since 1.0
@@ -39,7 +39,7 @@ public class ChineseContentProducer extends AbstractContentProducer implements C
 
 	/**
 	 * Constructor taking a length specifier.
-	 * 
+	 *
 	 * @param length content length
 	 */
 	public ChineseContentProducer(int length) {

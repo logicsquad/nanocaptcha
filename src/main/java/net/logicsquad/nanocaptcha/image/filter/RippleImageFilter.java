@@ -6,7 +6,7 @@ import com.jhlabs.image.RippleFilter;
 
 /**
  * Applies a {@link RippleFilter} to the image.
- * 
+ *
  * @author <a href="mailto:james.childers@gmail.com">James Childers</a>
  * @author <a href="mailto:paulh@logicsquad.net">Paul Hoadley</a>
  * @since 1.0
