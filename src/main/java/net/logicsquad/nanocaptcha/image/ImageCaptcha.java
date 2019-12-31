@@ -4,13 +4,7 @@ import java.awt.AlphaComposite;
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-import java.io.Serializable;
 import java.time.OffsetDateTime;
-
-import javax.imageio.ImageIO;
 
 import net.logicsquad.nanocaptcha.content.ContentProducer;
 import net.logicsquad.nanocaptcha.content.LatinContentProducer;
@@ -30,12 +24,7 @@ import net.logicsquad.nanocaptcha.image.renderer.WordRenderer;
  * @author <a href="mailto:paulh@logicsquad.net">Paul Hoadley</a>
  * @since 1.0
  */
-public final class ImageCaptcha implements Serializable {
-	/**
-	 * Serial version UID
-	 */
-	private static final long serialVersionUID = 1L;
-
+public final class ImageCaptcha {
 	/**
 	 * Generated image
 	 */
@@ -285,30 +274,5 @@ public final class ImageCaptcha implements Serializable {
 		StringBuilder sb = new StringBuilder(35);
 		sb.append("[ImageCaptcha: created=").append(created).append(" content='").append(content).append("']");
 		return sb.toString();
-	}
-
-	/**
-	 * Writes object for serialization.
-	 * 
-	 * @param out {@link ObjectOutputStream}
-	 * @throws IOException if encountered
-	 */
-	private void writeObject(ObjectOutputStream out) throws IOException {
-		out.writeObject(content);
-		out.writeObject(created);
-		ImageIO.write(image, "png", ImageIO.createImageOutputStream(out));
-	}
-
-	/**
-	 * Reads seralized object from {@link ObjectInputStream}.
-	 * 
-	 * @param in {@link ObjectInputStream}
-	 * @throws IOException            if encountered
-	 * @throws ClassNotFoundException if encountered
-	 */
-	private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
-		content = (String) in.readObject();
-		created = (OffsetDateTime) in.readObject();
-		image = ImageIO.read(ImageIO.createImageInputStream(in));
 	}
 }
