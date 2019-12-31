@@ -18,7 +18,7 @@ Getting started
 ---------------
 You can build a minimal image CAPTCHA very easily:
 
-    ImageCaptcha captcha = new ImageCaptcha.Builder(200, 50).addContent().build();
+    ImageCaptcha imageCaptcha = new ImageCaptcha.Builder(200, 50).addContent().build();
 
 This creates a 200 x 50 pixel image and adds five random characters
 from the Latin alphabet.  The `getImage()` method returns the image as
@@ -35,7 +35,7 @@ customised by:
 
 Building a minimal audio CAPTCHA is just as easy:
 
-    	AudioCaptcha audio = new AudioCaptcha.Builder().addContent().build();
+    AudioCaptcha audioCaptcha = new AudioCaptcha.Builder().addContent().build();
 
 As with image CAPTCHAs, these can be further customised by:
 
