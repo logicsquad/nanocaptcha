@@ -70,11 +70,11 @@ public class StraightLineNoiseProducer implements NoiseProducer {
 	}
 
 	private void drawLine(Graphics g, int y1, int x2, int y2) {
-		int X1 = 0;
+		int x1 = 0;
 
 		// The thick line is in fact a filled polygon
 		g.setColor(lineColor);
-		int dX = x2 - X1;
+		int dX = x2 - x1;
 		int dY = y2 - y1;
 		// line length
 		double lineLength = Math.sqrt(dX * dX + dY * dY);
@@ -91,12 +91,12 @@ public class StraightLineNoiseProducer implements NoiseProducer {
 		int dy = (int) ddy;
 
 		// Now we can compute the corner points...
-		int xPoints[] = new int[4];
-		int yPoints[] = new int[4];
+		int[] xPoints = new int[4];
+		int[] yPoints = new int[4];
 
-		xPoints[0] = X1 + dx;
+		xPoints[0] = x1 + dx;
 		yPoints[0] = y1 + dy;
-		xPoints[1] = X1 - dx;
+		xPoints[1] = x1 - dx;
 		yPoints[1] = y1 - dy;
 		xPoints[2] = x2 - dx;
 		yPoints[2] = y2 - dy;

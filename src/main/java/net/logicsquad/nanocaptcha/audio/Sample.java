@@ -1,9 +1,13 @@
 package net.logicsquad.nanocaptcha.audio;
 
-import java.io.*;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.Objects;
 
-import javax.sound.sampled.*;
+import javax.sound.sampled.AudioFormat;
+import javax.sound.sampled.AudioInputStream;
+import javax.sound.sampled.AudioSystem;
+import javax.sound.sampled.UnsupportedAudioFileException;
 
 /**
  * <p>
@@ -140,6 +144,7 @@ public class Sample {
 	 * @param start   start index
 	 * @param end     end index
 	 * @param samples destination array
+	 * @return interleaved decoded samples for all channels
 	 * @throws IOException              if unable to read from
 	 *                                  {@link AudioInputStream}
 	 * @throws IllegalArgumentException if sample is too large

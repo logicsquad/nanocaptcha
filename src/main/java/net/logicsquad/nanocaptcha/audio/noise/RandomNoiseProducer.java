@@ -41,7 +41,7 @@ public class RandomNoiseProducer implements NoiseProducer {
 	/**
 	 * Noise files to use
 	 */
-    private final String noiseFiles[];
+    private final String[] noiseFiles;
 
 	/**
 	 * Constructor: object will use built-in noise files.

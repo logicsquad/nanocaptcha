@@ -6,10 +6,8 @@ import java.awt.image.BufferedImage;
 import java.security.SecureRandom;
 import java.util.Random;
 
-import com.jhlabs.image.ShearFilter;
-
 /**
- * Applies a {@link ShearFilter} to the image.
+ * Applies a shear effect to the image.
  *
  * @author <a href="mailto:james.childers@gmail.com">James Childers</a>
  * @author <a href="mailto:paulh@logicsquad.net">Paul Hoadley</a>

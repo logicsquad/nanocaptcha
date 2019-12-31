@@ -74,7 +74,7 @@ public class FishEyeImageFilter implements ImageFilter {
 
 		// Create a pixel array of the original image.
 		// we need this later to do the operations on..
-		int pix[] = new int[height * width];
+		int[] pix = new int[height * width];
 		int j = 0;
 
 		for (int j1 = 0; j1 < width; j1++) {
