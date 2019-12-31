@@ -27,8 +27,7 @@ string against the text content of the image. If you need the text
 content itself, call `getContent()`.  Image CAPTCHAs can be further
 customised by:
 
-* Using different `ContentProducer`s (e.g., `ChineseContentProducer`)
-  and `WordRenderer`s (e.g., `ColoredEdgesWordRenderer`).
+* Using different `ContentProducer`s (e.g., `ChineseContentProducer`).
 * Adding noise using a `NoiseProducer`.
 * Adding various `ImageFilter`s.
 * Adding a background or a border.
