@@ -28,17 +28,17 @@ public final class ImageCaptcha {
 	/**
 	 * Generated image
 	 */
-	private BufferedImage image;
+	private final BufferedImage image;
 
 	/**
 	 * Text content of image
 	 */
-	private String content;
+	private final String content;
 
 	/**
 	 * Creation timestamp
 	 */
-	private OffsetDateTime created;
+	private final OffsetDateTime created;
 
 	/**
 	 * Constructor
