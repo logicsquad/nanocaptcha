@@ -13,84 +13,104 @@ import java.util.List;
 import java.util.Random;
 
 /**
- * Renders the answer onto the image.
+ * Renders the content onto the image.
  * 
  * @author <a href="mailto:james.childers@gmail.com">James Childers</a>
+ * @author <a href="mailto:paulh@logicsquad.net">Paul Hoadley</a>
  * @since 1.0
  */
 public class DefaultWordRenderer implements WordRenderer {
+	/**
+	 * Random number generator
+	 */
+	private static final Random RAND = new SecureRandom();
 
-    private static final Random RAND = new SecureRandom();
+	/**
+	 * Default {@link Color}s
+	 */
 	private static final List<Color> DEFAULT_COLORS = new ArrayList<Color>();
+
+	/**
+	 * Default fonts
+	 */
 	private static final List<Font> DEFAULT_FONTS = new ArrayList<Font>();
-	// The text will be rendered 25%/5% of the image height/width from the X and Y axes
+
+	// The text will be rendered 25%/5% of the image height/width from the X and Y
+	// axes
+	/**
+	 * Percentage offset along y-axis
+	 */
 	private static final double YOFFSET = 0.25;
+
+	/**
+	 * Percentage offset along x-axis
+	 */
 	private static final double XOFFSET = 0.05;
-    
+
+	// Set up default Colors, Fonts
 	static {
 		DEFAULT_COLORS.add(Color.BLACK);
 		DEFAULT_FONTS.add(new Font("Arial", Font.BOLD, 40));
 		DEFAULT_FONTS.add(new Font("Courier", Font.BOLD, 40));
 	}
-	
-    private final List<Color> _colors = new ArrayList<Color>();
-    private final List<Font> _fonts = new ArrayList<Font>();
-    
-    /**
-     * Use the default color (black) and fonts (Arial and Courier).
-     */
-    public DefaultWordRenderer() {
-    	this(DEFAULT_COLORS, DEFAULT_FONTS);
-    }
 
-    /**
-     * Build a <code>WordRenderer</code> using the given <code>Color</code>s and
-     * <code>Font</code>s.
-     * 
-     * @param colors
-     * @param fonts
-     */
-    public DefaultWordRenderer(List<Color> colors, List<Font> fonts) {
-    	_colors.addAll(colors);
-    	_fonts.addAll(fonts);
-    }
+	/**
+	 * List of available {@link Color}s
+	 */
+	private final List<Color> colors = new ArrayList<>();
 
-    /**
-     * Render a word onto a BufferedImage.
-     * 
-     * @param word The word to be rendered.
-     * @param image The BufferedImage onto which the word will be painted.
-     */
-    @Override
-    public void render(final String word, BufferedImage image) {
-        Graphics2D g = image.createGraphics();
+	/**
+	 * List of available {@link Font}s
+	 */
+	private final List<Font> fonts = new ArrayList<>();
 
-        RenderingHints hints = new RenderingHints(
-                RenderingHints.KEY_ANTIALIASING,
-                RenderingHints.VALUE_ANTIALIAS_ON);
-        hints.add(new RenderingHints(RenderingHints.KEY_RENDERING,
-                RenderingHints.VALUE_RENDER_QUALITY));
-        g.setRenderingHints(hints);
-        
-        FontRenderContext frc = g.getFontRenderContext();
-        int xBaseline = (int) Math.round(image.getWidth() * XOFFSET);
-        int yBaseline =  image.getHeight() - (int) Math.round(image.getHeight() * YOFFSET);
-        
-        char[] chars = new char[1];
-        for (char c : word.toCharArray()) {
-            chars[0] = c;
-            
-            g.setColor(_colors.get(RAND.nextInt(_colors.size())));
+	/**
+	 * Constructor using default {@link Color} (black) and {@link Font}s (Arial and
+	 * Courier).
+	 */
+	public DefaultWordRenderer() {
+		this(DEFAULT_COLORS, DEFAULT_FONTS);
+	}
 
-            int choiceFont = RAND.nextInt(_fonts.size());
-            Font font = _fonts.get(choiceFont);
-            g.setFont(font);
-            
-            GlyphVector gv = font.createGlyphVector(frc, chars);
-            g.drawChars(chars, 0, chars.length, xBaseline, yBaseline);
+	/**
+	 * Constructor taking a list of {@link Color}s and {@link Font}s to choose from.
+	 * 
+	 * @param colors {@link Color}s
+	 * @param fonts  {@link Font}s
+	 */
+	public DefaultWordRenderer(List<Color> colors, List<Font> fonts) {
+		this.colors.addAll(colors);
+		this.fonts.addAll(fonts);
+		return;
+	}
 
-            int width = (int) gv.getVisualBounds().getWidth();
-            xBaseline = xBaseline + width;
-        }
-    }
+	@Override
+	public void render(final String word, BufferedImage image) {
+		Graphics2D g = image.createGraphics();
+
+		RenderingHints hints = new RenderingHints(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+		hints.add(new RenderingHints(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY));
+		g.setRenderingHints(hints);
+
+		FontRenderContext frc = g.getFontRenderContext();
+		int xBaseline = (int) Math.round(image.getWidth() * XOFFSET);
+		int yBaseline = image.getHeight() - (int) Math.round(image.getHeight() * YOFFSET);
+
+		char[] chars = new char[1];
+		for (char c : word.toCharArray()) {
+			chars[0] = c;
+
+			g.setColor(colors.get(RAND.nextInt(colors.size())));
+
+			int choiceFont = RAND.nextInt(fonts.size());
+			Font font = fonts.get(choiceFont);
+			g.setFont(font);
+
+			GlyphVector gv = font.createGlyphVector(frc, chars);
+			g.drawChars(chars, 0, chars.length, xBaseline, yBaseline);
+
+			int width = (int) gv.getVisualBounds().getWidth();
+			xBaseline = xBaseline + width;
+		}
+	}
 }
