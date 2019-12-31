@@ -55,8 +55,8 @@ public class CurvedLineNoiseProducer implements NoiseProducer {
 	/**
 	 * Constructor taking {@link Color} and width.
 	 * 
-	 * @param color line {@link Color}
-	 * @param width line width
+	 * @param lineColor line {@link Color}
+	 * @param lineWidth line width
 	 */
 	public CurvedLineNoiseProducer(Color lineColor, float lineWidth) {
 		this.lineColor = lineColor;
