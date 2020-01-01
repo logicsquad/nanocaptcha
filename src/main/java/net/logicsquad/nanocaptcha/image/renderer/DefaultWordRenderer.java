@@ -7,7 +7,6 @@ import java.awt.RenderingHints;
 import java.awt.font.FontRenderContext;
 import java.awt.font.GlyphVector;
 import java.awt.image.BufferedImage;
-import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -28,7 +27,7 @@ public class DefaultWordRenderer implements WordRenderer {
 	/**
 	 * Random number generator
 	 */
-	private static final Random RAND = new SecureRandom();
+	private static final Random RAND = new Random();
 
 	/**
 	 * Default {@link Color}s
