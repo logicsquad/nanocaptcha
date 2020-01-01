@@ -208,16 +208,15 @@ public final class ImageCaptcha {
 		 * @return {@link ImageCaptcha} as described by this {@code Builder}
 		 */
 		public ImageCaptcha build() {
-			if (background == null) {
-				background = new TransparentBackgroundProducer().getBackground(image.getWidth(), image.getHeight());
+			if (background != null) {
+				// Paint the main image over the background
+				Graphics2D g = background.createGraphics();
+				g.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 1.0f));
+				g.drawImage(image, null, null);
+				image = background;
 			}
-
-			// Paint the main image over the background
-			Graphics2D g = background.createGraphics();
-			g.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 1.0f));
-			g.drawImage(image, null, null);
-
 			if (addBorder) {
+				Graphics2D g = image.createGraphics();
 				int width = image.getWidth();
 				int height = image.getHeight();
 				g.setColor(Color.BLACK);
@@ -226,7 +225,6 @@ public final class ImageCaptcha {
 				g.drawLine(0, height - 1, width, height - 1);
 				g.drawLine(width - 1, height - 1, width - 1, 0);
 			}
-			image = background;
 			return new ImageCaptcha(this);
 		}
 	}
