@@ -11,7 +11,8 @@ import net.logicsquad.nanocaptcha.audio.Sample;
 
 /**
  * <p>
- * Adds noise to a {@link Sample} from one of the built-in noise files:
+ * Adds noise to a {@link Sample}. Noise is chosen at random from one of the
+ * built-in noise files:
  * </p>
  *
  * <ul>
@@ -25,6 +26,11 @@ import net.logicsquad.nanocaptcha.audio.Sample;
  * @since 1.0
  */
 public class RandomNoiseProducer implements NoiseProducer {
+	/**
+	 * Relative volume of background noise
+	 */
+	private static final double NOISE_VOLUME = 0.6;
+
 	/**
 	 * Random number generator
 	 */
@@ -73,7 +79,7 @@ public class RandomNoiseProducer implements NoiseProducer {
 		String noiseFile = noiseFiles[RAND.nextInt(noiseFiles.length)];
 		Sample noise = new Sample(noiseFile);
 		// Decrease the volume of the noise to make sure the voices can be heard
-		return Mixer.mix(appended, 1.0, noise, 0.6);
+		return Mixer.mix(appended, 1.0, noise, NOISE_VOLUME);
 	}
 
 	@Override

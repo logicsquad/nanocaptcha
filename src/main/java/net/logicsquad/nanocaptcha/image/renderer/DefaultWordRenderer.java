@@ -21,6 +21,11 @@ import java.util.Random;
  */
 public class DefaultWordRenderer implements WordRenderer {
 	/**
+	 * Font size in points
+	 */
+	private static final int FONT_SIZE = 40;
+
+	/**
 	 * Random number generator
 	 */
 	private static final Random RAND = new SecureRandom();
@@ -50,8 +55,8 @@ public class DefaultWordRenderer implements WordRenderer {
 	// Set up default Colors, Fonts
 	static {
 		DEFAULT_COLORS.add(Color.BLACK);
-		DEFAULT_FONTS.add(new Font("Arial", Font.BOLD, 40));
-		DEFAULT_FONTS.add(new Font("Courier", Font.BOLD, 40));
+		DEFAULT_FONTS.add(new Font("Arial", Font.BOLD, FONT_SIZE));
+		DEFAULT_FONTS.add(new Font("Courier", Font.BOLD, FONT_SIZE));
 	}
 
 	/**

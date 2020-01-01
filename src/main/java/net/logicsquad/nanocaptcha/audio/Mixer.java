@@ -143,8 +143,8 @@ public final class Mixer {
 	 * @return sample encoded as {@code byte[]}
 	 */
 	private static byte[] asByteArray(long sampleCount, double[] sample) {
-		int b_len = (int) sampleCount * (Sample.SC_AUDIO_FORMAT.getSampleSizeInBits() / 8);
-		byte[] buffer = new byte[b_len];
+		int bufferLength = (int) sampleCount * (Sample.SC_AUDIO_FORMAT.getSampleSizeInBits() / 8);
+		byte[] buffer = new byte[bufferLength];
 		int in;
 		for (int i = 0; i < sample.length; i++) {
 			in = (int) (sample[i] * 32767);

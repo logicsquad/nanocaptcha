@@ -15,6 +15,11 @@ import java.util.Random;
  */
 public class ShearImageFilter implements ImageFilter {
 	/**
+	 * 2 * pi
+	 */
+	private static final double TWO_PI = 6.2831853071795862;
+
+	/**
 	 * Default {@link Color}
 	 */
 	private static final Color DEFAULT_COLOR = Color.GRAY;
@@ -61,7 +66,7 @@ public class ShearImageFilter implements ImageFilter {
 		int frames = 15;
 		int phase = RAND.nextInt(5) + 2;
 		for (int i = 0; i < h1; i++) {
-			double d = (period >> 1) * Math.sin((double) i / (double) period + (6.2831853071795862D * phase) / frames);
+			double d = (period >> 1) * Math.sin((double) i / (double) period + (TWO_PI * phase) / frames);
 			g.copyArea(0, i, w1, 1, (int) d, 0);
 			if (borderGap) {
 				g.setColor(color);
@@ -72,12 +77,12 @@ public class ShearImageFilter implements ImageFilter {
 	}
 
 	private void shearY(Graphics2D g, int w1, int h1) {
-		int period = RAND.nextInt(30) + 10; // 50;
+		int period = RAND.nextInt(30) + 10;
 		boolean borderGap = true;
 		int frames = 15;
 		int phase = 7;
 		for (int i = 0; i < w1; i++) {
-			double d = (period >> 1) * Math.sin((float) i / period + (6.2831853071795862D * phase) / frames);
+			double d = (period >> 1) * Math.sin((float) i / period + (TWO_PI * phase) / frames);
 			g.copyArea(i, 0, 1, h1, 0, (int) d);
 			if (borderGap) {
 				g.setColor(color);
