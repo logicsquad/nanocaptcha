@@ -200,10 +200,6 @@
           <rulesets>
             <ruleset>http://artefacts.logicsquad.net.s3.amazonaws.com/logicsquad_pmd.xml</ruleset>
           </rulesets>
-          <excludes>
-            <exclude>**/_*.java</exclude>
-            <exclude>**/migration/*.java</exclude>
-          </excludes>
         </configuration>
       </plugin>
       <plugin>
