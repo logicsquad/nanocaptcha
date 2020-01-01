@@ -79,9 +79,10 @@ public class CurvedLineNoiseProducer implements NoiseProducer {
 		Point2D[] tmp = new Point2D[200];
 		int i = 0;
 
+		float[] coords;
 		// while pi is iterating the curve, adds points to tmp array
 		while (!pi.isDone()) {
-			float[] coords = new float[6];
+			coords = new float[6];
 			if (pi.currentSegment(coords) == PathIterator.SEG_MOVETO
 					|| pi.currentSegment(coords) == PathIterator.SEG_LINETO) {
 				tmp[i] = new Point2D.Float(coords[0], coords[1]);
