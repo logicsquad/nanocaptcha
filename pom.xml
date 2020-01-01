@@ -6,6 +6,7 @@
   <name>NanoCaptcha</name>
   <description>A Java-based CAPTCHA implementation with a minimum of dependencies.</description>
   <url>https://github.com/logicsquad/nanocaptcha</url>
+  <inceptionYear>2019</inceptionYear>
 
   <organization>
     <name>Logic Squad</name>
