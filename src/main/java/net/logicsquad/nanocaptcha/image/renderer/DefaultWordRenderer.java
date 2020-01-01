@@ -33,12 +33,12 @@ public class DefaultWordRenderer implements WordRenderer {
 	/**
 	 * Default {@link Color}s
 	 */
-	private static final List<Color> DEFAULT_COLORS = new ArrayList<Color>();
+	private static final List<Color> DEFAULT_COLORS = new ArrayList<>();
 
 	/**
 	 * Default fonts
 	 */
-	private static final List<Font> DEFAULT_FONTS = new ArrayList<Font>();
+	private static final List<Font> DEFAULT_FONTS = new ArrayList<>();
 
 	// The text will be rendered 25%/5% of the image height/width from the X and Y
 	// axes

@@ -81,8 +81,8 @@ public final class AudioCaptcha {
 		 * Constructor
 		 */
 		public Builder() {
-			voiceProducers = new ArrayList<VoiceProducer>();
-			noiseProducers = new ArrayList<NoiseProducer>();
+			voiceProducers = new ArrayList<>();
+			noiseProducers = new ArrayList<>();
 			return;
 		}
 
@@ -165,7 +165,7 @@ public final class AudioCaptcha {
 
 			// Make a List of Samples for each character
 			VoiceProducer vProd;
-			List<Sample> samples = new ArrayList<Sample>();
+			List<Sample> samples = new ArrayList<>();
 			for (char c : ansAry) {
 				// Create Sample for this character from one of the
 				// VoiceProducers

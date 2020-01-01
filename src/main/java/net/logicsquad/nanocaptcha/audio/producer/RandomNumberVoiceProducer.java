@@ -42,10 +42,12 @@ public class RandomNumberVoiceProducer implements VoiceProducer {
 
 	static {
 		// 10 digits
+		List<String> sampleNames;
 		for (int i = 0; i < 10; i++) {
-			List<String> sampleNames = new ArrayList<>();
+			sampleNames = new ArrayList<>();
+			StringBuilder sb;
 			for (String name : Arrays.asList(BUILT_IN_VOICES)) {
-				StringBuilder sb = new StringBuilder(BUILT_IN_VOICES_PREFIX);
+				sb = new StringBuilder(BUILT_IN_VOICES_PREFIX);
 				sb.append(i).append("-").append(name).append(".wav");
 				sampleNames.add(sb.toString());
 			}

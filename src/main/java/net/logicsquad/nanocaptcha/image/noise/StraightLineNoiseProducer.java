@@ -85,8 +85,8 @@ public class StraightLineNoiseProducer implements NoiseProducer {
 		// rectangle...
 		double ddx = -scale * dY;
 		double ddy = scale * dX;
-		ddx += (ddx > 0) ? 0.5 : -0.5;
-		ddy += (ddy > 0) ? 0.5 : -0.5;
+		ddx += ddx > 0 ? 0.5 : -0.5;
+		ddy += ddy > 0 ? 0.5 : -0.5;
 		int dx = (int) ddx;
 		int dy = (int) ddy;
 
