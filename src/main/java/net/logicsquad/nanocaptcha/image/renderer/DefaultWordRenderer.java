@@ -104,17 +104,42 @@ public class DefaultWordRenderer implements WordRenderer {
 		for (char c : word.toCharArray()) {
 			chars[0] = c;
 
-			g.setColor(colors.get(RAND.nextInt(colors.size())));
-
-			int choiceFont = RAND.nextInt(fonts.size());
-			Font font = fonts.get(choiceFont);
-			g.setFont(font);
-
+			g.setColor(nextColor());
+			Font font = nextFont();
+			g.setFont(nextFont());
 			GlyphVector gv = font.createGlyphVector(frc, chars);
 			g.drawChars(chars, 0, chars.length, xBaseline, yBaseline);
 
 			int width = (int) gv.getVisualBounds().getWidth();
 			xBaseline = xBaseline + width;
+		}
+	}
+
+	/**
+	 * Returns a random {@link Color} from the list.
+	 * 
+	 * @return random {@link Color}
+	 * @since 1.1
+	 */
+	private Color nextColor() {
+		if (colors.size() == 1) {
+			return colors.get(0);
+		} else {
+			return colors.get(RAND.nextInt(colors.size()));
+		}
+	}
+
+	/**
+	 * Returns a random {@link Font} from the list.
+	 * 
+	 * @return random {@link Font}
+	 * @since 1.1
+	 */
+	private Font nextFont() {
+		if (fonts.size() == 1) {
+			return fonts.get(0);
+		} else {
+			return fonts.get(RAND.nextInt(fonts.size()));
 		}
 	}
 }
