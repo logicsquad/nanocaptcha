@@ -5,6 +5,7 @@ import java.awt.Font;
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 import java.util.Random;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * <p>
@@ -54,17 +55,17 @@ public class FastWordRenderer implements WordRenderer {
 	/**
 	 * Size of list of pre-computed indexes (into {@link Font} list)
 	 */
-	private static final int INDEX_SIZE = 100;
+	private static final int FONT_INDEX_SIZE = 100;
 
 	/**
 	 * Pre-computed indexes into {@link Font} list
 	 */
-	private static final int[] INDEXES = new int[INDEX_SIZE];
+	private static final int[] INDEXES = new int[FONT_INDEX_SIZE];
 
 	/**
 	 * Current index pointer
 	 */
-	private static volatile int idxPointer = 0;
+	private static AtomicInteger idxPointer = new AtomicInteger(0);
 
 	/**
 	 * Minimum fudge value
@@ -79,17 +80,17 @@ public class FastWordRenderer implements WordRenderer {
 	/**
 	 * Size of list of pre-computed fudge values
 	 */
-	private static final int FUDGE_SIZE = 100;
+	private static final int FUDGE_INDEX_SIZE = 100;
 
 	/**
 	 * Pre-computed fudge values
 	 */
-	private static final int[] FUDGES = new int[FUDGE_SIZE];
+	private static final int[] FUDGES = new int[FUDGE_INDEX_SIZE];
 
 	/**
 	 * Current fudge pointer
 	 */
-	private static volatile int fudgePointer = 0;
+	private static AtomicInteger fudgePointer = new AtomicInteger(0);
 
 	/**
 	 * Random number generator
@@ -128,10 +129,10 @@ public class FastWordRenderer implements WordRenderer {
 	 * Constructor
 	 */
 	public FastWordRenderer() {
-		for (int i = 0; i < INDEX_SIZE; i++) {
+		for (int i = 0; i < FONT_INDEX_SIZE; i++) {
 			INDEXES[i] = RAND.nextInt(FONTS.length);
 		}
-		for (int i = 0; i < FUDGE_SIZE; i++) {
+		for (int i = 0; i < FUDGE_INDEX_SIZE; i++) {
 			FUDGES[i] = RAND.nextInt((FUDGE_MAX - FUDGE_MIN) + 1) + FUDGE_MIN;
 		}
 		return;
@@ -163,12 +164,7 @@ public class FastWordRenderer implements WordRenderer {
 		if (FONTS.length == 1) {
 			return FONTS[0];
 		} else {
-			Font result = FONTS[INDEXES[idxPointer]];
-			idxPointer++;
-			if (idxPointer == INDEX_SIZE) {
-				idxPointer = 0;
-			}
-			return result;
+			return FONTS[INDEXES[idxPointer.getAndIncrement() % FONT_INDEX_SIZE]];
 		}
 	}
 
@@ -178,11 +174,6 @@ public class FastWordRenderer implements WordRenderer {
 	 * @return fudge value
 	 */
 	private int nextFudge() {
-		int result = FUDGES[fudgePointer];
-		fudgePointer++;
-		if (fudgePointer == FUDGE_SIZE) {
-			fudgePointer = 0;
-		}
-		return result;
+		return FUDGES[fudgePointer.getAndIncrement() % FUDGE_INDEX_SIZE];
 	}
 }
