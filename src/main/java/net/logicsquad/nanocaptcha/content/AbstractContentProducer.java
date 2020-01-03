@@ -1,6 +1,5 @@
 package net.logicsquad.nanocaptcha.content;
 
-import java.security.SecureRandom;
 import java.util.Arrays;
 import java.util.Random;
 
@@ -22,7 +21,7 @@ public abstract class AbstractContentProducer implements ContentProducer {
 	/**
 	 * Random number generator
 	 */
-	private static final Random RAND = new SecureRandom();
+	private static final Random RAND = new Random();
 
 	/**
 	 * Length of strings produced by this object

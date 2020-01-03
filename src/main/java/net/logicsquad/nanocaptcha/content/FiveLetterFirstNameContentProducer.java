@@ -1,6 +1,5 @@
 package net.logicsquad.nanocaptcha.content;
 
-import java.security.SecureRandom;
 import java.util.Random;
 
 /**
@@ -15,7 +14,7 @@ public class FiveLetterFirstNameContentProducer implements ContentProducer {
 	/**
 	 * {@link Random} number generator
 	 */
-	private static final Random RAND = new SecureRandom();
+	private static final Random RAND = new Random();
 
 	/**
 	 * Names list

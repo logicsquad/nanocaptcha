@@ -8,7 +8,6 @@ import java.awt.geom.CubicCurve2D;
 import java.awt.geom.PathIterator;
 import java.awt.geom.Point2D;
 import java.awt.image.BufferedImage;
-import java.security.SecureRandom;
 import java.util.Random;
 
 /**
@@ -22,7 +21,7 @@ public class CurvedLineNoiseProducer implements NoiseProducer {
 	/**
 	 * Random number generator
 	 */
-	private static final Random RAND = new SecureRandom();
+	private static final Random RAND = new Random();
 
 	/**
 	 * Default line {@link Color}

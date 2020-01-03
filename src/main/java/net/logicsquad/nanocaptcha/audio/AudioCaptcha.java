@@ -1,6 +1,5 @@
 package net.logicsquad.nanocaptcha.audio;
 
-import java.security.SecureRandom;
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -55,7 +54,7 @@ public final class AudioCaptcha {
 		/**
 		 * Random number generator
 		 */
-		private static final Random RAND = new SecureRandom();
+		private static final Random RAND = new Random();
 
 		/**
 		 * Text content

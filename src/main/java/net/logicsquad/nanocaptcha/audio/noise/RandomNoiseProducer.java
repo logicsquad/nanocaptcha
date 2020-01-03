@@ -1,6 +1,5 @@
 package net.logicsquad.nanocaptcha.audio.noise;
 
-import java.security.SecureRandom;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
@@ -34,7 +33,7 @@ public class RandomNoiseProducer implements NoiseProducer {
 	/**
 	 * Random number generator
 	 */
-    private static final Random RAND = new SecureRandom();
+    private static final Random RAND = new Random();
 
     /**
      * Built-in noise samples

@@ -1,6 +1,5 @@
 package net.logicsquad.nanocaptcha.audio.producer;
 
-import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -23,7 +22,7 @@ public class RandomNumberVoiceProducer implements VoiceProducer {
 	/**
 	 * Random number generator
 	 */
-	private static final Random RAND = new SecureRandom();
+	private static final Random RAND = new Random();
 
 	/**
 	 * Prefix for locating built-in voices

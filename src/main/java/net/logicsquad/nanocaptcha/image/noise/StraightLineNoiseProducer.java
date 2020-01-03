@@ -4,7 +4,7 @@ import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
-import java.security.SecureRandom;
+import java.util.Random;
 
 /**
  * Draws a straight line through the given image.
@@ -17,7 +17,7 @@ public class StraightLineNoiseProducer implements NoiseProducer {
 	/**
 	 * Random number generator
 	 */
-	private static final SecureRandom RAND = new SecureRandom();
+	private static final Random RAND = new Random();
 
 	/**
 	 * Default line {@link Color}

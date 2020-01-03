@@ -3,7 +3,6 @@ package net.logicsquad.nanocaptcha.image.filter;
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
-import java.security.SecureRandom;
 import java.util.Random;
 
 /**
@@ -27,7 +26,7 @@ public class ShearImageFilter implements ImageFilter {
 	/**
 	 * Random number generator
 	 */
-	private static final Random RAND = new SecureRandom();
+	private static final Random RAND = new Random();
 
 	/**
 	 * {@link Color} to use in filter
