@@ -27,7 +27,7 @@ public final class Mixer {
 	 * Returns the concatenation of the supplied {@link Sample}s as a new
 	 * {@link Sample}. If {@code samples} is empty, this method returns a new, empty
 	 * {@link Sample}.
-	 * 
+	 *
 	 * @param samples a list of {@link Sample}s
 	 * @return concatenation {@link Sample}
 	 * @throws NullPointerException if {@code samples} is {@code null}
@@ -57,7 +57,7 @@ public final class Mixer {
 	 * Returns {@code sample1} mixed with {@code sample2} as a new {@link Sample}.
 	 * Additionally, {@code sample1}'s volume is adjusted by the multiplier
 	 * {@code volume1}, and {@code sample2}'s by {@code volume2}.
-	 * 
+	 *
 	 * @param sample1 first {@link Sample}
 	 * @param volume1 first multiplier
 	 * @param sample2 second {@link Sample}
@@ -78,7 +78,7 @@ public final class Mixer {
 	/**
 	 * Concatenates the supplied arrays of {@code double}s and returns the resulting
 	 * array.
-	 * 
+	 *
 	 * @param first an array of {@code double}s
 	 * @param rest  additional arrays of {@code double}s
 	 * @return concatenated array
@@ -101,7 +101,7 @@ public final class Mixer {
 	 * Returns {@code sample1} mixed with {@code sample2} as a new raw array of
 	 * {@code double}s. Additionally, {@code sample1}'s volume is adjusted by the
 	 * multiplier {@code volume1}, and {@code sample2}'s by {@code volume2}.
-	 * 
+	 *
 	 * @param sample1 first sample
 	 * @param volume1 first multiplier
 	 * @param sample2 second sample
@@ -121,7 +121,7 @@ public final class Mixer {
 
 	/**
 	 * Returns a {@link Sample} created from the raw {@code sample} data.
-	 * 
+	 *
 	 * @param sampleCount number of samples
 	 * @param sample      raw sample data
 	 * @return {@link Sample} from raw samples
@@ -143,8 +143,8 @@ public final class Mixer {
 	 * @return sample encoded as {@code byte[]}
 	 */
 	private static byte[] asByteArray(long sampleCount, double[] sample) {
-		int b_len = (int) sampleCount * (Sample.SC_AUDIO_FORMAT.getSampleSizeInBits() / 8);
-		byte[] buffer = new byte[b_len];
+		int bufferLength = (int) sampleCount * (Sample.SC_AUDIO_FORMAT.getSampleSizeInBits() / 8);
+		byte[] buffer = new byte[bufferLength];
 		int in;
 		for (int i = 0; i < sample.length; i++) {
 			in = (int) (sample[i] * 32767);

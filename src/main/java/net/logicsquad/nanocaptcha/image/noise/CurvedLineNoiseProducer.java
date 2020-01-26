@@ -8,12 +8,11 @@ import java.awt.geom.CubicCurve2D;
 import java.awt.geom.PathIterator;
 import java.awt.geom.Point2D;
 import java.awt.image.BufferedImage;
-import java.security.SecureRandom;
 import java.util.Random;
 
 /**
  * Adds a randomly curved line to the image.
- * 
+ *
  * @author <a href="mailto:james.childers@gmail.com">James Childers</a>
  * @author <a href="mailto:paulh@logicsquad.net">Paul Hoadley</a>
  * @since 1.0
@@ -22,7 +21,7 @@ public class CurvedLineNoiseProducer implements NoiseProducer {
 	/**
 	 * Random number generator
 	 */
-	private static final Random RAND = new SecureRandom();
+	private static final Random RAND = new Random();
 
 	/**
 	 * Default line {@link Color}
@@ -54,9 +53,9 @@ public class CurvedLineNoiseProducer implements NoiseProducer {
 
 	/**
 	 * Constructor taking {@link Color} and width.
-	 * 
-	 * @param color line {@link Color}
-	 * @param width line width
+	 *
+	 * @param lineColor line {@link Color}
+	 * @param lineWidth line width
 	 */
 	public CurvedLineNoiseProducer(Color lineColor, float lineWidth) {
 		this.lineColor = lineColor;
@@ -76,15 +75,15 @@ public class CurvedLineNoiseProducer implements NoiseProducer {
 
 		// creates an iterator to define the boundary of the flattened curve
 		PathIterator pi = cc.getPathIterator(null, 2);
-		Point2D tmp[] = new Point2D[200];
+		Point2D[] tmp = new Point2D[200];
 		int i = 0;
 
+		float[] coords;
 		// while pi is iterating the curve, adds points to tmp array
 		while (!pi.isDone()) {
-			float[] coords = new float[6];
-			switch (pi.currentSegment(coords)) {
-			case PathIterator.SEG_MOVETO:
-			case PathIterator.SEG_LINETO:
+			coords = new float[6];
+			if (pi.currentSegment(coords) == PathIterator.SEG_MOVETO
+					|| pi.currentSegment(coords) == PathIterator.SEG_LINETO) {
 				tmp[i] = new Point2D.Float(coords[0], coords[1]);
 			}
 			i++;

@@ -4,7 +4,7 @@ import org.junit.Test;
 
 /**
  * Unit tests on {@link RandomNumberVoiceProducer} class.
- * 
+ *
  * @author <a href="mailto:paulh@logicsquad.net">Paul Hoadley</a>
  * @since 1.0
  */

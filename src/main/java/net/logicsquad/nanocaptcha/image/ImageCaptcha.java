@@ -19,7 +19,7 @@ import net.logicsquad.nanocaptcha.image.renderer.WordRenderer;
 
 /**
  * An image CAPTCHA.
- * 
+ *
  * @author <a href="mailto:james.childers@gmail.com">James Childers</a>
  * @author <a href="mailto:paulh@logicsquad.net">Paul Hoadley</a>
  * @since 1.0
@@ -42,7 +42,7 @@ public final class ImageCaptcha {
 
 	/**
 	 * Constructor
-	 * 
+	 *
 	 * @param builder a {@link Builder} object
 	 */
 	private ImageCaptcha(Builder builder) {
@@ -57,7 +57,7 @@ public final class ImageCaptcha {
 	 * Builder for an {@link ImageCaptcha}. Elements are added to the image on the
 	 * fly, so call the methods in an order that makes sense, e.g.:
 	 * </p>
-	 * 
+	 *
 	 * <pre>
 	 * ImageCaptcha image = addBackground().addContent().addNoise().addFilter().addBorder().build();
 	 * </pre>
@@ -85,7 +85,7 @@ public final class ImageCaptcha {
 
 		/**
 		 * Constructor taking a width and height (in pixels) for the generated image.
-		 * 
+		 *
 		 * @param width  image width
 		 * @param height image height
 		 */
@@ -97,7 +97,7 @@ public final class ImageCaptcha {
 		/**
 		 * Adds a background using the default {@link BackgroundProducer} (a
 		 * {@link TransparentBackgroundProducer}).
-		 * 
+		 *
 		 * @return this
 		 */
 		public Builder addBackground() {
@@ -108,7 +108,7 @@ public final class ImageCaptcha {
 		 * Adds a background using the given {@link BackgroundProducer}. Note that
 		 * adding more than one background does not have an additive effect: the last
 		 * background added is the winner.
-		 * 
+		 *
 		 * @param backgroundProducer a {@link BackgroundProducer}
 		 * @return this
 		 */
@@ -119,7 +119,7 @@ public final class ImageCaptcha {
 
 		/**
 		 * Adds content to the CAPTCHA using the default {@link ContentProducer}.
-		 * 
+		 *
 		 * @return this
 		 */
 		public Builder addContent() {
@@ -128,7 +128,7 @@ public final class ImageCaptcha {
 
 		/**
 		 * Adds content to the CAPTCHA using the given {@link ContentProducer}.
-		 * 
+		 *
 		 * @param contentProducer a {@link ContentProducer}
 		 * @return this
 		 */
@@ -153,7 +153,7 @@ public final class ImageCaptcha {
 		/**
 		 * Adds noise using the default {@link NoiseProducer} (a
 		 * {@link CurvedLineNoiseProducer}).
-		 * 
+		 *
 		 * @return this
 		 */
 		public Builder addNoise() {
@@ -162,7 +162,7 @@ public final class ImageCaptcha {
 
 		/**
 		 * Adds noise using the given {@link NoiseProducer}.
-		 * 
+		 *
 		 * @param noiseProducer a {@link NoiseProducer}
 		 * @return this
 		 */
@@ -174,7 +174,7 @@ public final class ImageCaptcha {
 		/**
 		 * Filters the image using the default {@link ImageFilter} (a
 		 * {@link RippleImageFilter}).
-		 * 
+		 *
 		 * @return this
 		 */
 		public Builder addFilter() {
@@ -183,7 +183,7 @@ public final class ImageCaptcha {
 
 		/**
 		 * Filters the image using the given {@link ImageFilter}.
-		 * 
+		 *
 		 * @param filter an {@link ImageFilter}
 		 * @return this
 		 */
@@ -194,7 +194,7 @@ public final class ImageCaptcha {
 
 		/**
 		 * Draws a single-pixel wide black border around the image.
-		 * 
+		 *
 		 * @return this
 		 */
 		public Builder addBorder() {
@@ -204,20 +204,19 @@ public final class ImageCaptcha {
 
 		/**
 		 * Builds the image CAPTCHA described by this object.
-		 * 
+		 *
 		 * @return {@link ImageCaptcha} as described by this {@code Builder}
 		 */
 		public ImageCaptcha build() {
-			if (background == null) {
-				background = new TransparentBackgroundProducer().getBackground(image.getWidth(), image.getHeight());
+			if (background != null) {
+				// Paint the main image over the background
+				Graphics2D g = background.createGraphics();
+				g.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 1.0f));
+				g.drawImage(image, null, null);
+				image = background;
 			}
-
-			// Paint the main image over the background
-			Graphics2D g = background.createGraphics();
-			g.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 1.0f));
-			g.drawImage(image, null, null);
-
 			if (addBorder) {
+				Graphics2D g = image.createGraphics();
 				int width = image.getWidth();
 				int height = image.getHeight();
 				g.setColor(Color.BLACK);
@@ -226,25 +225,28 @@ public final class ImageCaptcha {
 				g.drawLine(0, height - 1, width, height - 1);
 				g.drawLine(width - 1, height - 1, width - 1, 0);
 			}
-			image = background;
 			return new ImageCaptcha(this);
 		}
 	}
 
 	/**
-	 * Does CAPTCHA content match supplied {@code answer}?
-	 * 
+	 * Does CAPTCHA content match supplied {@code answer}? If {@code answer} is
+	 * {@code null}, this method returns {@code false}.
+	 *
 	 * @param answer a candidate content match
 	 * @return {@code true} if {@code answer} matches CAPTCHA content, otherwise
 	 *         {@code false}
 	 */
 	public boolean isCorrect(String answer) {
+		if (answer == null) {
+			return false;
+		}
 		return answer.equals(content);
 	}
 
 	/**
 	 * Returns content of this CAPTCHA.
-	 * 
+	 *
 	 * @return content
 	 */
 	public String getContent() {
@@ -262,7 +264,7 @@ public final class ImageCaptcha {
 
 	/**
 	 * Returns creation timestamp.
-	 * 
+	 *
 	 * @return creation timestamp
 	 */
 	public OffsetDateTime getCreated() {

@@ -6,7 +6,7 @@ import java.awt.image.BufferedImage;
 
 /**
  * Generates a transparent background.
- * 
+ *
  * @author <a href="mailto:james.childers@gmail.com">James Childers</a>
  * @author <a href="mailto:paulh@logicsquad.net">Paul Hoadley</a>
  * @since 1.0

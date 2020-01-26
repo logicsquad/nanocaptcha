@@ -7,33 +7,37 @@ import java.awt.RenderingHints;
 import java.awt.font.FontRenderContext;
 import java.awt.font.GlyphVector;
 import java.awt.image.BufferedImage;
-import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
 /**
  * Renders the content onto the image.
- * 
+ *
  * @author <a href="mailto:james.childers@gmail.com">James Childers</a>
  * @author <a href="mailto:paulh@logicsquad.net">Paul Hoadley</a>
  * @since 1.0
  */
 public class DefaultWordRenderer implements WordRenderer {
 	/**
+	 * Font size in points
+	 */
+	private static final int FONT_SIZE = 40;
+
+	/**
 	 * Random number generator
 	 */
-	private static final Random RAND = new SecureRandom();
+	private static final Random RAND = new Random();
 
 	/**
 	 * Default {@link Color}s
 	 */
-	private static final List<Color> DEFAULT_COLORS = new ArrayList<Color>();
+	private static final List<Color> DEFAULT_COLORS = new ArrayList<>();
 
 	/**
 	 * Default fonts
 	 */
-	private static final List<Font> DEFAULT_FONTS = new ArrayList<Font>();
+	private static final List<Font> DEFAULT_FONTS = new ArrayList<>();
 
 	// The text will be rendered 25%/5% of the image height/width from the X and Y
 	// axes
@@ -50,8 +54,8 @@ public class DefaultWordRenderer implements WordRenderer {
 	// Set up default Colors, Fonts
 	static {
 		DEFAULT_COLORS.add(Color.BLACK);
-		DEFAULT_FONTS.add(new Font("Arial", Font.BOLD, 40));
-		DEFAULT_FONTS.add(new Font("Courier", Font.BOLD, 40));
+		DEFAULT_FONTS.add(new Font("Arial", Font.BOLD, FONT_SIZE));
+		DEFAULT_FONTS.add(new Font("Courier", Font.BOLD, FONT_SIZE));
 	}
 
 	/**
@@ -74,7 +78,7 @@ public class DefaultWordRenderer implements WordRenderer {
 
 	/**
 	 * Constructor taking a list of {@link Color}s and {@link Font}s to choose from.
-	 * 
+	 *
 	 * @param colors {@link Color}s
 	 * @param fonts  {@link Font}s
 	 */
@@ -100,17 +104,42 @@ public class DefaultWordRenderer implements WordRenderer {
 		for (char c : word.toCharArray()) {
 			chars[0] = c;
 
-			g.setColor(colors.get(RAND.nextInt(colors.size())));
-
-			int choiceFont = RAND.nextInt(fonts.size());
-			Font font = fonts.get(choiceFont);
-			g.setFont(font);
-
+			g.setColor(nextColor());
+			Font font = nextFont();
+			g.setFont(nextFont());
 			GlyphVector gv = font.createGlyphVector(frc, chars);
 			g.drawChars(chars, 0, chars.length, xBaseline, yBaseline);
 
 			int width = (int) gv.getVisualBounds().getWidth();
 			xBaseline = xBaseline + width;
+		}
+	}
+
+	/**
+	 * Returns a random {@link Color} from the list.
+	 * 
+	 * @return random {@link Color}
+	 * @since 1.1
+	 */
+	private Color nextColor() {
+		if (colors.size() == 1) {
+			return colors.get(0);
+		} else {
+			return colors.get(RAND.nextInt(colors.size()));
+		}
+	}
+
+	/**
+	 * Returns a random {@link Font} from the list.
+	 * 
+	 * @return random {@link Font}
+	 * @since 1.1
+	 */
+	private Font nextFont() {
+		if (fonts.size() == 1) {
+			return fonts.get(0);
+		} else {
+			return fonts.get(RAND.nextInt(fonts.size()));
 		}
 	}
 }

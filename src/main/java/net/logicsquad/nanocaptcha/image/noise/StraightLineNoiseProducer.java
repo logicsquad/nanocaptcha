@@ -4,11 +4,11 @@ import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
-import java.security.SecureRandom;
+import java.util.Random;
 
 /**
  * Draws a straight line through the given image.
- * 
+ *
  * @author <a href="mailto:james.childers@gmail.com">James Childers</a>
  * @author <a href="mailto:paulh@logicsquad.net">Paul Hoadley</a>
  * @since 1.0
@@ -17,7 +17,7 @@ public class StraightLineNoiseProducer implements NoiseProducer {
 	/**
 	 * Random number generator
 	 */
-	private static final SecureRandom RAND = new SecureRandom();
+	private static final Random RAND = new Random();
 
 	/**
 	 * Default line {@link Color}
@@ -49,7 +49,7 @@ public class StraightLineNoiseProducer implements NoiseProducer {
 
 	/**
 	 * Constructor taking a line {@link Color} and line width.
-	 * 
+	 *
 	 * @param lineColor line {@link Color}
 	 * @param lineWidth line width
 	 */
@@ -70,11 +70,11 @@ public class StraightLineNoiseProducer implements NoiseProducer {
 	}
 
 	private void drawLine(Graphics g, int y1, int x2, int y2) {
-		int X1 = 0;
+		int x1 = 0;
 
 		// The thick line is in fact a filled polygon
 		g.setColor(lineColor);
-		int dX = x2 - X1;
+		int dX = x2 - x1;
 		int dY = y2 - y1;
 		// line length
 		double lineLength = Math.sqrt(dX * dX + dY * dY);
@@ -85,18 +85,18 @@ public class StraightLineNoiseProducer implements NoiseProducer {
 		// rectangle...
 		double ddx = -scale * dY;
 		double ddy = scale * dX;
-		ddx += (ddx > 0) ? 0.5 : -0.5;
-		ddy += (ddy > 0) ? 0.5 : -0.5;
+		ddx += ddx > 0 ? 0.5 : -0.5;
+		ddy += ddy > 0 ? 0.5 : -0.5;
 		int dx = (int) ddx;
 		int dy = (int) ddy;
 
 		// Now we can compute the corner points...
-		int xPoints[] = new int[4];
-		int yPoints[] = new int[4];
+		int[] xPoints = new int[4];
+		int[] yPoints = new int[4];
 
-		xPoints[0] = X1 + dx;
+		xPoints[0] = x1 + dx;
 		yPoints[0] = y1 + dy;
-		xPoints[1] = X1 - dx;
+		xPoints[1] = x1 - dx;
 		yPoints[1] = y1 - dy;
 		xPoints[2] = x2 - dx;
 		yPoints[2] = y2 - dy;

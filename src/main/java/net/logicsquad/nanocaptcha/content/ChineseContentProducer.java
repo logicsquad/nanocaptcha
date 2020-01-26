@@ -2,31 +2,31 @@ package net.logicsquad.nanocaptcha.content;
 
 /**
  * Generates random strings using a subset of the Chinese alphabet.
- * 
+ *
  * @author <a href="mailto:james.childers@gmail.com">James Childers</a>
  * @author <a href="mailto:paulh@logicsquad.net">Paul Hoadley</a>
  * @since 1.0
  */
 public class ChineseContentProducer extends AbstractContentProducer implements ContentProducer {
 	/**
-	 * Code point at start of range
+	 * Code point at start of range (inclusive)
 	 */
-	private static final int CODE_POINT_START = 0x4E00;
+	static final int CODE_POINT_START = 0x4E00;
 
 	/**
-	 * Code point at end of range
+	 * Code point at end of range (exclusive)
 	 */
-	private static final int CODE_POINT_END = 0x4F6F;
+	static final int CODE_POINT_END = 0x4F6F;
 
 	/**
 	 * Array of source characters
 	 */
-	private static final char[] CHARS;
+	static final char[] CHARS;
 
 	static {
 		CHARS = new char[CODE_POINT_END - CODE_POINT_START];
-		for (char c = CODE_POINT_START, i = 0; c < CODE_POINT_END; c++, i++) {
-			CHARS[i] = Character.valueOf(c);
+		for (int i = 0; i < (CODE_POINT_END - CODE_POINT_START); i++) {
+			CHARS[i] = (char) (CODE_POINT_START + i);
 		}
 	}
 
@@ -39,7 +39,7 @@ public class ChineseContentProducer extends AbstractContentProducer implements C
 
 	/**
 	 * Constructor taking a length specifier.
-	 * 
+	 *
 	 * @param length content length
 	 */
 	public ChineseContentProducer(int length) {

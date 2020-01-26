@@ -6,7 +6,7 @@ import java.awt.image.BufferedImage;
 
 /**
  * Overlays a warped grid to the image.
- * 
+ *
  * @author <a href="mailto:james.childers@gmail.com">James Childers</a>
  * @author <a href="mailto:paulh@logicsquad.net">Paul Hoadley</a>
  * @since 1.0
@@ -37,7 +37,7 @@ public class FishEyeImageFilter implements ImageFilter {
 
 	/**
 	 * Constructor taking colours for lines.
-	 * 
+	 *
 	 * @param hColor horizontal line {@link Color}
 	 * @param vColor vertical line {@link Color}
 	 */
@@ -74,7 +74,7 @@ public class FishEyeImageFilter implements ImageFilter {
 
 		// Create a pixel array of the original image.
 		// we need this later to do the operations on..
-		int pix[] = new int[height * width];
+		int[] pix = new int[height * width];
 		int j = 0;
 
 		for (int j1 = 0; j1 < width; j1++) {
@@ -110,12 +110,12 @@ public class FishEyeImageFilter implements ImageFilter {
 		graph.dispose();
 	}
 
-	private final int ranInt(int i, int j) {
+	private int ranInt(int i, int j) {
 		double d = Math.random();
 		return (int) (i + ((j - i) + 1) * d);
 	}
 
-	private final double fishEyeFormula(double s) {
+	private double fishEyeFormula(double s) {
 		// implementation of:
 		// g(s) = - (3/4)s3 + (3/2)s2 + (1/4)s, with s from 0 to 1.
 		if (s < 0.0D) {

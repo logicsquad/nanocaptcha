@@ -1,9 +1,13 @@
 package net.logicsquad.nanocaptcha.audio;
 
-import java.io.*;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.Objects;
 
-import javax.sound.sampled.*;
+import javax.sound.sampled.AudioFormat;
+import javax.sound.sampled.AudioInputStream;
+import javax.sound.sampled.AudioSystem;
+import javax.sound.sampled.UnsupportedAudioFileException;
 
 /**
  * <p>
@@ -11,7 +15,7 @@ import javax.sound.sampled.*;
  * at this time this class only supports wav files with the following
  * characteristics:
  * </p>
- * 
+ *
  * <ul>
  * <li>Sample rate: 16KHz</li>
  * <li>Sample size: 16 bits</li>
@@ -19,12 +23,12 @@ import javax.sound.sampled.*;
  * <li>Signed: true</li>
  * <li>Big Endian: false</li>
  * </ul>
- * 
+ *
  * <p>
  * Data files in other formats will cause an
  * <code>IllegalArgumentException</code> to be thrown.
  * </p>
- * 
+ *
  * @author <a href="mailto:james.childers@gmail.com">James Childers</a>
  * @author <a href="mailto:paulh@logicsquad.net">Paul Hoadley</a>
  * @since 1.0
@@ -46,7 +50,7 @@ public class Sample {
 
 	/**
 	 * Constructor taking a filename.
-	 * 
+	 *
 	 * @param filename filename
 	 * @throws NullPointerException if {@code filename} is {@code null}
 	 */
@@ -56,7 +60,7 @@ public class Sample {
 
 	/**
 	 * Constructor taking an {@link InputStream}.
-	 * 
+	 *
 	 * @param is an {@link InputStream}
 	 * @throws NullPointerException     if {@code is} is {@code null}
 	 * @throws IllegalArgumentException if the audio format is unsupported
@@ -85,7 +89,7 @@ public class Sample {
 
 	/**
 	 * Returns {@link AudioInputStream} for this {@code Sample}.
-	 * 
+	 *
 	 * @return {@link AudioInputStream}
 	 */
 	public AudioInputStream getAudioInputStream() {
@@ -94,7 +98,7 @@ public class Sample {
 
 	/**
 	 * Returns {@link AudioFormat} for this {@code Sample}.
-	 * 
+	 *
 	 * @return {@link AudioFormat}
 	 */
 	private AudioFormat getFormat() {
@@ -103,7 +107,7 @@ public class Sample {
 
 	/**
 	 * Return the number of samples for all channels.
-	 * 
+	 *
 	 * @return number of samples for all channels
 	 */
 	long getSampleCount() {
@@ -114,7 +118,7 @@ public class Sample {
 
 	/**
 	 * Returns interleaved samples for this {@code Sample}.
-	 * 
+	 *
 	 * @return interleaved samples
 	 */
 	double[] getInterleavedSamples() {
@@ -136,10 +140,11 @@ public class Sample {
 	 * into {@code samples}. {@code end} must not exceed {@code getSampleCount()},
 	 * and the number of samples must not be so large that the associated byte array
 	 * cannot be allocated.
-	 * 
+	 *
 	 * @param start   start index
 	 * @param end     end index
 	 * @param samples destination array
+	 * @return interleaved decoded samples for all channels
 	 * @throws IOException              if unable to read from
 	 *                                  {@link AudioInputStream}
 	 * @throws IllegalArgumentException if sample is too large
@@ -164,7 +169,7 @@ public class Sample {
 	/**
 	 * Decodes audio as bytes in {@code audioBytes} into audio as samples and writes
 	 * the result into {@code audioSamples}.
-	 * 
+	 *
 	 * @param audioBytes   source audio as bytes
 	 * @param audioSamples destination audio as samples
 	 */
@@ -183,16 +188,18 @@ public class Sample {
 				// bytes start with LSB
 				for (int j = sampleSizeInBytes - 1; j >= 0; j--) {
 					sampleBytes[j] = audioBytes[k++];
-					if (sampleBytes[j] != 0)
+					if (sampleBytes[j] != 0) {
 						j = j + 0;
+					}
 				}
 			}
 			// get integer value from bytes
 			int ival = 0;
 			for (int j = 0; j < sampleSizeInBytes; j++) {
 				ival += sampleBytes[j];
-				if (j < sampleSizeInBytes - 1)
+				if (j < sampleSizeInBytes - 1) {
 					ival <<= 8;
+				}
 			}
 			// decode value
 			double ratio = Math.pow(2., getFormat().getSampleSizeInBits() - 1);
@@ -203,7 +210,7 @@ public class Sample {
 
 	@Override
 	public String toString() {
-		StringBuilder sb = new StringBuilder();
+		StringBuilder sb = new StringBuilder(26);
 		sb.append("[Sample: samples=").append(getSampleCount()).append(" format=").append(getFormat()).append("]");
 		return sb.toString();
 	}

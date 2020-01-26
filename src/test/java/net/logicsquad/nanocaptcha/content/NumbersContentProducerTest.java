@@ -5,7 +5,7 @@ import org.junit.Test;
 
 /**
  * Unit tests on {@link NumbersContentProducer} class.
- * 
+ *
  * @author <a href="mailto:paulh@logicsquad.net">Paul Hoadley</a>
  * @since 1.0
  */
@@ -42,7 +42,7 @@ public class NumbersContentProducerTest {
 
 	/**
 	 * Is {@code number} a number?
-	 * 
+	 *
 	 * @param number candidate number string
 	 * @return {@code true} if {@code number} is a number, otherwise {@code false}
 	 */

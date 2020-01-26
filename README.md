@@ -18,24 +18,23 @@ Getting started
 ---------------
 You can build a minimal image CAPTCHA very easily:
 
-    ImageCaptcha captcha = new ImageCaptcha.Builder(200, 50).addContent().build();
+    ImageCaptcha imageCaptcha = new ImageCaptcha.Builder(200, 50).addContent().build();
 
 This creates a 200 x 50 pixel image and adds five random characters
 from the Latin alphabet.  The `getImage()` method returns the image as
 a `BufferedImage` object. `isCorrect(String)` will verify the supplied
 string against the text content of the image. If you need the text
-content itself, call `getAnswer()`.  Image CAPTCHAs can be further
+content itself, call `getContent()`.  Image CAPTCHAs can be further
 customised by:
 
-* Using different `ContentProducer`s (e.g., `ChineseContentProducer`)
-  and `WordRenderer`s (e.g., `ColoredEdgesWordRenderer`).
+* Using different `ContentProducer`s (e.g., `ChineseContentProducer`).
 * Adding noise using a `NoiseProducer`.
 * Adding various `ImageFilter`s.
 * Adding a background or a border.
 
 Building a minimal audio CAPTCHA is just as easy:
 
-    	AudioCaptcha audio = new AudioCaptcha.Builder().addContent().build();
+    AudioCaptcha audioCaptcha = new AudioCaptcha.Builder().addContent().build();
 
 As with image CAPTCHAs, these can be further customised by:
 
@@ -43,16 +42,29 @@ As with image CAPTCHAs, these can be further customised by:
 
 Using NanoCaptcha
 -----------------
-At the moment you'll need to build NanoCaptcha from source:
+You can use NanoCaptcha in your projects by including it as a Maven dependency:
 
-    $ git clone https://github.com/logicsquad/nanocaptcha.git NanoCaptcha
-    $ cd NanoCaptcha
-    $ mvn package
+    <dependency>
+      <groupId>net.logicsquad</groupId>
+      <artifactId>nanocaptcha</artifactId>
+      <version>1.1</version>
+    </dependency>
 
-Note that _the API may change prior to a 1.0 release,_ at which time
-it will remain stable, consistent with [semantic
-versioning](https://semver.org). Once we ship a 1.0 release, NanoCaptcha
-will be available from Maven Central.
+Roadmap
+-------
+The following are some potential ideas for future releases:
+
+1. Remove the dependency on `com.jhlabs.filters`. The aim of
+   NanoCaptcha is to be minimally dependent, and this is our only
+   dependency—it would be good to remove it. Additionally, this
+   library _seems_ to be abandonware, with the artefact we're using
+   here [produced by an unrelated third
+   party](https://github.com/andto/jhlabs). In any case, the license
+   in the source code is Apache 2.0, which should allow us to
+   incorporate the classes we need directly in this project.
+2. Further reduce the public API surface where possible. A first pass
+   over the SimpleCaptcha code made a few reductions, but there might
+   be scope for more.
 
 Contributing
 ------------

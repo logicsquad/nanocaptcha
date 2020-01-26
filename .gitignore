@@ -1,10 +1,5 @@
 .settings
 .DS_Store
-*.class
-.metadata/
-.cvsignore
-docs/output/
-CVS/
-bin/
-stacktrace.log
-.settings/org.eclipse.ltk.core.refactoring.prefs
+bin
+build
+target

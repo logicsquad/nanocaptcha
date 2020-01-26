@@ -1,12 +1,11 @@
 package net.logicsquad.nanocaptcha.content;
 
-import java.security.SecureRandom;
 import java.util.Random;
 
 /**
  * {@link ContentProducer} implementation that chooses from a static list of
  * 5-letter "first names".
- * 
+ *
  * @author <a href="mailto:james.childers@gmail.com">James Childers</a>
  * @author <a href="mailto:paulh@logicsquad.net">Paul Hoadley</a>
  * @since 1.0
@@ -15,7 +14,7 @@ public class FiveLetterFirstNameContentProducer implements ContentProducer {
 	/**
 	 * {@link Random} number generator
 	 */
-	private static final Random RAND = new SecureRandom();
+	private static final Random RAND = new Random();
 
 	/**
 	 * Names list

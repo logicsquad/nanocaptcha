@@ -1,6 +1,5 @@
 package net.logicsquad.nanocaptcha.audio.producer;
 
-import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -14,7 +13,7 @@ import net.logicsquad.nanocaptcha.audio.Sample;
 /**
  * A {@link VoiceProducer} that can generate a vocalization for a given number
  * in a randomly chosen voice.
- * 
+ *
  * @author <a href="mailto:james.childers@gmail.com">James Childers</a>
  * @author <a href="mailto:paulh@logicsquad.net">Paul Hoadley</a>
  * @since 1.0
@@ -23,7 +22,7 @@ public class RandomNumberVoiceProducer implements VoiceProducer {
 	/**
 	 * Random number generator
 	 */
-	private static final Random RAND = new SecureRandom();
+	private static final Random RAND = new Random();
 
 	/**
 	 * Prefix for locating built-in voices
@@ -42,14 +41,13 @@ public class RandomNumberVoiceProducer implements VoiceProducer {
 
 	static {
 		// 10 digits
+		List<String> sampleNames;
 		for (int i = 0; i < 10; i++) {
-			List<String> sampleNames = new ArrayList<>();
+			sampleNames = new ArrayList<>();
+			StringBuilder sb;
 			for (String name : Arrays.asList(BUILT_IN_VOICES)) {
-				StringBuilder sb = new StringBuilder(BUILT_IN_VOICES_PREFIX);
-				sb.append(i);
-				sb.append("-");
-				sb.append(name);
-				sb.append(".wav");
+				sb = new StringBuilder(BUILT_IN_VOICES_PREFIX);
+				sb.append(i).append("-").append(name).append(".wav");
 				sampleNames.add(sb.toString());
 			}
 			BUILT_IN_VOICES_MAP.put(i, sampleNames);
@@ -72,12 +70,12 @@ public class RandomNumberVoiceProducer implements VoiceProducer {
 	 * Creates a {@code RandomNumberVoiceProducer} for the given {@code voices}, a
 	 * map of numbers to their corresponding filename options. Conceptually the map
 	 * must look like the following:
-	 * 
+	 *
 	 * <pre>
 	 * {1 => ["/my_sounds/1-quiet.wav", "/my_sounds/1-loud.wav"],
 	 *  2 => ["/my_sounds/2-quiet.wav", "/my_sounds/2-loud.wav"]}
 	 * </pre>
-	 * 
+	 *
 	 * @param voices map of digits to list of vocalizations of that digit
 	 * @throws NullPointerException if {@code voices} is {@code null}
 	 */
