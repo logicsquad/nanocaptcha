@@ -230,13 +230,17 @@ public final class ImageCaptcha {
 	}
 
 	/**
-	 * Does CAPTCHA content match supplied {@code answer}?
+	 * Does CAPTCHA content match supplied {@code answer}? If {@code answer} is
+	 * {@code null}, this method returns {@code false}.
 	 *
 	 * @param answer a candidate content match
 	 * @return {@code true} if {@code answer} matches CAPTCHA content, otherwise
 	 *         {@code false}
 	 */
 	public boolean isCorrect(String answer) {
+		if (answer == null) {
+			return false;
+		}
 		return answer.equals(content);
 	}
 
