@@ -358,7 +358,6 @@ public class RippleImageFilter implements ImageFilter {
 
 			outX = transformedSpace.x;
 			outY = transformedSpace.y;
-			int[] rgb = new int[4];
 			float[] out = new float[2];
 
 			for (int y = 0; y < outHeight; y++) {
@@ -388,7 +387,6 @@ public class RippleImageFilter implements ImageFilter {
 						outPixels[x] = p;
 					} else {
 						int i = srcWidth * srcY + srcX;
-						rgb[0] = inPixels[i];
 						outPixels[x] = inPixels[i];
 					}
 				}
