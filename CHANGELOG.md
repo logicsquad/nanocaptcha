@@ -29,7 +29,7 @@ up, including: Javadoc comments, visibility tightening, API pruning.
   argument. [#1](https://github.com/logicsquad/nanocaptcha/issues/1)
 
 
-# Release 1.2 (2021-02-14)
+## Release 1.2 (2021-02-14)
 
 ### Changed
 - Removed dependency on `com.jhlabs.filters`.
