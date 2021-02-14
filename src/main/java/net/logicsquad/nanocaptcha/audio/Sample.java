@@ -9,6 +9,9 @@ import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.UnsupportedAudioFileException;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 /**
  * <p>
  * Class representing a sound sample, typically read in from a file. Note that
@@ -35,9 +38,14 @@ import javax.sound.sampled.UnsupportedAudioFileException;
  */
 public class Sample {
 	/**
+	 * Logger
+	 */
+	private static final Logger LOG = LoggerFactory.getLogger(Sample.class);
+
+	/**
 	 * {@link AudioFormat} for all {@code Sample}s
 	 */
-	public static final AudioFormat SC_AUDIO_FORMAT = new AudioFormat(16000, // sample rate
+	public static final AudioFormat SC_AUDIO_FORMAT = new AudioFormat(16_000, // sample rate
 			16, // sample size in bits
 			1, // channels
 			true, // signed?
@@ -75,9 +83,8 @@ public class Sample {
 		} else {
 			try {
 				audioInputStream = AudioSystem.getAudioInputStream(is);
-			} catch (UnsupportedAudioFileException e) {
-				throw new RuntimeException(e);
-			} catch (IOException e) {
+			} catch (UnsupportedAudioFileException | IOException e) {
+				LOG.error("Unable to get audio input stream.", e);
 				throw new RuntimeException(e);
 			}
 		}
@@ -125,10 +132,8 @@ public class Sample {
 		double[] samples = new double[(int) getSampleCount()];
 		try {
 			getInterleavedSamples(0, getSampleCount(), samples);
-		} catch (IllegalArgumentException e) {
-			e.printStackTrace();
-		} catch (IOException e) {
-			e.printStackTrace();
+		} catch (IllegalArgumentException | IOException e) {
+			LOG.error("Unable to get interleaved samples.", e);
 		}
 
 		return samples;
@@ -149,8 +154,7 @@ public class Sample {
 	 *                                  {@link AudioInputStream}
 	 * @throws IllegalArgumentException if sample is too large
 	 */
-	private double[] getInterleavedSamples(long start, long end, double[] samples)
-			throws IOException, IllegalArgumentException {
+	private double[] getInterleavedSamples(long start, long end, double[] samples) throws IOException {
 		long nbSamples = end - start;
 		long nbBytes = nbSamples * (getFormat().getSampleSizeInBits() / 8) * getFormat().getChannels();
 		if (nbBytes > Integer.MAX_VALUE) {
@@ -211,7 +215,7 @@ public class Sample {
 	@Override
 	public String toString() {
 		StringBuilder sb = new StringBuilder(26);
-		sb.append("[Sample: samples=").append(getSampleCount()).append(" format=").append(getFormat()).append("]");
+		sb.append("[Sample: samples=").append(getSampleCount()).append(" format=").append(getFormat()).append(']');
 		return sb.toString();
 	}
 }
