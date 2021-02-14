@@ -2,7 +2,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>net.logicsquad</groupId>
   <artifactId>nanocaptcha</artifactId>
-  <version>1.1</version>
+  <version>1.2</version>
   <name>NanoCaptcha</name>
   <description>A Java-based CAPTCHA implementation with a minimum of dependencies.</description>
   <url>https://github.com/logicsquad/nanocaptcha</url>
@@ -148,6 +148,7 @@
           </execution>
         </executions>
       </plugin>
+      <!--
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-gpg-plugin</artifactId>
@@ -162,6 +163,7 @@
           </execution>
         </executions>
       </plugin>
+      -->
     </plugins>
   </build>
 
@@ -234,14 +236,9 @@
 
   <dependencies>
     <dependency>
-      <groupId>com.jhlabs</groupId>
-      <artifactId>filters</artifactId>
-      <version>2.0.235-1</version>
-    </dependency>
-    <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
-      <version>4.12</version>
+      <version>4.13.1</version>
       <scope>test</scope>
     </dependency>
   </dependencies>
