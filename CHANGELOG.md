@@ -27,3 +27,14 @@ up, including: Javadoc comments, visibility tightening, API pruning.
 ### Fixed
 - `ImageCaptcha.isCorrect()` returns `false` for a `null`
   argument. [#1](https://github.com/logicsquad/nanocaptcha/issues/1)
+
+
+# Release 1.2 (2021-02-14)
+
+### Changed
+- Removed dependency on `com.jhlabs.filters`.
+  [#4](https://github.com/logicsquad/nanocaptcha/issues/4)
+	
+### Security
+- Updated JUnit 4.12 → 4.13.1.
+  [#2](https://github.com/logicsquad/nanocaptcha/issues/2)
