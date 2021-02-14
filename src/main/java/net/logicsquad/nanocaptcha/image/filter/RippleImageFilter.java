@@ -176,6 +176,11 @@ public class RippleImageFilter implements ImageFilter {
 		public String toString() {
 			return "Distort/Ripple...";
 		}
+
+		@Override
+		public RenderingHints getRenderingHints() {
+			return null;
+		}
 	}
 
 	// The following code has been modified by Logic Squad, and originally carried
@@ -264,8 +269,7 @@ public class RippleImageFilter implements ImageFilter {
 		 * 
 		 * @param rect the rectangle to transform
 		 */
-		protected void transformSpace(Rectangle rect) {
-		}
+		protected abstract void transformSpace(Rectangle rect);
 
 		public BufferedImage filter(BufferedImage src, BufferedImage dst) {
 			int width = src.getWidth();
@@ -437,9 +441,7 @@ public class RippleImageFilter implements ImageFilter {
 			return dstPt;
 		}
 
-		public RenderingHints getRenderingHints() {
-			return null;
-		}
+		public abstract RenderingHints getRenderingHints();
 
 		/**
 		 * A convenience method for getting ARGB pixels from an image. This tries to
