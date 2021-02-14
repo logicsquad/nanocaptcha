@@ -14,6 +14,7 @@ import java.util.Random;
  *
  * @author <a href="mailto:james.childers@gmail.com">James Childers</a>
  * @author <a href="mailto:paulh@logicsquad.net">Paul Hoadley</a>
+ * @author <a href="http://www.jhlabs.com/ip/filters/">Jerry Huxtable</a>
  * @since 1.0
  */
 public class RippleImageFilter implements ImageFilter {
@@ -28,6 +29,23 @@ public class RippleImageFilter implements ImageFilter {
 		ImageFilter.applyFilter(image, filter);
 	}
 
+	// The following code has been modified by Logic Squad, and originally carried
+	// the following license:
+	/*
+	Copyright 2006 Jerry Huxtable
+
+	Licensed under the Apache License, Version 2.0 (the "License");
+	you may not use this file except in compliance with the License.
+	You may obtain a copy of the License at
+
+	   http://www.apache.org/licenses/LICENSE-2.0
+
+	Unless required by applicable law or agreed to in writing, software
+	distributed under the License is distributed on an "AS IS" BASIS,
+	WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+	See the License for the specific language governing permissions and
+	limitations under the License.
+	*/
 	/**
 	 * A filter which distorts an image by rippling it in the X or Y directions. The
 	 * amplitude and wavelength of rippling can be specified as well as whether
@@ -160,6 +178,23 @@ public class RippleImageFilter implements ImageFilter {
 		}
 	}
 
+	// The following code has been modified by Logic Squad, and originally carried
+	// the following license:
+	/*
+	Copyright 2006 Jerry Huxtable
+
+	Licensed under the Apache License, Version 2.0 (the "License");
+	you may not use this file except in compliance with the License.
+	You may obtain a copy of the License at
+
+	   http://www.apache.org/licenses/LICENSE-2.0
+
+	Unless required by applicable law or agreed to in writing, software
+	distributed under the License is distributed on an "AS IS" BASIS,
+	WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+	See the License for the specific language governing permissions and
+	limitations under the License.
+	*/
 	/**
 	 * An abstract superclass for filters which distort images in some way. The
 	 * subclass only needs to override two methods to provide the mapping between
@@ -363,6 +398,23 @@ public class RippleImageFilter implements ImageFilter {
 		}
 	}
 
+	// The following code has been modified by Logic Squad, and originally carried
+	// the following license:
+	/*
+	Copyright 2006 Jerry Huxtable
+
+	Licensed under the Apache License, Version 2.0 (the "License");
+	you may not use this file except in compliance with the License.
+	You may obtain a copy of the License at
+
+	   http://www.apache.org/licenses/LICENSE-2.0
+
+	Unless required by applicable law or agreed to in writing, software
+	distributed under the License is distributed on an "AS IS" BASIS,
+	WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+	See the License for the specific language governing permissions and
+	limitations under the License.
+	*/
 	/**
 	 * A convenience class which implements those methods of BufferedImageOp which
 	 * are rarely changed.
@@ -440,6 +492,23 @@ public class RippleImageFilter implements ImageFilter {
 		}
 	}
 
+	// The following code has been modified by Logic Squad, and originally carried
+	// the following license:
+	/*
+	Copyright 2006 Jerry Huxtable
+
+	Licensed under the Apache License, Version 2.0 (the "License");
+	you may not use this file except in compliance with the License.
+	You may obtain a copy of the License at
+
+	   http://www.apache.org/licenses/LICENSE-2.0
+
+	Unless required by applicable law or agreed to in writing, software
+	distributed under the License is distributed on an "AS IS" BASIS,
+	WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+	See the License for the specific language governing permissions and
+	limitations under the License.
+	*/
 	/**
 	 * A class containing static math methods useful for image processing.
 	 */
@@ -552,6 +621,23 @@ public class RippleImageFilter implements ImageFilter {
 		}
 	}
 
+	// The following code has been modified by Logic Squad, and originally carried
+	// the following license:
+	/*
+	Copyright 2006 Jerry Huxtable
+
+	Licensed under the Apache License, Version 2.0 (the "License");
+	you may not use this file except in compliance with the License.
+	You may obtain a copy of the License at
+
+	   http://www.apache.org/licenses/LICENSE-2.0
+
+	Unless required by applicable law or agreed to in writing, software
+	distributed under the License is distributed on an "AS IS" BASIS,
+	WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+	See the License for the specific language governing permissions and
+	limitations under the License.
+	*/
 	/**
 	 * Perlin Noise functions
 	 */
@@ -802,14 +888,65 @@ public class RippleImageFilter implements ImageFilter {
 		}
 	}
 
+	// The following code has been modified by Logic Squad, and originally carried
+	// the following license:
+	/*
+	Copyright 2006 Jerry Huxtable
+
+	Licensed under the Apache License, Version 2.0 (the "License");
+	you may not use this file except in compliance with the License.
+	You may obtain a copy of the License at
+
+	   http://www.apache.org/licenses/LICENSE-2.0
+
+	Unless required by applicable law or agreed to in writing, software
+	distributed under the License is distributed on an "AS IS" BASIS,
+	WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+	See the License for the specific language governing permissions and
+	limitations under the License.
+	*/
 	private interface Function3D {
 		public float evaluate(float x, float y, float z);
 	}
 
+	// The following code has been modified by Logic Squad, and originally carried
+	// the following license:
+	/*
+	Copyright 2006 Jerry Huxtable
+
+	Licensed under the Apache License, Version 2.0 (the "License");
+	you may not use this file except in compliance with the License.
+	You may obtain a copy of the License at
+
+	   http://www.apache.org/licenses/LICENSE-2.0
+
+	Unless required by applicable law or agreed to in writing, software
+	distributed under the License is distributed on an "AS IS" BASIS,
+	WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+	See the License for the specific language governing permissions and
+	limitations under the License.
+	*/
 	private interface Function2D {
 		public float evaluate(float x, float y);
 	}
 
+	// The following code has been modified by Logic Squad, and originally carried
+	// the following license:
+	/*
+	Copyright 2006 Jerry Huxtable
+
+	Licensed under the Apache License, Version 2.0 (the "License");
+	you may not use this file except in compliance with the License.
+	You may obtain a copy of the License at
+
+	   http://www.apache.org/licenses/LICENSE-2.0
+
+	Unless required by applicable law or agreed to in writing, software
+	distributed under the License is distributed on an "AS IS" BASIS,
+	WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+	See the License for the specific language governing permissions and
+	limitations under the License.
+	*/
 	private interface Function1D {
 		public float evaluate(float v);
 	}
