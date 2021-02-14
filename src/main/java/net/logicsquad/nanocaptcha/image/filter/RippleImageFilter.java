@@ -7,7 +7,6 @@ import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 import java.awt.image.BufferedImageOp;
 import java.awt.image.ColorModel;
-import java.awt.image.WritableRaster;
 import java.util.Random;
 
 /**
@@ -81,16 +80,6 @@ public class RippleImageFilter implements ImageFilter {
 		}
 
 		/**
-		 * Get the amplitude of ripple in the X direction.
-		 * 
-		 * @return the amplitude (in pixels).
-		 * @see #setXAmplitude
-		 */
-		public float getXAmplitude() {
-			return xAmplitude;
-		}
-
-		/**
 		 * Set the wavelength of ripple in the X direction.
 		 * 
 		 * @param xWavelength the wavelength (in pixels).
@@ -98,16 +87,6 @@ public class RippleImageFilter implements ImageFilter {
 		 */
 		public void setXWavelength(float xWavelength) {
 			this.xWavelength = xWavelength;
-		}
-
-		/**
-		 * Get the wavelength of ripple in the X direction.
-		 * 
-		 * @return the wavelength (in pixels).
-		 * @see #setXWavelength
-		 */
-		public float getXWavelength() {
-			return xWavelength;
 		}
 
 		/**
@@ -121,16 +100,6 @@ public class RippleImageFilter implements ImageFilter {
 		}
 
 		/**
-		 * Get the amplitude of ripple in the Y direction.
-		 * 
-		 * @return the amplitude (in pixels).
-		 * @see #setYAmplitude
-		 */
-		public float getYAmplitude() {
-			return yAmplitude;
-		}
-
-		/**
 		 * Set the wavelength of ripple in the Y direction.
 		 * 
 		 * @param yWavelength the wavelength (in pixels).
@@ -141,16 +110,6 @@ public class RippleImageFilter implements ImageFilter {
 		}
 
 		/**
-		 * Get the wavelength of ripple in the Y direction.
-		 * 
-		 * @return the wavelength (in pixels).
-		 * @see #setYWavelength
-		 */
-		public float getYWavelength() {
-			return yWavelength;
-		}
-
-		/**
 		 * Set the wave type.
 		 * 
 		 * @param waveType the type.
@@ -158,16 +117,6 @@ public class RippleImageFilter implements ImageFilter {
 		 */
 		public void setWaveType(int waveType) {
 			this.waveType = waveType;
-		}
-
-		/**
-		 * Get the wave type.
-		 * 
-		 * @return the type.
-		 * @see #setWaveType
-		 */
-		public int getWaveType() {
-			return waveType;
 		}
 
 		protected void transformSpace(Rectangle r) {
@@ -265,51 +214,6 @@ public class RippleImageFilter implements ImageFilter {
 		protected Rectangle transformedSpace;
 
 		/**
-		 * The input image rectangle.
-		 */
-		protected Rectangle originalSpace;
-
-		/**
-		 * Set the action to perform for pixels off the edge of the image.
-		 * 
-		 * @param edgeAction one of ZERO, CLAMP or WRAP
-		 * @see #getEdgeAction
-		 */
-		public void setEdgeAction(int edgeAction) {
-			this.edgeAction = edgeAction;
-		}
-
-		/**
-		 * Get the action to perform for pixels off the edge of the image.
-		 * 
-		 * @return one of ZERO, CLAMP or WRAP
-		 * @see #setEdgeAction
-		 */
-		public int getEdgeAction() {
-			return edgeAction;
-		}
-
-		/**
-		 * Set the type of interpolation to perform.
-		 * 
-		 * @param interpolation one of NEAREST_NEIGHBOUR or BILINEAR
-		 * @see #getInterpolation
-		 */
-		public void setInterpolation(int interpolation) {
-			this.interpolation = interpolation;
-		}
-
-		/**
-		 * Get the type of interpolation to perform.
-		 * 
-		 * @return one of NEAREST_NEIGHBOUR or BILINEAR
-		 * @see #setInterpolation
-		 */
-		public int getInterpolation() {
-			return interpolation;
-		}
-
-		/**
 		 * Inverse transform a point. This method needs to be overriden by all
 		 * subclasses.
 		 * 
@@ -331,10 +235,7 @@ public class RippleImageFilter implements ImageFilter {
 		public BufferedImage filter(BufferedImage src, BufferedImage dst) {
 			int width = src.getWidth();
 			int height = src.getHeight();
-			int type = src.getType();
-			WritableRaster srcRaster = src.getRaster();
 
-			originalSpace = new Rectangle(0, 0, width, height);
 			transformedSpace = new Rectangle(0, 0, width, height);
 			transformSpace(transformedSpace);
 
@@ -344,7 +245,6 @@ public class RippleImageFilter implements ImageFilter {
 						dstCM.createCompatibleWritableRaster(transformedSpace.width, transformedSpace.height),
 						dstCM.isAlphaPremultiplied(), null);
 			}
-			WritableRaster dstRaster = dst.getRaster();
 
 			int[] inPixels = getRGB(src, 0, 0, width, height, null);
 
@@ -358,7 +258,6 @@ public class RippleImageFilter implements ImageFilter {
 			int outWidth = transformedSpace.width;
 			int outHeight = transformedSpace.height;
 			int outX, outY;
-			int index = 0;
 			int[] outPixels = new int[outWidth];
 
 			outX = transformedSpace.x;
@@ -545,164 +444,6 @@ public class RippleImageFilter implements ImageFilter {
 	 * A class containing static math methods useful for image processing.
 	 */
 	private static class ImageMath {
-
-		/**
-		 * The value of pi as a float.
-		 */
-		public final static float PI = (float) Math.PI;
-
-		/**
-		 * The value of half pi as a float.
-		 */
-		public final static float HALF_PI = (float) Math.PI / 2.0f;
-
-		/**
-		 * The value of quarter pi as a float.
-		 */
-		public final static float QUARTER_PI = (float) Math.PI / 4.0f;
-
-		/**
-		 * The value of two pi as a float.
-		 */
-		public final static float TWO_PI = (float) Math.PI * 2.0f;
-
-		/**
-		 * Apply a bias to a number in the unit interval, moving numbers towards 0 or 1
-		 * according to the bias parameter.
-		 * 
-		 * @param a the number to bias
-		 * @param b the bias parameter. 0.5 means no change, smaller values bias towards
-		 *          0, larger towards 1.
-		 * @return the output value
-		 */
-		public static float bias(float a, float b) {
-//			return (float)Math.pow(a, Math.log(b) / Math.log(0.5));
-			return a / ((1.0f / b - 2) * (1.0f - a) + 1);
-		}
-
-		/**
-		 * A variant of the gamma function.
-		 * 
-		 * @param a the number to apply gain to
-		 * @param b the gain parameter. 0.5 means no change, smaller values reduce gain,
-		 *          larger values increase gain.
-		 * @return the output value
-		 */
-		public static float gain(float a, float b) {
-			/*
-			 * float p = (float)Math.log(1.0 - b) / (float)Math.log(0.5);
-			 * 
-			 * if (a < .001) return 0.0f; else if (a > .999) return 1.0f; if (a < 0.5)
-			 * return (float)Math.pow(2 * a, p) / 2; else return 1.0f - (float)Math.pow(2 *
-			 * (1. - a), p) / 2;
-			 */
-			float c = (1.0f / b - 2.0f) * (1.0f - 2.0f * a);
-			if (a < 0.5)
-				return a / (c + 1.0f);
-			else
-				return (c - a) / (c - 1.0f);
-		}
-
-		/**
-		 * The step function. Returns 0 below a threshold, 1 above.
-		 * 
-		 * @param a the threshold position
-		 * @param x the input parameter
-		 * @return the output value - 0 or 1
-		 */
-		public static float step(float a, float x) {
-			return (x < a) ? 0.0f : 1.0f;
-		}
-
-		/**
-		 * The pulse function. Returns 1 between two thresholds, 0 outside.
-		 * 
-		 * @param a the lower threshold position
-		 * @param b the upper threshold position
-		 * @param x the input parameter
-		 * @return the output value - 0 or 1
-		 */
-		public static float pulse(float a, float b, float x) {
-			return (x < a || x >= b) ? 0.0f : 1.0f;
-		}
-
-		/**
-		 * A smoothed pulse function. A cubic function is used to smooth the step
-		 * between two thresholds.
-		 * 
-		 * @param a1 the lower threshold position for the start of the pulse
-		 * @param a2 the upper threshold position for the start of the pulse
-		 * @param b1 the lower threshold position for the end of the pulse
-		 * @param b2 the upper threshold position for the end of the pulse
-		 * @param x  the input parameter
-		 * @return the output value
-		 */
-		public static float smoothPulse(float a1, float a2, float b1, float b2, float x) {
-			if (x < a1 || x >= b2)
-				return 0;
-			if (x >= a2) {
-				if (x < b1)
-					return 1.0f;
-				x = (x - b1) / (b2 - b1);
-				return 1.0f - (x * x * (3.0f - 2.0f * x));
-			}
-			x = (x - a1) / (a2 - a1);
-			return x * x * (3.0f - 2.0f * x);
-		}
-
-		/**
-		 * A smoothed step function. A cubic function is used to smooth the step between
-		 * two thresholds.
-		 * 
-		 * @param a the lower threshold position
-		 * @param b the upper threshold position
-		 * @param x the input parameter
-		 * @return the output value
-		 */
-		public static float smoothStep(float a, float b, float x) {
-			if (x < a)
-				return 0;
-			if (x >= b)
-				return 1;
-			x = (x - a) / (b - a);
-			return x * x * (3 - 2 * x);
-		}
-
-		/**
-		 * A "circle up" function. Returns y on a unit circle given 1-x. Useful for
-		 * forming bevels.
-		 * 
-		 * @param x the input parameter in the range 0..1
-		 * @return the output value
-		 */
-		public static float circleUp(float x) {
-			x = 1 - x;
-			return (float) Math.sqrt(1 - x * x);
-		}
-
-		/**
-		 * A "circle down" function. Returns 1-y on a unit circle given x. Useful for
-		 * forming bevels.
-		 * 
-		 * @param x the input parameter in the range 0..1
-		 * @return the output value
-		 */
-		public static float circleDown(float x) {
-			return 1.0f - (float) Math.sqrt(1 - x * x);
-		}
-
-		/**
-		 * Clamp a value to an interval.
-		 * 
-		 * @param a the lower clamp threshold
-		 * @param b the upper clamp threshold
-		 * @param x the input parameter
-		 * @return the clamped value
-		 */
-		public static float clamp(float x, float a, float b) {
-			return (x < a) ? a : (x > b) ? b : x;
-		}
-
 		/**
 		 * Clamp a value to an interval.
 		 * 
@@ -713,23 +454,6 @@ public class RippleImageFilter implements ImageFilter {
 		 */
 		public static int clamp(int x, int a, int b) {
 			return (x < a) ? a : (x > b) ? b : x;
-		}
-
-		/**
-		 * Return a mod b. This differs from the % operator with respect to negative
-		 * numbers.
-		 * 
-		 * @param a the dividend
-		 * @param b the divisor
-		 * @return a mod b
-		 */
-		public static double mod(double a, double b) {
-			int n = (int) (a / b);
-
-			a -= n * b;
-			if (a < 0)
-				return a + b;
-			return a;
 		}
 
 		/**
@@ -776,54 +500,6 @@ public class RippleImageFilter implements ImageFilter {
 		public static float triangle(float x) {
 			float r = mod(x, 1.0f);
 			return 2.0f * (r < 0.5 ? r : 1 - r);
-		}
-
-		/**
-		 * Linear interpolation.
-		 * 
-		 * @param t the interpolation parameter
-		 * @param a the lower interpolation range
-		 * @param b the upper interpolation range
-		 * @return the interpolated value
-		 */
-		public static float lerp(float t, float a, float b) {
-			return a + t * (b - a);
-		}
-
-		/**
-		 * Linear interpolation.
-		 * 
-		 * @param t the interpolation parameter
-		 * @param a the lower interpolation range
-		 * @param b the upper interpolation range
-		 * @return the interpolated value
-		 */
-		public static int lerp(float t, int a, int b) {
-			return (int) (a + t * (b - a));
-		}
-
-		/**
-		 * Linear interpolation of ARGB values.
-		 * 
-		 * @param t    the interpolation parameter
-		 * @param rgb1 the lower interpolation range
-		 * @param rgb2 the upper interpolation range
-		 * @return the interpolated value
-		 */
-		public static int mixColors(float t, int rgb1, int rgb2) {
-			int a1 = (rgb1 >> 24) & 0xff;
-			int r1 = (rgb1 >> 16) & 0xff;
-			int g1 = (rgb1 >> 8) & 0xff;
-			int b1 = rgb1 & 0xff;
-			int a2 = (rgb2 >> 24) & 0xff;
-			int r2 = (rgb2 >> 16) & 0xff;
-			int g2 = (rgb2 >> 8) & 0xff;
-			int b2 = rgb2 & 0xff;
-			a1 = lerp(t, a1, a2);
-			r1 = lerp(t, r1, r2);
-			g1 = lerp(t, g1, g2);
-			b1 = lerp(t, b1, b2);
-			return (a1 << 24) | (r1 << 16) | (g1 << 8) | b1;
 		}
 
 		/**
@@ -874,356 +550,6 @@ public class RippleImageFilter implements ImageFilter {
 
 			return (a << 24) | (r << 16) | (g << 8) | b;
 		}
-
-		/**
-		 * Return the NTSC gray level of an RGB value.
-		 * 
-		 * @param rgb1 the input pixel
-		 * @return the gray level (0-255)
-		 */
-		public static int brightnessNTSC(int rgb) {
-			int r = (rgb >> 16) & 0xff;
-			int g = (rgb >> 8) & 0xff;
-			int b = rgb & 0xff;
-			return (int) (r * 0.299f + g * 0.587f + b * 0.114f);
-		}
-
-		// Catmull-Rom splines
-		private final static float m00 = -0.5f;
-		private final static float m01 = 1.5f;
-		private final static float m02 = -1.5f;
-		private final static float m03 = 0.5f;
-		private final static float m10 = 1.0f;
-		private final static float m11 = -2.5f;
-		private final static float m12 = 2.0f;
-		private final static float m13 = -0.5f;
-		private final static float m20 = -0.5f;
-		private final static float m21 = 0.0f;
-		private final static float m22 = 0.5f;
-		private final static float m23 = 0.0f;
-		private final static float m30 = 0.0f;
-		private final static float m31 = 1.0f;
-		private final static float m32 = 0.0f;
-		private final static float m33 = 0.0f;
-
-		/**
-		 * Compute a Catmull-Rom spline.
-		 * 
-		 * @param x        the input parameter
-		 * @param numKnots the number of knots in the spline
-		 * @param knots    the array of knots
-		 * @return the spline value
-		 */
-		public static float spline(float x, int numKnots, float[] knots) {
-			int span;
-			int numSpans = numKnots - 3;
-			float k0, k1, k2, k3;
-			float c0, c1, c2, c3;
-
-			if (numSpans < 1)
-				throw new IllegalArgumentException("Too few knots in spline");
-
-			x = clamp(x, 0, 1) * numSpans;
-			span = (int) x;
-			if (span > numKnots - 4)
-				span = numKnots - 4;
-			x -= span;
-
-			k0 = knots[span];
-			k1 = knots[span + 1];
-			k2 = knots[span + 2];
-			k3 = knots[span + 3];
-
-			c3 = m00 * k0 + m01 * k1 + m02 * k2 + m03 * k3;
-			c2 = m10 * k0 + m11 * k1 + m12 * k2 + m13 * k3;
-			c1 = m20 * k0 + m21 * k1 + m22 * k2 + m23 * k3;
-			c0 = m30 * k0 + m31 * k1 + m32 * k2 + m33 * k3;
-
-			return ((c3 * x + c2) * x + c1) * x + c0;
-		}
-
-		/**
-		 * Compute a Catmull-Rom spline, but with variable knot spacing.
-		 * 
-		 * @param x        the input parameter
-		 * @param numKnots the number of knots in the spline
-		 * @param xknots   the array of knot x values
-		 * @param yknots   the array of knot y values
-		 * @return the spline value
-		 */
-		public static float spline(float x, int numKnots, int[] xknots, int[] yknots) {
-			int span;
-			int numSpans = numKnots - 3;
-			float k0, k1, k2, k3;
-			float c0, c1, c2, c3;
-
-			if (numSpans < 1)
-				throw new IllegalArgumentException("Too few knots in spline");
-
-			for (span = 0; span < numSpans; span++)
-				if (xknots[span + 1] > x)
-					break;
-			if (span > numKnots - 3)
-				span = numKnots - 3;
-			float t = (float) (x - xknots[span]) / (xknots[span + 1] - xknots[span]);
-			span--;
-			if (span < 0) {
-				span = 0;
-				t = 0;
-			}
-
-			k0 = yknots[span];
-			k1 = yknots[span + 1];
-			k2 = yknots[span + 2];
-			k3 = yknots[span + 3];
-
-			c3 = m00 * k0 + m01 * k1 + m02 * k2 + m03 * k3;
-			c2 = m10 * k0 + m11 * k1 + m12 * k2 + m13 * k3;
-			c1 = m20 * k0 + m21 * k1 + m22 * k2 + m23 * k3;
-			c0 = m30 * k0 + m31 * k1 + m32 * k2 + m33 * k3;
-
-			return ((c3 * t + c2) * t + c1) * t + c0;
-		}
-
-		/**
-		 * Compute a Catmull-Rom spline for RGB values.
-		 * 
-		 * @param x        the input parameter
-		 * @param numKnots the number of knots in the spline
-		 * @param knots    the array of knots
-		 * @return the spline value
-		 */
-		public static int colorSpline(float x, int numKnots, int[] knots) {
-			int span;
-			int numSpans = numKnots - 3;
-			float k0, k1, k2, k3;
-			float c0, c1, c2, c3;
-
-			if (numSpans < 1)
-				throw new IllegalArgumentException("Too few knots in spline");
-
-			x = clamp(x, 0, 1) * numSpans;
-			span = (int) x;
-			if (span > numKnots - 4)
-				span = numKnots - 4;
-			x -= span;
-
-			int v = 0;
-			for (int i = 0; i < 4; i++) {
-				int shift = i * 8;
-
-				k0 = (knots[span] >> shift) & 0xff;
-				k1 = (knots[span + 1] >> shift) & 0xff;
-				k2 = (knots[span + 2] >> shift) & 0xff;
-				k3 = (knots[span + 3] >> shift) & 0xff;
-
-				c3 = m00 * k0 + m01 * k1 + m02 * k2 + m03 * k3;
-				c2 = m10 * k0 + m11 * k1 + m12 * k2 + m13 * k3;
-				c1 = m20 * k0 + m21 * k1 + m22 * k2 + m23 * k3;
-				c0 = m30 * k0 + m31 * k1 + m32 * k2 + m33 * k3;
-				int n = (int) (((c3 * x + c2) * x + c1) * x + c0);
-				if (n < 0)
-					n = 0;
-				else if (n > 255)
-					n = 255;
-				v |= n << shift;
-			}
-
-			return v;
-		}
-
-		/**
-		 * Compute a Catmull-Rom spline for RGB values, but with variable knot spacing.
-		 * 
-		 * @param x        the input parameter
-		 * @param numKnots the number of knots in the spline
-		 * @param xknots   the array of knot x values
-		 * @param yknots   the array of knot y values
-		 * @return the spline value
-		 */
-		public static int colorSpline(int x, int numKnots, int[] xknots, int[] yknots) {
-			int span;
-			int numSpans = numKnots - 3;
-			float k0, k1, k2, k3;
-			float c0, c1, c2, c3;
-
-			if (numSpans < 1)
-				throw new IllegalArgumentException("Too few knots in spline");
-
-			for (span = 0; span < numSpans; span++)
-				if (xknots[span + 1] > x)
-					break;
-			if (span > numKnots - 3)
-				span = numKnots - 3;
-			float t = (float) (x - xknots[span]) / (xknots[span + 1] - xknots[span]);
-			span--;
-			if (span < 0) {
-				span = 0;
-				t = 0;
-			}
-
-			int v = 0;
-			for (int i = 0; i < 4; i++) {
-				int shift = i * 8;
-
-				k0 = (yknots[span] >> shift) & 0xff;
-				k1 = (yknots[span + 1] >> shift) & 0xff;
-				k2 = (yknots[span + 2] >> shift) & 0xff;
-				k3 = (yknots[span + 3] >> shift) & 0xff;
-
-				c3 = m00 * k0 + m01 * k1 + m02 * k2 + m03 * k3;
-				c2 = m10 * k0 + m11 * k1 + m12 * k2 + m13 * k3;
-				c1 = m20 * k0 + m21 * k1 + m22 * k2 + m23 * k3;
-				c0 = m30 * k0 + m31 * k1 + m32 * k2 + m33 * k3;
-				int n = (int) (((c3 * t + c2) * t + c1) * t + c0);
-				if (n < 0)
-					n = 0;
-				else if (n > 255)
-					n = 255;
-				v |= n << shift;
-			}
-
-			return v;
-		}
-
-		/**
-		 * An implementation of Fant's resampling algorithm.
-		 * 
-		 * @param source the source pixels
-		 * @param dest   the destination pixels
-		 * @param length the length of the scanline to resample
-		 * @param offset the start offset into the arrays
-		 * @param stride the offset between pixels in consecutive rows
-		 * @param out    an array of output positions for each pixel
-		 */
-		public static void resample(int[] source, int[] dest, int length, int offset, int stride, float[] out) {
-			int i, j;
-			float sizfac;
-			float inSegment;
-			float outSegment;
-			int a, r, g, b, nextA, nextR, nextG, nextB;
-			float aSum, rSum, gSum, bSum;
-			float[] in;
-			int srcIndex = offset;
-			int destIndex = offset;
-			int lastIndex = source.length;
-			int rgb;
-
-			in = new float[length + 2];
-			i = 0;
-			for (j = 0; j < length; j++) {
-				while (out[i + 1] < j)
-					i++;
-				in[j] = i + (float) (j - out[i]) / (out[i + 1] - out[i]);
-//				in[j] = ImageMath.clamp( in[j], 0, length-1 );
-			}
-			in[length] = length;
-			in[length + 1] = length;
-
-			inSegment = 1.0f;
-			outSegment = in[1];
-			sizfac = outSegment;
-			aSum = rSum = gSum = bSum = 0.0f;
-			rgb = source[srcIndex];
-			a = (rgb >> 24) & 0xff;
-			r = (rgb >> 16) & 0xff;
-			g = (rgb >> 8) & 0xff;
-			b = rgb & 0xff;
-			srcIndex += stride;
-			rgb = source[srcIndex];
-			nextA = (rgb >> 24) & 0xff;
-			nextR = (rgb >> 16) & 0xff;
-			nextG = (rgb >> 8) & 0xff;
-			nextB = rgb & 0xff;
-			srcIndex += stride;
-			i = 1;
-
-			while (i <= length) {
-				float aIntensity = inSegment * a + (1.0f - inSegment) * nextA;
-				float rIntensity = inSegment * r + (1.0f - inSegment) * nextR;
-				float gIntensity = inSegment * g + (1.0f - inSegment) * nextG;
-				float bIntensity = inSegment * b + (1.0f - inSegment) * nextB;
-				if (inSegment < outSegment) {
-					aSum += (aIntensity * inSegment);
-					rSum += (rIntensity * inSegment);
-					gSum += (gIntensity * inSegment);
-					bSum += (bIntensity * inSegment);
-					outSegment -= inSegment;
-					inSegment = 1.0f;
-					a = nextA;
-					r = nextR;
-					g = nextG;
-					b = nextB;
-					if (srcIndex < lastIndex)
-						rgb = source[srcIndex];
-					nextA = (rgb >> 24) & 0xff;
-					nextR = (rgb >> 16) & 0xff;
-					nextG = (rgb >> 8) & 0xff;
-					nextB = rgb & 0xff;
-					srcIndex += stride;
-				} else {
-					aSum += (aIntensity * outSegment);
-					rSum += (rIntensity * outSegment);
-					gSum += (gIntensity * outSegment);
-					bSum += (bIntensity * outSegment);
-					dest[destIndex] = ((int) Math.min(aSum / sizfac, 255) << 24)
-							| ((int) Math.min(rSum / sizfac, 255) << 16) | ((int) Math.min(gSum / sizfac, 255) << 8)
-							| (int) Math.min(bSum / sizfac, 255);
-					destIndex += stride;
-					aSum = rSum = gSum = bSum = 0.0f;
-					inSegment -= outSegment;
-					outSegment = in[i + 1] - in[i];
-					sizfac = outSegment;
-					i++;
-				}
-			}
-		}
-
-		/**
-		 * Premultiply a block of pixels
-		 */
-		public static void premultiply(int[] p, int offset, int length) {
-			length += offset;
-			for (int i = offset; i < length; i++) {
-				int rgb = p[i];
-				int a = (rgb >> 24) & 0xff;
-				int r = (rgb >> 16) & 0xff;
-				int g = (rgb >> 8) & 0xff;
-				int b = rgb & 0xff;
-				float f = a * (1.0f / 255.0f);
-				r *= f;
-				g *= f;
-				b *= f;
-				p[i] = (a << 24) | (r << 16) | (g << 8) | b;
-			}
-		}
-
-		/**
-		 * Premultiply a block of pixels
-		 */
-		public static void unpremultiply(int[] p, int offset, int length) {
-			length += offset;
-			for (int i = offset; i < length; i++) {
-				int rgb = p[i];
-				int a = (rgb >> 24) & 0xff;
-				int r = (rgb >> 16) & 0xff;
-				int g = (rgb >> 8) & 0xff;
-				int b = rgb & 0xff;
-				if (a != 0 && a != 255) {
-					float f = 255.0f / a;
-					r *= f;
-					g *= f;
-					b *= f;
-					if (r > 255)
-						r = 255;
-					if (g > 255)
-						g = 255;
-					if (b > 255)
-						b = 255;
-					p[i] = (a << 24) | (r << 16) | (g << 8) | b;
-				}
-			}
-		}
 	}
 
 	/**
@@ -1243,38 +569,6 @@ public class RippleImageFilter implements ImageFilter {
 
 		public float evaluate(float x, float y, float z) {
 			return noise3(x, y, z);
-		}
-
-		/**
-		 * Compute turbulence using Perlin noise.
-		 * 
-		 * @param x       the x value
-		 * @param y       the y value
-		 * @param octaves number of octaves of turbulence
-		 * @return turbulence value at (x,y)
-		 */
-		public static float turbulence2(float x, float y, float octaves) {
-			float t = 0.0f;
-
-			for (float f = 1.0f; f <= octaves; f *= 2)
-				t += Math.abs(noise2(f * x, f * y)) / f;
-			return t;
-		}
-
-		/**
-		 * Compute turbulence using Perlin noise.
-		 * 
-		 * @param x       the x value
-		 * @param y       the y value
-		 * @param octaves number of octaves of turbulence
-		 * @return turbulence value at (x,y)
-		 */
-		public static float turbulence3(float x, float y, float z, float octaves) {
-			float t = 0.0f;
-
-			for (float f = 1.0f; f <= octaves; f *= 2)
-				t += Math.abs(noise3(f * x, f * y, f * z)) / f;
-			return t;
 		}
 
 		private final static int B = 0x100;
@@ -1506,47 +800,6 @@ public class RippleImageFilter implements ImageFilter {
 					g3[B + i][j] = g3[i][j];
 			}
 		}
-
-		/**
-		 * Returns the minimum and maximum of a number of random values of the given
-		 * function. This is useful for making some stab at normalising the function.
-		 */
-		public static float[] findRange(Function1D f, float[] minmax) {
-			if (minmax == null)
-				minmax = new float[2];
-			float min = 0, max = 0;
-			// Some random numbers here...
-			for (float x = -100; x < 100; x += 1.27139) {
-				float n = f.evaluate(x);
-				min = Math.min(min, n);
-				max = Math.max(max, n);
-			}
-			minmax[0] = min;
-			minmax[1] = max;
-			return minmax;
-		}
-
-		/**
-		 * Returns the minimum and maximum of a number of random values of the given
-		 * function. This is useful for making some stab at normalising the function.
-		 */
-		public static float[] findRange(Function2D f, float[] minmax) {
-			if (minmax == null)
-				minmax = new float[2];
-			float min = 0, max = 0;
-			// Some random numbers here...
-			for (float y = -100; y < 100; y += 10.35173) {
-				for (float x = -100; x < 100; x += 10.77139) {
-					float n = f.evaluate(x, y);
-					min = Math.min(min, n);
-					max = Math.max(max, n);
-				}
-			}
-			minmax[0] = min;
-			minmax[1] = max;
-			return minmax;
-		}
-
 	}
 
 	private interface Function3D {
