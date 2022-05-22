@@ -40,6 +40,17 @@ As with image CAPTCHAs, these can be further customised by:
 
 * Adding background noise with a `NoiseProducer`.
 
+Playing the audio is probably application-dependent, but the following
+snippet will play the clip locally:
+
+    Clip clip = AudioSystem.getClip();
+    clip.open(audioCaptcha.getAudio().getAudioInputStream());
+    clip.start();
+    Thread.sleep(10000);
+
+(The call to `Thread.sleep()` is simply to keep the JVM alive long
+enough to play the clip.)
+
 Using NanoCaptcha
 -----------------
 You can use NanoCaptcha in your projects by including it as a Maven dependency:
