@@ -1,5 +1,6 @@
 package net.logicsquad.nanocaptcha.audio;
 
+import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Objects;
@@ -82,7 +83,7 @@ public class Sample {
 			audioInputStream = (AudioInputStream) is;
 		} else {
 			try {
-				audioInputStream = AudioSystem.getAudioInputStream(is);
+				audioInputStream = AudioSystem.getAudioInputStream(new BufferedInputStream(is));
 			} catch (UnsupportedAudioFileException | IOException e) {
 				LOG.error("Unable to get audio input stream.", e);
 				throw new RuntimeException(e);
