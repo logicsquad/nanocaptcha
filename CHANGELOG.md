@@ -29,7 +29,7 @@ up, including: Javadoc comments, visibility tightening, API pruning.
   argument. [#1](https://github.com/logicsquad/nanocaptcha/issues/1)
 
 
-# Release 1.2 (2021-02-14)
+## Release 1.2 (2021-02-14)
 
 ### Changed
 - Removed dependency on `com.jhlabs.filters`.
@@ -38,3 +38,14 @@ up, including: Javadoc comments, visibility tightening, API pruning.
 ### Security
 - Updated JUnit 4.12 → 4.13.1.
   [#2](https://github.com/logicsquad/nanocaptcha/issues/2)
+
+
+## Release 1.3 (2022-10-05)
+
+### Fixed
+- Inserted a `BufferedInputStream` into the `Sample(InputStream)`
+  constructor to allow audio to be played from resources in the
+  JAR. [#6](https://github.com/logicsquad/nanocaptcha/issues/6)
+
+### Security
+- Updated SLF4J 2.9.0 → 2.18.0.

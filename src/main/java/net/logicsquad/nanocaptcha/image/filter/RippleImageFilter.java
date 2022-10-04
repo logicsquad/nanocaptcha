@@ -137,6 +137,7 @@ public class RippleImageFilter implements ImageFilter {
 			this.waveType = waveType;
 		}
 
+		@Override
 		protected void transformSpace(Rectangle r) {
 			if (edgeAction == ZERO) {
 				r.x -= (int) xAmplitude;
@@ -146,6 +147,7 @@ public class RippleImageFilter implements ImageFilter {
 			}
 		}
 
+		@Override
 		protected void transformInverse(int x, int y, float[] out) {
 			float nx = (float) y / xWavelength;
 			float ny = (float) x / yWavelength;
@@ -173,8 +175,14 @@ public class RippleImageFilter implements ImageFilter {
 			out[1] = y + yAmplitude * fy;
 		}
 
+		@Override
 		public String toString() {
 			return "Distort/Ripple...";
+		}
+
+		@Override
+		public RenderingHints getRenderingHints() {
+			return null;
 		}
 	}
 
@@ -264,9 +272,9 @@ public class RippleImageFilter implements ImageFilter {
 		 * 
 		 * @param rect the rectangle to transform
 		 */
-		protected void transformSpace(Rectangle rect) {
-		}
+		protected abstract void transformSpace(Rectangle rect);
 
+		@Override
 		public BufferedImage filter(BufferedImage src, BufferedImage dst) {
 			int width = src.getWidth();
 			int height = src.getHeight();
@@ -358,7 +366,6 @@ public class RippleImageFilter implements ImageFilter {
 
 			outX = transformedSpace.x;
 			outY = transformedSpace.y;
-			int[] rgb = new int[4];
 			float[] out = new float[2];
 
 			for (int y = 0; y < outHeight; y++) {
@@ -388,7 +395,6 @@ public class RippleImageFilter implements ImageFilter {
 						outPixels[x] = p;
 					} else {
 						int i = srcWidth * srcY + srcX;
-						rgb[0] = inPixels[i];
 						outPixels[x] = inPixels[i];
 					}
 				}
@@ -420,7 +426,7 @@ public class RippleImageFilter implements ImageFilter {
 	 * are rarely changed.
 	 */
 	private static abstract class AbstractBufferedImageOp implements BufferedImageOp, Cloneable {
-
+		@Override
 		public BufferedImage createCompatibleDestImage(BufferedImage src, ColorModel dstCM) {
 			if (dstCM == null)
 				dstCM = src.getColorModel();
@@ -428,10 +434,12 @@ public class RippleImageFilter implements ImageFilter {
 					dstCM.isAlphaPremultiplied(), null);
 		}
 
+		@Override
 		public Rectangle2D getBounds2D(BufferedImage src) {
 			return new Rectangle(0, 0, src.getWidth(), src.getHeight());
 		}
 
+		@Override
 		public Point2D getPoint2D(Point2D srcPt, Point2D dstPt) {
 			if (dstPt == null)
 				dstPt = new Point2D.Double();
@@ -439,9 +447,8 @@ public class RippleImageFilter implements ImageFilter {
 			return dstPt;
 		}
 
-		public RenderingHints getRenderingHints() {
-			return null;
-		}
+		@Override
+		public abstract RenderingHints getRenderingHints();
 
 		/**
 		 * A convenience method for getting ARGB pixels from an image. This tries to
@@ -483,6 +490,7 @@ public class RippleImageFilter implements ImageFilter {
 				image.setRGB(x, y, width, height, pixels, 0, width);
 		}
 
+		@Override
 		public Object clone() {
 			try {
 				return super.clone();
@@ -645,14 +653,17 @@ public class RippleImageFilter implements ImageFilter {
 
 		private static Random randomGenerator = new Random();
 
+		@Override
 		public float evaluate(float x) {
 			return noise1(x);
 		}
 
+		@Override
 		public float evaluate(float x, float y) {
 			return noise2(x, y);
 		}
 
+		@Override
 		public float evaluate(float x, float y, float z) {
 			return noise3(x, y, z);
 		}
