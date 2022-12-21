@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Random;
@@ -23,6 +24,22 @@ public class RandomNumberVoiceProducer implements VoiceProducer {
 	 * Random number generator
 	 */
 	private static final Random RAND = new Random();
+
+	/**
+	 * List of supported languages
+	 */
+	private static final List<Locale> SUPPORTED_LANGUAGES = Arrays.asList(Locale.ENGLISH, Locale.GERMAN);
+
+	/**
+	 * Property key for declaring a default language (which will be used in the
+	 * no-args constructor) via 2-digit ISO 639 code
+	 */
+	static final String DEFAULT_LANGUAGE_KEY = "net.logicsquad.nanocaptcha.audio.producer.RandomNumberVoiceProducer.defaultLanguage";
+
+	/**
+	 * Default language of last resort if there's nothing set by property
+	 */
+	private static final Locale FALLBACK_LANGUAGE = Locale.ENGLISH;
 
 	/**
 	 * Prefix for locating built-in voices
@@ -55,9 +72,16 @@ public class RandomNumberVoiceProducer implements VoiceProducer {
 	}
 
 	/**
+	 * Default {@link Locale}
+	 */
+	static Locale defaultLanguage;
+
+	/**
 	 * Map from each single digit to list of vocalizations to choose from for that digit
 	 */
 	private final Map<Integer, List<String>> voices;
+
+//	private final Locale locale;
 
 	/**
 	 * Constructor resulting in object providing built-in voices to vocalize digits.
@@ -84,6 +108,11 @@ public class RandomNumberVoiceProducer implements VoiceProducer {
 		return;
 	}
 
+//	public RandomNumberVoiceProducer(Locale locale) {
+//		
+//	}
+
+//	private RandomNumberVoiceProducer
 	@Override
 	public final Sample getVocalization(char number) {
 		String stringNumber = Character.toString(number);
@@ -95,5 +124,25 @@ public class RandomNumberVoiceProducer implements VoiceProducer {
 		} catch (NumberFormatException e) {
 			throw new IllegalArgumentException("RandomNumberVoiceProducer can only vocalize numbers.");
 		}
+	}
+
+	/**
+	 * Returns a default {@link Locale} to use when not explicitly declared by
+	 * constructor.
+	 * 
+	 * @return default {@link Locale}
+	 * @see <a href="https://github.com/logicsquad/nanocaptcha/issues/7">#7</a>
+	 * @since 1.3
+	 */
+	static Locale defaultLanguage() {
+		if (defaultLanguage == null) {
+			String language = System.getProperty(DEFAULT_LANGUAGE_KEY);
+			if (language == null || !SUPPORTED_LANGUAGES.stream().map(l -> l.getLanguage()).anyMatch(s -> s.equals(language))) {
+				defaultLanguage = FALLBACK_LANGUAGE;
+			} else {
+				defaultLanguage = new Locale(language);
+			}
+		}
+		return defaultLanguage;
 	}
 }
