@@ -81,7 +81,10 @@ public class RandomNumberVoiceProducer implements VoiceProducer {
 	 */
 	private final Map<Integer, List<String>> voices;
 
-//	private final Locale locale;
+	/**
+	 * Language to use for vocalizations
+	 */
+	final Locale language;
 
 	/**
 	 * Constructor resulting in object providing built-in voices to vocalize digits.
@@ -104,15 +107,18 @@ public class RandomNumberVoiceProducer implements VoiceProducer {
 	 * @throws NullPointerException if {@code voices} is {@code null}
 	 */
 	public RandomNumberVoiceProducer(Map<Integer, List<String>> voices) {
+		this.language = defaultLanguage();
 		this.voices = Objects.requireNonNull(voices);
 		return;
 	}
 
-//	public RandomNumberVoiceProducer(Locale locale) {
-//		
-//	}
+	public RandomNumberVoiceProducer(Locale language) {
+		Objects.requireNonNull(language);
+		this.language = SUPPORTED_LANGUAGES.contains(language) ? language : defaultLanguage();
+		this.voices = BUILT_IN_VOICES_MAP;
+		return;
+	}
 
-//	private RandomNumberVoiceProducer
 	@Override
 	public final Sample getVocalization(char number) {
 		String stringNumber = Character.toString(number);
