@@ -42,34 +42,14 @@ public class RandomNumberVoiceProducer implements VoiceProducer {
 	private static final Locale FALLBACK_LANGUAGE = Locale.ENGLISH;
 
 	/**
-	 * Prefix for locating built-in voices
+	 * Prefix for locating voices
 	 */
-	private static final String BUILT_IN_VOICES_PREFIX = "/sounds/en/numbers/";
+	private static final String PATH_PREFIX_TEMPLATE = "/sounds/%s/numbers/";
 
 	/**
 	 * Built-in voices
 	 */
 	private static final String[] BUILT_IN_VOICES = { "alex", "bruce", "fred", "ralph", "kathy", "vicki", "victoria" };
-
-	/**
-	 * Map from each single digit to built-in list of vocalizations for that digit
-	 */
-	private static final Map<Integer, List<String>> BUILT_IN_VOICES_MAP = new HashMap<>();
-
-	static {
-		// 10 digits
-		List<String> sampleNames;
-		for (int i = 0; i < 10; i++) {
-			sampleNames = new ArrayList<>();
-			StringBuilder sb;
-			for (String name : Arrays.asList(BUILT_IN_VOICES)) {
-				sb = new StringBuilder(BUILT_IN_VOICES_PREFIX);
-				sb.append(i).append("-").append(name).append(".wav");
-				sampleNames.add(sb.toString());
-			}
-			BUILT_IN_VOICES_MAP.put(i, sampleNames);
-		}
-	}
 
 	/**
 	 * Default {@link Locale}
@@ -79,7 +59,7 @@ public class RandomNumberVoiceProducer implements VoiceProducer {
 	/**
 	 * Map from each single digit to list of vocalizations to choose from for that digit
 	 */
-	private final Map<Integer, List<String>> voices;
+	private Map<Integer, List<String>> voices;
 
 	/**
 	 * Language to use for vocalizations
@@ -87,10 +67,15 @@ public class RandomNumberVoiceProducer implements VoiceProducer {
 	final Locale language;
 
 	/**
+	 * Prefix to path for vocalizations
+	 */
+	private String pathPrefix;
+
+	/**
 	 * Constructor resulting in object providing built-in voices to vocalize digits.
 	 */
 	public RandomNumberVoiceProducer() {
-		this(BUILT_IN_VOICES_MAP);
+		this(defaultLanguage());
 	}
 
 	/**
@@ -112,10 +97,17 @@ public class RandomNumberVoiceProducer implements VoiceProducer {
 		return;
 	}
 
+	/**
+	 * Constructor taking a language {@link Locale}. If {@code language} is not a
+	 * supported language, the default language will be used.
+	 * 
+	 * @param language a {@link Locale} representing a language
+	 * @see <a href="https://github.com/logicsquad/nanocaptcha/issues/7">#7</a>
+	 * @since 1.3
+	 */
 	public RandomNumberVoiceProducer(Locale language) {
 		Objects.requireNonNull(language);
 		this.language = SUPPORTED_LANGUAGES.contains(language) ? language : defaultLanguage();
-		this.voices = BUILT_IN_VOICES_MAP;
 		return;
 	}
 
@@ -124,7 +116,7 @@ public class RandomNumberVoiceProducer implements VoiceProducer {
 		String stringNumber = Character.toString(number);
 		try {
 			int idx = Integer.parseInt(stringNumber);
-			List<String> files = voices.get(idx);
+			List<String> files = voices().get(idx);
 			String filename = files.get(RAND.nextInt(files.size()));
 			return new Sample(filename);
 		} catch (NumberFormatException e) {
@@ -150,5 +142,44 @@ public class RandomNumberVoiceProducer implements VoiceProducer {
 			}
 		}
 		return defaultLanguage;
+	}
+
+	/**
+	 * Returns a localized path prefix to find the vocalizations.
+	 * 
+	 * @return path prefix
+	 * @see <a href="https://github.com/logicsquad/nanocaptcha/issues/7">#7</a>
+	 * @since 1.3
+	 */
+	private String pathPrefix() {
+		if (pathPrefix == null) {
+			pathPrefix = String.format(PATH_PREFIX_TEMPLATE, language.getLanguage());
+		}
+		return pathPrefix;
+	}
+
+	/**
+	 * Returns the map from numbers to vocalization samples.
+	 * 
+	 * @return map of vocalizations
+	 * @see <a href="https://github.com/logicsquad/nanocaptcha/issues/7">#7</a>
+	 * @since 1.3
+	 */
+	private Map<Integer, List<String>> voices() {
+		if (voices == null) {
+			voices = new HashMap<>();
+			List<String> sampleNames;
+			for (int i = 0; i < 10; i++) {
+				sampleNames = new ArrayList<>();
+				StringBuilder sb;
+				for (String name : Arrays.asList(BUILT_IN_VOICES)) {
+					sb = new StringBuilder(pathPrefix());
+					sb.append(i).append("-").append(name).append(".wav");
+					sampleNames.add(sb.toString());
+				}
+				voices.put(i, sampleNames);
+			}
+		}
+		return voices;
 	}
 }
