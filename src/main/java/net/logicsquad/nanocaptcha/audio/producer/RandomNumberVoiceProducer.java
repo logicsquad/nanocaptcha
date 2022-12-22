@@ -47,9 +47,24 @@ public class RandomNumberVoiceProducer implements VoiceProducer {
 	private static final String PATH_PREFIX_TEMPLATE = "/sounds/%s/numbers/";
 
 	/**
-	 * Built-in voices
+	 * English voices
 	 */
-	private static final String[] BUILT_IN_VOICES = { "alex", "bruce", "fred", "ralph", "kathy", "vicki", "victoria" };
+	private static final List<String> VOICES_EN = Arrays.asList("a", "b", "c", "d", "e", "f", "g");
+
+	/**
+	 * German voices
+	 */
+	private static final List<String> VOICES_DE = Arrays.asList("a", "b");
+
+	/**
+	 * Map from language to list of voice names
+	 */
+	private static final Map<Locale, List<String>> VOICES = new HashMap<>();
+
+	static {
+		VOICES.put(Locale.ENGLISH, VOICES_EN);
+		VOICES.put(Locale.GERMAN, VOICES_DE);
+	}
 
 	/**
 	 * Default {@link Locale}
@@ -57,9 +72,10 @@ public class RandomNumberVoiceProducer implements VoiceProducer {
 	static Locale defaultLanguage;
 
 	/**
-	 * Map from each single digit to list of vocalizations to choose from for that digit
+	 * Map from each single digit to list of vocalizations to choose from for that
+	 * digit
 	 */
-	private Map<Integer, List<String>> voices;
+	private Map<Integer, List<String>> vocalizations;
 
 	/**
 	 * Language to use for vocalizations
@@ -90,10 +106,13 @@ public class RandomNumberVoiceProducer implements VoiceProducer {
 	 *
 	 * @param voices map of digits to list of vocalizations of that digit
 	 * @throws NullPointerException if {@code voices} is {@code null}
+	 * @deprecated Use {@link #RandomNumberVoiceProducer(Locale)} with a supported
+	 *             language instead
 	 */
+	@Deprecated
 	public RandomNumberVoiceProducer(Map<Integer, List<String>> voices) {
 		this.language = defaultLanguage();
-		this.voices = Objects.requireNonNull(voices);
+		this.vocalizations = Objects.requireNonNull(voices);
 		return;
 	}
 
@@ -116,7 +135,7 @@ public class RandomNumberVoiceProducer implements VoiceProducer {
 		String stringNumber = Character.toString(number);
 		try {
 			int idx = Integer.parseInt(stringNumber);
-			List<String> files = voices().get(idx);
+			List<String> files = vocalizations().get(idx);
 			String filename = files.get(RAND.nextInt(files.size()));
 			return new Sample(filename);
 		} catch (NumberFormatException e) {
@@ -165,21 +184,21 @@ public class RandomNumberVoiceProducer implements VoiceProducer {
 	 * @see <a href="https://github.com/logicsquad/nanocaptcha/issues/7">#7</a>
 	 * @since 1.3
 	 */
-	private Map<Integer, List<String>> voices() {
-		if (voices == null) {
-			voices = new HashMap<>();
+	private Map<Integer, List<String>> vocalizations() {
+		if (vocalizations == null) {
+			vocalizations = new HashMap<>();
 			List<String> sampleNames;
 			for (int i = 0; i < 10; i++) {
 				sampleNames = new ArrayList<>();
 				StringBuilder sb;
-				for (String name : Arrays.asList(BUILT_IN_VOICES)) {
+				for (String name : VOICES.get(language)) {
 					sb = new StringBuilder(pathPrefix());
-					sb.append(i).append("-").append(name).append(".wav");
+					sb.append(i).append("_").append(name).append(".wav");
 					sampleNames.add(sb.toString());
 				}
-				voices.put(i, sampleNames);
+				vocalizations.put(i, sampleNames);
 			}
 		}
-		return voices;
+		return vocalizations;
 	}
 }
