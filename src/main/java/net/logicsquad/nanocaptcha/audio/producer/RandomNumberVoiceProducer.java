@@ -122,7 +122,7 @@ public class RandomNumberVoiceProducer implements VoiceProducer {
 	 * 
 	 * @param language a {@link Locale} representing a language
 	 * @see <a href="https://github.com/logicsquad/nanocaptcha/issues/7">#7</a>
-	 * @since 1.3
+	 * @since 1.4
 	 */
 	public RandomNumberVoiceProducer(Locale language) {
 		Objects.requireNonNull(language);
@@ -149,7 +149,7 @@ public class RandomNumberVoiceProducer implements VoiceProducer {
 	 * 
 	 * @return default {@link Locale}
 	 * @see <a href="https://github.com/logicsquad/nanocaptcha/issues/7">#7</a>
-	 * @since 1.3
+	 * @since 1.4
 	 */
 	static Locale defaultLanguage() {
 		if (defaultLanguage == null) {
@@ -168,7 +168,7 @@ public class RandomNumberVoiceProducer implements VoiceProducer {
 	 * 
 	 * @return path prefix
 	 * @see <a href="https://github.com/logicsquad/nanocaptcha/issues/7">#7</a>
-	 * @since 1.3
+	 * @since 1.4
 	 */
 	private String pathPrefix() {
 		if (pathPrefix == null) {
@@ -182,7 +182,7 @@ public class RandomNumberVoiceProducer implements VoiceProducer {
 	 * 
 	 * @return map of vocalizations
 	 * @see <a href="https://github.com/logicsquad/nanocaptcha/issues/7">#7</a>
-	 * @since 1.3
+	 * @since 1.4
 	 */
 	private Map<Integer, List<String>> vocalizations() {
 		if (vocalizations == null) {
