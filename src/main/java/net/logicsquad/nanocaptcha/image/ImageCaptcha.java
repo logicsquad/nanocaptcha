@@ -127,6 +127,17 @@ public final class ImageCaptcha {
 		}
 
 		/**
+		 * Adds content (of length {@code length}) to the CAPTCHA using the default {@link ContentProducer}.
+		 *
+		 * @return this
+		 * @see <a href="https://github.com/logicsquad/nanocaptcha/issues/9">#9</a>
+		 * @since 1.4
+		 */
+		public Builder addContent(int length) {
+			return addContent(new LatinContentProducer(length));
+		}
+
+		/**
 		 * Adds content to the CAPTCHA using the given {@link ContentProducer}.
 		 *
 		 * @param contentProducer a {@link ContentProducer}
