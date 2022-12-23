@@ -1,13 +1,13 @@
 package net.logicsquad.nanocaptcha.audio.producer;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * Unit tests on {@link RandomNumberVoiceProducer} class.
@@ -16,22 +16,22 @@ import org.junit.Test;
  * @since 1.0
  */
 public class RandomNumberVoiceProducerTest {
-	@Before
+	@BeforeEach
 	public void setup() {
 		RandomNumberVoiceProducer.defaultLanguage = null;
 		System.clearProperty(RandomNumberVoiceProducer.DEFAULT_LANGUAGE_KEY);
 		return;
 	}
 
-	@Test(expected = NullPointerException.class)
+	@Test
 	public void constructorThrowsOnNull1() {
-		new RandomNumberVoiceProducer((Map<Integer, List<String>>) null);
+		assertThrows(NullPointerException.class, () -> new RandomNumberVoiceProducer((Map<Integer, List<String>>) null));
 		return;
 	}
 
-	@Test(expected = NullPointerException.class)
+	@Test
 	public void constructorThrowsOnNull2() {
-		new RandomNumberVoiceProducer((Locale) null);
+		assertThrows(NullPointerException.class, () -> new RandomNumberVoiceProducer((Locale) null));
 		return;
 	}
 

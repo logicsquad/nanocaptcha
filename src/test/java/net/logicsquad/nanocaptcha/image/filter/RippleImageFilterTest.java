@@ -1,14 +1,14 @@
 package net.logicsquad.nanocaptcha.image.filter;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 
 import javax.imageio.ImageIO;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * Unit tests on {@link RippleImageFilter} class.
@@ -19,7 +19,7 @@ import org.junit.Test;
 public class RippleImageFilterTest {
 	private ImageFilter rippleImageFilter;
 
-	@Before
+	@BeforeEach
 	public void setup() {
 		rippleImageFilter = new RippleImageFilter();
 		return;
