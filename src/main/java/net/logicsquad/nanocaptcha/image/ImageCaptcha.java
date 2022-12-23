@@ -129,6 +129,7 @@ public final class ImageCaptcha {
 		/**
 		 * Adds content (of length {@code length}) to the CAPTCHA using the default {@link ContentProducer}.
 		 *
+		 * @param length number of content units to add
 		 * @return this
 		 * @see <a href="https://github.com/logicsquad/nanocaptcha/issues/9">#9</a>
 		 * @since 1.4

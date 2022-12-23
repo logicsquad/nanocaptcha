@@ -97,6 +97,7 @@ public final class AudioCaptcha {
 		/**
 		 * Adds content (of length {@code length}) using the default {@link ContentProducer} ({@link NumbersContentProducer}).
 		 *
+		 * @param length number of content units to add
 		 * @return this
 		 * @see <a href="https://github.com/logicsquad/nanocaptcha/issues/9">#9</a>
 		 * @since 1.4
