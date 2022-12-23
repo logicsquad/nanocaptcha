@@ -84,8 +84,7 @@ public class RandomNoiseProducer implements NoiseProducer {
 	@Override
 	public String toString() {
 		StringBuffer sb = new StringBuffer(34);
-		sb.append("[RandomNoiseProducer: noiseFiles=")
-				.append(Arrays.asList(noiseFiles).stream().collect(Collectors.joining(","))).append("]");
+		sb.append("[RandomNoiseProducer: noiseFiles=").append(Arrays.asList(noiseFiles).stream().collect(Collectors.joining(", "))).append("]");
 		return sb.toString();
 	}
 }

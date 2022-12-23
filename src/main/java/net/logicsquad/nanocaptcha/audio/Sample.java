@@ -193,9 +193,6 @@ public class Sample {
 				// bytes start with LSB
 				for (int j = sampleSizeInBytes - 1; j >= 0; j--) {
 					sampleBytes[j] = audioBytes[k++];
-					if (sampleBytes[j] != 0) {
-						j = j + 0;
-					}
 				}
 			}
 			// get integer value from bytes

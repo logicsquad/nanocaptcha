@@ -69,7 +69,7 @@ public class RandomNumberVoiceProducer implements VoiceProducer {
 	/**
 	 * Default {@link Locale}
 	 */
-	static Locale defaultLanguage;
+	static volatile Locale defaultLanguage;
 
 	/**
 	 * Map from each single digit to list of vocalizations to choose from for that
@@ -139,13 +139,12 @@ public class RandomNumberVoiceProducer implements VoiceProducer {
 			String filename = files.get(RAND.nextInt(files.size()));
 			return new Sample(filename);
 		} catch (NumberFormatException e) {
-			throw new IllegalArgumentException("RandomNumberVoiceProducer can only vocalize numbers.");
+			throw new IllegalArgumentException("RandomNumberVoiceProducer can only vocalize numbers.", e);
 		}
 	}
 
 	/**
-	 * Returns a default {@link Locale} to use when not explicitly declared by
-	 * constructor.
+	 * Returns a default {@link Locale} to use when not explicitly declared by constructor.
 	 * 
 	 * @return default {@link Locale}
 	 * @see <a href="https://github.com/logicsquad/nanocaptcha/issues/7">#7</a>
@@ -153,11 +152,15 @@ public class RandomNumberVoiceProducer implements VoiceProducer {
 	 */
 	static Locale defaultLanguage() {
 		if (defaultLanguage == null) {
-			String language = System.getProperty(DEFAULT_LANGUAGE_KEY);
-			if (language == null || !SUPPORTED_LANGUAGES.stream().map(l -> l.getLanguage()).anyMatch(s -> s.equals(language))) {
-				defaultLanguage = FALLBACK_LANGUAGE;
-			} else {
-				defaultLanguage = new Locale(language);
+			synchronized (RandomNumberVoiceProducer.class) {
+				if (defaultLanguage == null) {
+					String language = System.getProperty(DEFAULT_LANGUAGE_KEY);
+					if (language == null || !SUPPORTED_LANGUAGES.stream().map(l -> l.getLanguage()).anyMatch(s -> s.equals(language))) {
+						defaultLanguage = FALLBACK_LANGUAGE;
+					} else {
+						defaultLanguage = new Locale(language);
+					}
+				}
 			}
 		}
 		return defaultLanguage;
