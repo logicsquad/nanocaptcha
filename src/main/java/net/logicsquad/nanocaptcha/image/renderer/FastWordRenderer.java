@@ -4,7 +4,6 @@ import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
-import java.util.Random;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
@@ -78,11 +77,6 @@ public class FastWordRenderer extends AbstractWordRenderer {
 	 * Current fudge pointer
 	 */
 	private static AtomicInteger fudgePointer = new AtomicInteger(0);
-
-	/**
-	 * Random number generator
-	 */
-	private static final Random RAND = new Random();
 
 	/**
 	 * Available {@link Color}

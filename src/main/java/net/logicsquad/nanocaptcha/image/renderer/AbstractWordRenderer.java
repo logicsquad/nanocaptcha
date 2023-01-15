@@ -1,6 +1,7 @@
 package net.logicsquad.nanocaptcha.image.renderer;
 
 import java.awt.image.BufferedImage;
+import java.util.Random;
 
 /**
  * Superclass for {@link WordRenderer} implementations.
@@ -13,6 +14,11 @@ public abstract class AbstractWordRenderer implements WordRenderer {
 	 * Font size (in points)
 	 */
 	protected static final int FONT_SIZE = 40;
+
+	/**
+	 * Random number generator
+	 */
+	protected static final Random RAND = new Random();
 
 	/**
 	 * Default percentage offset along x-axis

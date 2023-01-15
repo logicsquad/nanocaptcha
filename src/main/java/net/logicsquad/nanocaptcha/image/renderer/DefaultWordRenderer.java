@@ -9,7 +9,6 @@ import java.awt.font.GlyphVector;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
 
 /**
  * Renders the content onto the image.
@@ -19,11 +18,6 @@ import java.util.Random;
  * @since 1.0
  */
 public class DefaultWordRenderer extends AbstractWordRenderer {
-	/**
-	 * Random number generator
-	 */
-	private static final Random RAND = new Random();
-
 	/**
 	 * Default {@link Color}s
 	 */
