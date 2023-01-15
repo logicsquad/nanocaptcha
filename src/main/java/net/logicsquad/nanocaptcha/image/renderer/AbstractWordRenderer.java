@@ -31,6 +31,16 @@ public abstract class AbstractWordRenderer implements WordRenderer {
 	protected static final double Y_OFFSET_DEFAULT = 0.25;
 
 	/**
+	 * Minimum for y-offset if randomised
+	 */
+	private static final double Y_OFFSET_MIN = 0.0;
+
+	/**
+	 * Maximum for y-offset if randomised
+	 */
+	private static final double Y_OFFSET_MAX = 0.75;
+
+	/**
 	 * Percentage offset along x-axis
 	 */
 	private final double xOffset;
@@ -106,6 +116,16 @@ public abstract class AbstractWordRenderer implements WordRenderer {
 		 */
 		public Builder setXOffset(double xOffset) {
 			this.xOffset = xOffset;
+			return this;
+		}
+
+		/**
+		 * Selects a random value for y-offset.
+		 * 
+		 * @return this
+		 */
+		public Builder randomiseYOffset() {
+			this.yOffset = Y_OFFSET_MIN + (Y_OFFSET_MAX - Y_OFFSET_MIN) * RAND.nextDouble();
 			return this;
 		}
 	}
