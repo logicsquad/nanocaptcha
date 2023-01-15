@@ -62,7 +62,7 @@ public final class ImageCaptcha {
 	 * ImageCaptcha image = addBackground().addContent().addNoise().addFilter().addBorder().build();
 	 * </pre>
 	 */
-	public static class Builder {
+	public static class Builder implements net.logicsquad.nanocaptcha.Builder<ImageCaptcha> {
 		/**
 		 * Text content
 		 */

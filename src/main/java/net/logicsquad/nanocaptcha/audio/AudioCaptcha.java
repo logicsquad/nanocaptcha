@@ -50,7 +50,7 @@ public final class AudioCaptcha {
 	/**
 	 * Build for an {@link AudioCaptcha}.
 	 */
-	public static class Builder {
+	public static class Builder implements net.logicsquad.nanocaptcha.Builder<AudioCaptcha> {
 		/**
 		 * Random number generator
 		 */
