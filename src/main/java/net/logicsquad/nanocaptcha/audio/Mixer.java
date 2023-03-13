@@ -147,7 +147,7 @@ public final class Mixer {
 		byte[] buffer = new byte[bufferLength];
 		int in;
 		for (int i = 0; i < sample.length; i++) {
-			in = (int) (sample[i] * 32767);
+			in = (int) (sample[i] * 32_767);
 			buffer[2 * i] = (byte) (in & 255);
 			buffer[2 * i + 1] = (byte) (in >> 8);
 		}

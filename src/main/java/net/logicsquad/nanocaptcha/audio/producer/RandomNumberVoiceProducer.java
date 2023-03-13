@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Random;
@@ -25,45 +26,72 @@ public class RandomNumberVoiceProducer implements VoiceProducer {
 	private static final Random RAND = new Random();
 
 	/**
-	 * Prefix for locating built-in voices
+	 * List of supported languages
 	 */
-	private static final String BUILT_IN_VOICES_PREFIX = "/sounds/en/numbers/";
+	private static final List<Locale> SUPPORTED_LANGUAGES = Arrays.asList(Locale.ENGLISH, Locale.GERMAN);
 
 	/**
-	 * Built-in voices
+	 * Property key for declaring a default language (which will be used in the
+	 * no-args constructor) via 2-digit ISO 639 code
 	 */
-	private static final String[] BUILT_IN_VOICES = { "alex", "bruce", "fred", "ralph", "kathy", "vicki", "victoria" };
+	static final String DEFAULT_LANGUAGE_KEY = "net.logicsquad.nanocaptcha.audio.producer.RandomNumberVoiceProducer.defaultLanguage";
 
 	/**
-	 * Map from each single digit to built-in list of vocalizations for that digit
+	 * Default language of last resort if there's nothing set by property
 	 */
-	private static final Map<Integer, List<String>> BUILT_IN_VOICES_MAP = new HashMap<>();
+	private static final Locale FALLBACK_LANGUAGE = Locale.ENGLISH;
+
+	/**
+	 * Prefix for locating voices
+	 */
+	private static final String PATH_PREFIX_TEMPLATE = "/sounds/%s/numbers/";
+
+	/**
+	 * English voices
+	 */
+	private static final List<String> VOICES_EN = Arrays.asList("a", "b", "c", "d", "e", "f", "g");
+
+	/**
+	 * German voices
+	 */
+	private static final List<String> VOICES_DE = Arrays.asList("a", "b");
+
+	/**
+	 * Map from language to list of voice names
+	 */
+	private static final Map<Locale, List<String>> VOICES = new HashMap<>();
 
 	static {
-		// 10 digits
-		List<String> sampleNames;
-		for (int i = 0; i < 10; i++) {
-			sampleNames = new ArrayList<>();
-			StringBuilder sb;
-			for (String name : Arrays.asList(BUILT_IN_VOICES)) {
-				sb = new StringBuilder(BUILT_IN_VOICES_PREFIX);
-				sb.append(i).append("-").append(name).append(".wav");
-				sampleNames.add(sb.toString());
-			}
-			BUILT_IN_VOICES_MAP.put(i, sampleNames);
-		}
+		VOICES.put(Locale.ENGLISH, VOICES_EN);
+		VOICES.put(Locale.GERMAN, VOICES_DE);
 	}
 
 	/**
-	 * Map from each single digit to list of vocalizations to choose from for that digit
+	 * Default {@link Locale}
 	 */
-	private final Map<Integer, List<String>> voices;
+	static volatile Locale defaultLanguage;
+
+	/**
+	 * Map from each single digit to list of vocalizations to choose from for that
+	 * digit
+	 */
+	private Map<Integer, List<String>> vocalizations;
+
+	/**
+	 * Language to use for vocalizations
+	 */
+	final Locale language;
+
+	/**
+	 * Prefix to path for vocalizations
+	 */
+	private String pathPrefix;
 
 	/**
 	 * Constructor resulting in object providing built-in voices to vocalize digits.
 	 */
 	public RandomNumberVoiceProducer() {
-		this(BUILT_IN_VOICES_MAP);
+		this(defaultLanguage());
 	}
 
 	/**
@@ -78,9 +106,27 @@ public class RandomNumberVoiceProducer implements VoiceProducer {
 	 *
 	 * @param voices map of digits to list of vocalizations of that digit
 	 * @throws NullPointerException if {@code voices} is {@code null}
+	 * @deprecated Use {@link #RandomNumberVoiceProducer(Locale)} with a supported
+	 *             language instead
 	 */
+	@Deprecated
 	public RandomNumberVoiceProducer(Map<Integer, List<String>> voices) {
-		this.voices = Objects.requireNonNull(voices);
+		this.language = defaultLanguage();
+		this.vocalizations = Objects.requireNonNull(voices);
+		return;
+	}
+
+	/**
+	 * Constructor taking a language {@link Locale}. If {@code language} is not a
+	 * supported language, the default language will be used.
+	 * 
+	 * @param language a {@link Locale} representing a language
+	 * @see <a href="https://github.com/logicsquad/nanocaptcha/issues/7">#7</a>
+	 * @since 1.4
+	 */
+	public RandomNumberVoiceProducer(Locale language) {
+		Objects.requireNonNull(language);
+		this.language = SUPPORTED_LANGUAGES.contains(language) ? language : defaultLanguage();
 		return;
 	}
 
@@ -89,11 +135,73 @@ public class RandomNumberVoiceProducer implements VoiceProducer {
 		String stringNumber = Character.toString(number);
 		try {
 			int idx = Integer.parseInt(stringNumber);
-			List<String> files = voices.get(idx);
+			List<String> files = vocalizations().get(idx);
 			String filename = files.get(RAND.nextInt(files.size()));
 			return new Sample(filename);
 		} catch (NumberFormatException e) {
-			throw new IllegalArgumentException("RandomNumberVoiceProducer can only vocalize numbers.");
+			throw new IllegalArgumentException("RandomNumberVoiceProducer can only vocalize numbers.", e);
 		}
+	}
+
+	/**
+	 * Returns a default {@link Locale} to use when not explicitly declared by constructor.
+	 * 
+	 * @return default {@link Locale}
+	 * @see <a href="https://github.com/logicsquad/nanocaptcha/issues/7">#7</a>
+	 * @since 1.4
+	 */
+	static Locale defaultLanguage() {
+		if (defaultLanguage == null) {
+			synchronized (RandomNumberVoiceProducer.class) {
+				if (defaultLanguage == null) {
+					String language = System.getProperty(DEFAULT_LANGUAGE_KEY);
+					if (language == null || !SUPPORTED_LANGUAGES.stream().map(l -> l.getLanguage()).anyMatch(s -> s.equals(language))) {
+						defaultLanguage = FALLBACK_LANGUAGE;
+					} else {
+						defaultLanguage = new Locale(language);
+					}
+				}
+			}
+		}
+		return defaultLanguage;
+	}
+
+	/**
+	 * Returns a localized path prefix to find the vocalizations.
+	 * 
+	 * @return path prefix
+	 * @see <a href="https://github.com/logicsquad/nanocaptcha/issues/7">#7</a>
+	 * @since 1.4
+	 */
+	private String pathPrefix() {
+		if (pathPrefix == null) {
+			pathPrefix = String.format(PATH_PREFIX_TEMPLATE, language.getLanguage());
+		}
+		return pathPrefix;
+	}
+
+	/**
+	 * Returns the map from numbers to vocalization samples.
+	 * 
+	 * @return map of vocalizations
+	 * @see <a href="https://github.com/logicsquad/nanocaptcha/issues/7">#7</a>
+	 * @since 1.4
+	 */
+	private Map<Integer, List<String>> vocalizations() {
+		if (vocalizations == null) {
+			vocalizations = new HashMap<>();
+			List<String> sampleNames;
+			for (int i = 0; i < 10; i++) {
+				sampleNames = new ArrayList<>();
+				StringBuilder sb;
+				for (String name : VOICES.get(language)) {
+					sb = new StringBuilder(pathPrefix());
+					sb.append(i).append("_").append(name).append(".wav");
+					sampleNames.add(sb.toString());
+				}
+				vocalizations.put(i, sampleNames);
+			}
+		}
+		return vocalizations;
 	}
 }

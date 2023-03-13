@@ -7,7 +7,7 @@ package net.logicsquad.nanocaptcha.content;
  * @author <a href="mailto:paulh@logicsquad.net">Paul Hoadley</a>
  * @since 1.0
  */
-public class ChineseContentProducer extends AbstractContentProducer implements ContentProducer {
+public class ChineseContentProducer extends AbstractContentProducer {
 	/**
 	 * Code point at start of range (inclusive)
 	 */

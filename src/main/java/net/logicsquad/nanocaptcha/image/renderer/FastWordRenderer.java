@@ -4,51 +4,37 @@ import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
-import java.util.Random;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * <p>
- * Based on the {@link DefaultWordRenderer}, this implementation strips down to
- * the basics to render {@link BufferedImage}s as much as 5X faster. (This class
- * will render almost 70,000 {@link BufferedImage}s per second on an iMac with a
- * 4GHx Intel Core i7 CPU.) It has the following restrictions compared to
- * {@link DefaultWordRenderer}:
+ * Based on the {@link DefaultWordRenderer}, this implementation strips down to the basics to render {@link BufferedImage}s as much as 5X
+ * faster. (This class will render almost 70,000 {@link BufferedImage}s per second on an iMac with a 4GHx Intel Core i7 CPU.) It has the
+ * following restrictions compared to {@link DefaultWordRenderer}:
  * </p>
  * 
  * <ul>
  * <li>{@link Color} choices are limited: text is rendered in black.</li>
  * <li>{@link Font} choices are limited: renders with Arial and Courier.</li>
  * <li>Rendered text is <em>not</em> anti-aliased.</li>
- * <li>{@link DefaultWordRenderer} measures the size of each glyph it renders to
- * calculate horizontal spacing. This class uses fixed spacing, <em>but</em>
- * will "fudge" each glyph's position horizontally and vertically: see
- * below.</li>
- * <li>{@link Font} choice is only random for the first 100 choices: this class
- * pre-computes a list of random indexes into the {@link Font} array, and then
- * <em>re-uses</em> those indexes by cycling through them repeatedly.</li>
+ * <li>{@link DefaultWordRenderer} measures the size of each glyph it renders to calculate horizontal spacing. This class uses fixed
+ * spacing, <em>but</em> will "fudge" each glyph's position horizontally and vertically: see below.</li>
+ * <li>{@link Font} choice is only random for the first 100 choices: this class pre-computes a list of random indexes into the {@link Font}
+ * array, and then <em>re-uses</em> those indexes by cycling through them repeatedly.</li>
  * </ul>
  * 
  * <p>
- * As noted above, this class will render each glyph with a random horizontal
- * and vertical fudge factor between (-5, 5) from the baseline. The effect is
- * that glyphs can move around and bunch together (or spread apart) more. As
- * with {@link Font} choice, there is only limited randomness here: again, we
- * pre-compute a list of 100 random fudge values in the range, and cycle through
- * that list repeatedly.
+ * As noted above, this class will render each glyph with a random horizontal and vertical fudge factor between (-5, 5) from the baseline.
+ * The effect is that glyphs can move around and bunch together (or spread apart) more. As with {@link Font} choice, there is only limited
+ * randomness here: again, we pre-compute a list of 100 random fudge values in the range, and cycle through that list repeatedly.
  * </p>
  * 
  * @author <a href="mailto:paulh@logicsquad.net">Paul Hoadley</a>
  * @since 1.1
  */
-public class FastWordRenderer implements WordRenderer {
+public class FastWordRenderer extends AbstractWordRenderer {
 	/**
-	 * Font size (in points)
-	 */
-	private static final int FONT_SIZE = 40;
-
-	/**
-	 * Horizontal space between glyphs (in pixels) 
+	 * Horizontal space between glyphs (in pixels)
 	 */
 	private static final int SHIFT = 20;
 
@@ -93,11 +79,6 @@ public class FastWordRenderer implements WordRenderer {
 	private static AtomicInteger fudgePointer = new AtomicInteger(0);
 
 	/**
-	 * Random number generator
-	 */
-	private static final Random RAND = new Random();
-
-	/**
 	 * Available {@link Color}
 	 */
 	private static final Color COLOR = Color.BLACK;
@@ -113,22 +94,25 @@ public class FastWordRenderer implements WordRenderer {
 		FONTS[1] = new Font("Courier", Font.BOLD, FONT_SIZE);
 	}
 
-	// The text will be rendered 25%/5% of the image height/width from the X and Y
-	// axes
-	/**
-	 * Percentage offset along y-axis
-	 */
-	private static final double YOFFSET = 0.25;
-
-	/**
-	 * Percentage offset along x-axis
-	 */
-	private static final double XOFFSET = 0.05;
-
 	/**
 	 * Constructor
+	 * 
+	 * @deprecated use {@link Builder} instead
 	 */
 	public FastWordRenderer() {
+		this(X_OFFSET_DEFAULT, Y_OFFSET_DEFAULT);
+		return;
+	}
+
+	/**
+	 * Constructor taking x- and y-axis offsets
+	 * 
+	 * @param xOffset x-axis offset
+	 * @param yOffset y-axis offset
+	 * @since 1.4
+	 */
+	private FastWordRenderer(double xOffset, double yOffset) {
+		super(xOffset, yOffset);
 		for (int i = 0; i < FONT_INDEX_SIZE; i++) {
 			INDEXES[i] = RAND.nextInt(FONTS.length);
 		}
@@ -141,8 +125,8 @@ public class FastWordRenderer implements WordRenderer {
 	@Override
 	public void render(final String word, BufferedImage image) {
 		Graphics2D g = image.createGraphics();
-		int xBaseline = (int) (image.getWidth() * XOFFSET);
-		int yBaseline = image.getHeight() - (int) (image.getHeight() * YOFFSET);
+		int xBaseline = (int) (image.getWidth() * xOffset());
+		int yBaseline = image.getHeight() - (int) (image.getHeight() * yOffset());
 		char[] chars = new char[1];
 		for (char c : word.toCharArray()) {
 			chars[0] = c;
@@ -175,5 +159,17 @@ public class FastWordRenderer implements WordRenderer {
 	 */
 	private int nextFudge() {
 		return FUDGES[fudgePointer.getAndIncrement() % FUDGE_INDEX_SIZE];
+	}
+
+	/**
+	 * Builder for {@link FastWordRenderer}.
+	 * 
+	 * @since 1.4
+	 */
+	public static class Builder extends AbstractWordRenderer.Builder {
+		@Override
+		public FastWordRenderer build() {
+			return new FastWordRenderer(xOffset, yOffset);
+		}
 	}
 }

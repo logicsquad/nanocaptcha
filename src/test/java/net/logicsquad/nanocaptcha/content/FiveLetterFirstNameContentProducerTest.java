@@ -1,6 +1,6 @@
 package net.logicsquad.nanocaptcha.content;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 /**
  * Unit tests on {@link FiveLetterFirstNameContentProducer} class.

@@ -9,7 +9,6 @@ import java.awt.font.GlyphVector;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
 
 /**
  * Renders the content onto the image.
@@ -18,17 +17,7 @@ import java.util.Random;
  * @author <a href="mailto:paulh@logicsquad.net">Paul Hoadley</a>
  * @since 1.0
  */
-public class DefaultWordRenderer implements WordRenderer {
-	/**
-	 * Font size in points
-	 */
-	private static final int FONT_SIZE = 40;
-
-	/**
-	 * Random number generator
-	 */
-	private static final Random RAND = new Random();
-
+public class DefaultWordRenderer extends AbstractWordRenderer {
 	/**
 	 * Default {@link Color}s
 	 */
@@ -38,18 +27,6 @@ public class DefaultWordRenderer implements WordRenderer {
 	 * Default fonts
 	 */
 	private static final List<Font> DEFAULT_FONTS = new ArrayList<>();
-
-	// The text will be rendered 25%/5% of the image height/width from the X and Y
-	// axes
-	/**
-	 * Percentage offset along y-axis
-	 */
-	private static final double YOFFSET = 0.25;
-
-	/**
-	 * Percentage offset along x-axis
-	 */
-	private static final double XOFFSET = 0.05;
 
 	// Set up default Colors, Fonts
 	static {
@@ -69,11 +46,27 @@ public class DefaultWordRenderer implements WordRenderer {
 	private final List<Font> fonts = new ArrayList<>();
 
 	/**
-	 * Constructor using default {@link Color} (black) and {@link Font}s (Arial and
-	 * Courier).
+	 * Constructor using default {@link Color} (black) and {@link Font}s (Arial and Courier).
+	 * 
+	 * @deprecated use {@link Builder} instead
 	 */
 	public DefaultWordRenderer() {
-		this(DEFAULT_COLORS, DEFAULT_FONTS);
+		this(X_OFFSET_DEFAULT, Y_OFFSET_DEFAULT);
+		return;
+	}
+
+	/**
+	 * Constructor taking x- and y-axis offsets
+	 * 
+	 * @param xOffset x-axis offset
+	 * @param yOffset y-axis offset
+	 * @since 1.4
+	 */
+	private DefaultWordRenderer(double xOffset, double yOffset) {
+		super(xOffset, yOffset);
+		this.colors.addAll(DEFAULT_COLORS);
+		this.fonts.addAll(DEFAULT_FONTS);
+		return;
 	}
 
 	/**
@@ -81,6 +74,7 @@ public class DefaultWordRenderer implements WordRenderer {
 	 *
 	 * @param colors {@link Color}s
 	 * @param fonts  {@link Font}s
+	 * @deprecated use {@link Builder} instead
 	 */
 	public DefaultWordRenderer(List<Color> colors, List<Font> fonts) {
 		this.colors.addAll(colors);
@@ -97,8 +91,8 @@ public class DefaultWordRenderer implements WordRenderer {
 		g.setRenderingHints(hints);
 
 		FontRenderContext frc = g.getFontRenderContext();
-		int xBaseline = (int) Math.round(image.getWidth() * XOFFSET);
-		int yBaseline = image.getHeight() - (int) Math.round(image.getHeight() * YOFFSET);
+		int xBaseline = (int) Math.round(image.getWidth() * xOffset());
+		int yBaseline = image.getHeight() - (int) Math.round(image.getHeight() * yOffset());
 
 		char[] chars = new char[1];
 		for (char c : word.toCharArray()) {
@@ -140,6 +134,18 @@ public class DefaultWordRenderer implements WordRenderer {
 			return fonts.get(0);
 		} else {
 			return fonts.get(RAND.nextInt(fonts.size()));
+		}
+	}
+
+	/**
+	 * Builder for {@code DefaultWordRenderer}.
+	 * 
+	 * @since 1.4
+	 */
+	public static class Builder extends AbstractWordRenderer.Builder {
+		@Override
+		public DefaultWordRenderer build() {
+			return new DefaultWordRenderer(xOffset, yOffset);
 		}
 	}
 }

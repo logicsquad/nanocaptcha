@@ -1,7 +1,8 @@
 package net.logicsquad.nanocaptcha.content;
 
-import static org.junit.Assert.*;
-import org.junit.Test;
+import static org.junit.jupiter.api.Assertions.*;
+
+import org.junit.jupiter.api.Test;
 
 /**
  * Unit tests on {@link NumbersContentProducer} class.
@@ -30,14 +31,14 @@ public class NumbersContentProducerTest {
 		return;
 	}
 
-	@Test(expected = IllegalArgumentException.class)
+	@Test
 	public void constructorThrowsOnZero() {
-		new NumbersContentProducer(0);
+		assertThrows(IllegalArgumentException.class, () -> new NumbersContentProducer(0));
 	}
 
-	@Test(expected = IllegalArgumentException.class)
+	@Test
 	public void constructorThrowsOnNegative() {
-		new NumbersContentProducer(-1);
+		assertThrows(IllegalArgumentException.class, () -> new NumbersContentProducer(-1));
 	}
 
 	/**

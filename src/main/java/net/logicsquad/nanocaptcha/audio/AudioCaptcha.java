@@ -50,7 +50,7 @@ public final class AudioCaptcha {
 	/**
 	 * Build for an {@link AudioCaptcha}.
 	 */
-	public static class Builder {
+	public static class Builder implements net.logicsquad.nanocaptcha.Builder<AudioCaptcha> {
 		/**
 		 * Random number generator
 		 */
@@ -86,13 +86,24 @@ public final class AudioCaptcha {
 		}
 
 		/**
-		 * Adds content using the default {@link ContentProducer}
-		 * ({@link NumbersContentProducer}).
+		 * Adds content using the default {@link ContentProducer} ({@link NumbersContentProducer}).
 		 *
 		 * @return this
 		 */
 		public Builder addContent() {
 			return addContent(new NumbersContentProducer());
+		}
+
+		/**
+		 * Adds content (of length {@code length}) using the default {@link ContentProducer} ({@link NumbersContentProducer}).
+		 *
+		 * @param length number of content units to add
+		 * @return this
+		 * @see <a href="https://github.com/logicsquad/nanocaptcha/issues/9">#9</a>
+		 * @since 1.4
+		 */
+		public Builder addContent(int length) {
+			return addContent(new NumbersContentProducer(length));
 		}
 
 		/**

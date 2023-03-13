@@ -1,7 +1,6 @@
 package net.logicsquad.nanocaptcha.audio;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -10,7 +9,7 @@ import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.UnsupportedAudioFileException;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 /**
  * Unit tests on {@link Sample} class.
@@ -31,36 +30,35 @@ public class SampleTest {
 	// Known sample count
 	private static final int WAV_GOOD_SAMPLES = 9847;
 
-	@Test(expected = NullPointerException.class)
+	@Test
 	public void stringConstructorThrowsOnNull() {
-		new Sample((String) null);
+		assertThrows(NullPointerException.class, () -> new Sample((String) null));
 		return;
 	}
 
-	@Test(expected = NullPointerException.class)
+	@Test
 	public void inputStreamConstructorThrowsOnNull() {
-		new Sample((InputStream) null);
+		assertThrows(NullPointerException.class, () -> new Sample((InputStream) null));
 		return;
 	}
 
-	@Test(expected = RuntimeException.class)
+	@Test
 	public void constructorThrowsOnWrongFormat() {
-		new Sample(MP3_FILENAME);
+		assertThrows(RuntimeException.class, () -> new Sample(MP3_FILENAME));
 		return;
 	}
 
-	@Test(expected = IllegalArgumentException.class)
+	@Test
 	public void stringConstructorThrowsOnWrongAudioParameters() {
-		new Sample(WAV_BAD_FILENAME);
+		assertThrows(IllegalArgumentException.class, () -> new Sample(WAV_BAD_FILENAME));
 		return;
 	}
 
-	@Test(expected = IllegalArgumentException.class)
+	@Test
 	public void inputStreamConstructorThrowsOnWrongAudioParameters() throws UnsupportedAudioFileException, IOException {
-		AudioInputStream audioInputStream = AudioSystem
-				.getAudioInputStream(SampleTest.class.getResourceAsStream(WAV_BAD_FILENAME));
+		AudioInputStream audioInputStream = AudioSystem.getAudioInputStream(SampleTest.class.getResourceAsStream(WAV_BAD_FILENAME));
 		assertNotNull(audioInputStream);
-		new Sample(audioInputStream);
+		assertThrows(IllegalArgumentException.class, () -> new Sample(audioInputStream));
 		return;
 	}
 

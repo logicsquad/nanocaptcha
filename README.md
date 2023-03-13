@@ -36,6 +36,18 @@ Building a minimal audio CAPTCHA is just as easy:
 
     AudioCaptcha audioCaptcha = new AudioCaptcha.Builder().addContent().build();
 
+There is support for different languages. (Currently English and German
+are supported.) You can set the system property
+`net.logicsquad.nanocaptcha.audio.producer.RandomNumberVoiceProducer.defaultLanguage`
+to a 2-digit code for a supported language, e.g., `de`, and the
+`Builder` above will return German digit vocalizations. Alternatively,
+you can supply a `RandomNumberVoiceProducer` explicitly:
+
+    AudioCaptcha audioCaptcha = new AudioCaptcha.Builder().addContent().addVoice(new RandomNumberVoiceProducer(Locale.GERMAN)).build();
+
+You can even mix languages by calling `addVoice(Locale)` more than
+once.
+
 As with image CAPTCHAs, these can be further customised by:
 
 * Adding background noise with a `NoiseProducer`.
@@ -58,7 +70,7 @@ You can use NanoCaptcha in your projects by including it as a Maven dependency:
     <dependency>
       <groupId>net.logicsquad</groupId>
       <artifactId>nanocaptcha</artifactId>
-      <version>1.3</version>
+      <version>1.4</version>
     </dependency>
 
 Roadmap
