@@ -34,7 +34,7 @@ up, including: Javadoc comments, visibility tightening, API pruning.
 ### Changed
 - Removed dependency on `com.jhlabs.filters`.
   [#4](https://github.com/logicsquad/nanocaptcha/issues/4)
-	
+
 ### Security
 - Updated JUnit 4.12 → 4.13.1.
   [#2](https://github.com/logicsquad/nanocaptcha/issues/2)
@@ -49,3 +49,16 @@ up, including: Javadoc comments, visibility tightening, API pruning.
 
 ### Security
 - Updated SLF4J 2.9.0 → 2.18.0.
+
+
+## Release 1.4 (2023-03-12)
+
+### Added
+- Improved support for alternate languages, and added German digit
+  samples for audio
+  CAPTCHAs. [#7](https://github.com/logicsquad/nanocaptcha/issues/7)
+- Added support in `Builder` classes for setting content
+  length. [#9](https://github.com/logicsquad/nanocaptcha/issues/9)
+- Added support for randomising the y-offset in image CAPTCHAs, which
+  improves variability in "tall"
+  images. [#13](https://github.com/logicsquad/nanocaptcha/issues/13)
