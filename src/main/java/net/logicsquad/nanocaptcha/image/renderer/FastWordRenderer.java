@@ -90,8 +90,8 @@ public class FastWordRenderer extends AbstractWordRenderer {
 
 	// Set up Font list
 	static {
-		FONTS[0] = new Font("Arial", Font.BOLD, FONT_SIZE);
-		FONTS[1] = new Font("Courier", Font.BOLD, FONT_SIZE);
+		FONTS[0] = DEFAULT_FONTS.get(0);
+		FONTS[1] = DEFAULT_FONTS.get(1);
 	}
 
 	/**

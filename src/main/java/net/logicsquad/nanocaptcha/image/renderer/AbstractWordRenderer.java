@@ -1,7 +1,17 @@
 package net.logicsquad.nanocaptcha.image.renderer;
 
+import java.awt.Color;
+import java.awt.Font;
+import java.awt.FontFormatException;
 import java.awt.image.BufferedImage;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Superclass for {@link WordRenderer} implementations.
@@ -10,6 +20,38 @@ import java.util.Random;
  * @since 1.4
  */
 public abstract class AbstractWordRenderer implements WordRenderer {
+	/**
+	 * Logger
+	 */
+	private static final Logger LOG = LoggerFactory.getLogger(AbstractWordRenderer.class);
+
+	/**
+	 * Resource path to "Courier Prime"
+	 */
+	private static final String COURIER_PRIME_FONT = "/fonts/CourierPrime-Bold.ttf";
+
+	/**
+	 * Resource path to "Public Sans"
+	 */
+	private static final String PUBLIC_SANS_FONT = "/fonts/PublicSans-Bold.ttf";
+
+	/**
+	 * Default {@link Color}s
+	 */
+	protected static final List<Color> DEFAULT_COLORS = new ArrayList<>();
+
+	/**
+	 * Default fonts
+	 */
+	protected static final List<Font> DEFAULT_FONTS = new ArrayList<>();
+
+	// Set up default Colors, Fonts
+	static {
+		DEFAULT_COLORS.add(Color.BLACK);
+		DEFAULT_FONTS.add(fontFromResource(COURIER_PRIME_FONT));
+		DEFAULT_FONTS.add(fontFromResource(PUBLIC_SANS_FONT));
+	}
+
 	/**
 	 * Font size (in points)
 	 */
@@ -146,5 +188,22 @@ public abstract class AbstractWordRenderer implements WordRenderer {
 	 */
 	protected double yOffset() {
 		return yOffset;
+	}
+
+	/**
+	 * Returns a {@link Font} loaded from supplied {@code resourceName}, or {@code null} if unable to load the
+	 * resource.
+	 * 
+	 * @param resourceName path to resource
+	 * @return loaded {@link Font}
+	 * @since 1.5
+	 */
+	private static Font fontFromResource(String resourceName) {
+		try (InputStream is = DefaultWordRenderer.class.getResourceAsStream(resourceName)) {
+			return Font.createFont(Font.TRUETYPE_FONT, is).deriveFont((long) FONT_SIZE);
+		} catch (IOException | FontFormatException e) {
+			LOG.error("Unable to load font '{}'.", resourceName, e);
+			return null;
+		}
 	}
 }
