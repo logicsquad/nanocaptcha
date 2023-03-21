@@ -62,3 +62,15 @@ up, including: Javadoc comments, visibility tightening, API pruning.
 - Added support for randomising the y-offset in image CAPTCHAs, which
   improves variability in "tall"
   images. [#13](https://github.com/logicsquad/nanocaptcha/issues/13)
+
+
+## Release 1.5 (2023-02-22)
+
+### Fixed
+- `WordRenderer` implementations now use built-in fonts by default: we
+  were making assumptions about font availability that were rarely
+  true. Ships with "Courier Prime" and "Public
+  Sans". [#14](https://github.com/logicsquad/nanocaptcha/issues/14)
+- `FastWordRenderer` was initialising static variables in its
+  constructor. This has been moved out to a static
+  block. [#15](https://github.com/logicsquad/nanocaptcha/issues/15)

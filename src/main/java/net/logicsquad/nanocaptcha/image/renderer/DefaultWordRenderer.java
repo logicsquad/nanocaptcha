@@ -19,23 +19,6 @@ import java.util.List;
  */
 public class DefaultWordRenderer extends AbstractWordRenderer {
 	/**
-	 * Default {@link Color}s
-	 */
-	private static final List<Color> DEFAULT_COLORS = new ArrayList<>();
-
-	/**
-	 * Default fonts
-	 */
-	private static final List<Font> DEFAULT_FONTS = new ArrayList<>();
-
-	// Set up default Colors, Fonts
-	static {
-		DEFAULT_COLORS.add(Color.BLACK);
-		DEFAULT_FONTS.add(new Font("Arial", Font.BOLD, FONT_SIZE));
-		DEFAULT_FONTS.add(new Font("Courier", Font.BOLD, FONT_SIZE));
-	}
-
-	/**
 	 * List of available {@link Color}s
 	 */
 	private final List<Color> colors = new ArrayList<>();
@@ -100,7 +83,7 @@ public class DefaultWordRenderer extends AbstractWordRenderer {
 
 			g.setColor(nextColor());
 			Font font = nextFont();
-			g.setFont(nextFont());
+			g.setFont(font);
 			GlyphVector gv = font.createGlyphVector(frc, chars);
 			g.drawChars(chars, 0, chars.length, xBaseline, yBaseline);
 

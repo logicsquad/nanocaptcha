@@ -15,7 +15,7 @@ import java.util.concurrent.atomic.AtomicInteger;
  * 
  * <ul>
  * <li>{@link Color} choices are limited: text is rendered in black.</li>
- * <li>{@link Font} choices are limited: renders with Arial and Courier.</li>
+ * <li>{@link Font} choices are limited: renders with "Courier Prime" and "Public Sans".</li>
  * <li>Rendered text is <em>not</em> anti-aliased.</li>
  * <li>{@link DefaultWordRenderer} measures the size of each glyph it renders to calculate horizontal spacing. This class uses fixed
  * spacing, <em>but</em> will "fudge" each glyph's position horizontally and vertically: see below.</li>
@@ -88,10 +88,17 @@ public class FastWordRenderer extends AbstractWordRenderer {
 	 */
 	private static final Font[] FONTS = new Font[2];
 
-	// Set up Font list
+	// Set up Font list, pre-computed values
 	static {
-		FONTS[0] = new Font("Arial", Font.BOLD, FONT_SIZE);
-		FONTS[1] = new Font("Courier", Font.BOLD, FONT_SIZE);
+		FONTS[0] = DEFAULT_FONTS.get(0);
+		FONTS[1] = DEFAULT_FONTS.get(1);
+
+		for (int i = 0; i < FONT_INDEX_SIZE; i++) {
+			INDEXES[i] = RAND.nextInt(FONTS.length);
+		}
+		for (int i = 0; i < FUDGE_INDEX_SIZE; i++) {
+			FUDGES[i] = RAND.nextInt((FUDGE_MAX - FUDGE_MIN) + 1) + FUDGE_MIN;
+		}
 	}
 
 	/**
@@ -113,12 +120,6 @@ public class FastWordRenderer extends AbstractWordRenderer {
 	 */
 	private FastWordRenderer(double xOffset, double yOffset) {
 		super(xOffset, yOffset);
-		for (int i = 0; i < FONT_INDEX_SIZE; i++) {
-			INDEXES[i] = RAND.nextInt(FONTS.length);
-		}
-		for (int i = 0; i < FUDGE_INDEX_SIZE; i++) {
-			FUDGES[i] = RAND.nextInt((FUDGE_MAX - FUDGE_MIN) + 1) + FUDGE_MIN;
-		}
 		return;
 	}
 

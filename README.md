@@ -70,7 +70,7 @@ You can use NanoCaptcha in your projects by including it as a Maven dependency:
     <dependency>
       <groupId>net.logicsquad</groupId>
       <artifactId>nanocaptcha</artifactId>
-      <version>1.4</version>
+      <version>1.5</version>
     </dependency>
 
 Roadmap
