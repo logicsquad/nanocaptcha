@@ -7,6 +7,7 @@ import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Random;
 
@@ -35,10 +36,20 @@ public abstract class AbstractWordRenderer implements WordRenderer {
 	 */
 	private static final String PUBLIC_SANS_FONT = "/fonts/PublicSans-Bold.ttf";
 
+    /**
+     * Random number generator
+     */
+    protected static final Random RAND = new Random();
+
 	/**
 	 * Default {@link Color}s
 	 */
 	protected static final List<Color> DEFAULT_COLORS = new ArrayList<>();
+
+    /**
+     * Default supplier of the {@link Color}
+     */
+    protected static final ColorSupplier DEFAULT_COLOR_SUPPLIER = () -> DEFAULT_COLORS.get(RAND.nextInt(DEFAULT_COLORS.size()));
 
 	/**
 	 * Default fonts
@@ -56,11 +67,6 @@ public abstract class AbstractWordRenderer implements WordRenderer {
 	 * Font size (in points)
 	 */
 	protected static final int FONT_SIZE = 40;
-
-	/**
-	 * Random number generator
-	 */
-	protected static final Random RAND = new Random();
 
 	/**
 	 * Default percentage offset along x-axis
@@ -93,11 +99,17 @@ public abstract class AbstractWordRenderer implements WordRenderer {
 	private final double yOffset;
 
 	/**
+	 * Supplier of {@link Color}
+	 */
+	private final ColorSupplier wordColorSupplier;
+
+	/**
 	 * Constructor
 	 */
 	protected AbstractWordRenderer() {
 		this.xOffset = X_OFFSET_DEFAULT;
 		this.yOffset = Y_OFFSET_DEFAULT;
+		this.wordColorSupplier = DEFAULT_COLOR_SUPPLIER;
 		return;
 	}
 
@@ -107,9 +119,10 @@ public abstract class AbstractWordRenderer implements WordRenderer {
 	 * @param xOffset x-axis offset
 	 * @param yOffset y-axis offset
 	 */
-	protected AbstractWordRenderer(double xOffset, double yOffset) {
+	protected AbstractWordRenderer(double xOffset, double yOffset, ColorSupplier wordColorSupplier) {
 		this.xOffset = xOffset;
 		this.yOffset = yOffset;
+        this.wordColorSupplier = wordColorSupplier;
 		return;
 	}
 
@@ -130,12 +143,18 @@ public abstract class AbstractWordRenderer implements WordRenderer {
 		 */
 		protected double yOffset;
 
+        /**
+         * Supplier of {@link Color}
+         */
+        protected ColorSupplier wordColorSupplier;
+
 		/**
 		 * Constructor
 		 */
 		protected Builder() {
 			xOffset = X_OFFSET_DEFAULT;
 			yOffset = Y_OFFSET_DEFAULT;
+            wordColorSupplier = DEFAULT_COLOR_SUPPLIER;
 			return;
 		}
 
@@ -170,7 +189,73 @@ public abstract class AbstractWordRenderer implements WordRenderer {
 			this.yOffset = Y_OFFSET_MIN + (Y_OFFSET_MAX - Y_OFFSET_MIN) * RAND.nextDouble();
 			return this;
 		}
+
+		/**
+		 * Sets the supplier to randomly select a color from the given colors.
+		 *
+		 * @param color the first color
+		 * @param colors additional colors (optional)
+		 * @return this
+		 */
+		public Builder randomColor(Color color, Color... colors) {
+			List<Color> colorList = new ArrayList<>();
+			colorList.add(color);
+			Collections.addAll(colorList, colors);
+			randomColor(colorList);
+			return this;
+		}
+
+		/**
+		 * Assigns a supplier that randomly selects a color from the provided list.
+		 * If the list is empty, no changes are made to the current color supplier.
+		 *
+		 * @param colors the list of colors to choose from
+		 * @return this
+		 */
+		public Builder randomColor(List<Color> colors) {
+			if (!colors.isEmpty()) {
+				this.wordColorSupplier = () -> colors.get(RAND.nextInt(colors.size()));
+			}
+			return this;
+		}
+
+		/**
+		 * Sets the supplier to provide a specified color.
+		 *
+		 * @param color the color to be provided by the supplier
+		 * @return this
+		 */
+		public Builder color(Color color) {
+			this.wordColorSupplier = () -> color;
+			return this;
+		}
+
 	}
+
+	/**
+	 * The AbstractWordRenderer class's inner interface for supplying {@link Color} objects.
+	 * This interface allows for dynamic color provisioning within the rendering process of the AbstractWordRenderer.
+	 * It's designed to be implemented by clients who wish to control the color selection in rendering operations.
+	 * <p>
+	 * As an inner interface of AbstractWordRenderer, ColorSupplier is integral to defining custom color behavior
+	 * for various rendering tasks performed by instances of AbstractWordRenderer or its subclasses.
+	 * <p>
+	 * Example usage (as an inner interface):
+	 * <pre>
+	 *     AbstractWordRenderer.ColorSupplier supplier = () -> Color.RED; // Supplies a constant color
+	 * </pre>
+	 *
+	 * @see AbstractWordRenderer
+	 */
+	public interface ColorSupplier {
+		/**
+		 * Retrieves a {@link Color}.
+		 *
+		 * @return The color to be used next in the rendering process.
+		 */
+		Color get();
+	}
+
 
 	/**
 	 * Returns x-axis offset.
@@ -188,6 +273,15 @@ public abstract class AbstractWordRenderer implements WordRenderer {
 	 */
 	protected double yOffset() {
 		return yOffset;
+	}
+
+	/**
+	 * Returns word color supplier.
+	 *
+	 * @return word color supplier
+	 */
+	protected ColorSupplier wordColorSupplier() {
+		return wordColorSupplier;
 	}
 
 	/**

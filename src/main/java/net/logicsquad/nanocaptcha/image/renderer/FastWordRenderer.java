@@ -79,11 +79,6 @@ public class FastWordRenderer extends AbstractWordRenderer {
 	private static AtomicInteger fudgePointer = new AtomicInteger(0);
 
 	/**
-	 * Available {@link Color}
-	 */
-	private static final Color COLOR = Color.BLACK;
-
-	/**
 	 * Available {@link Font}s
 	 */
 	private static final Font[] FONTS = new Font[2];
@@ -107,7 +102,7 @@ public class FastWordRenderer extends AbstractWordRenderer {
 	 * @deprecated use {@link Builder} instead
 	 */
 	public FastWordRenderer() {
-		this(X_OFFSET_DEFAULT, Y_OFFSET_DEFAULT);
+		this(X_OFFSET_DEFAULT, Y_OFFSET_DEFAULT, DEFAULT_COLOR_SUPPLIER);
 		return;
 	}
 
@@ -118,8 +113,8 @@ public class FastWordRenderer extends AbstractWordRenderer {
 	 * @param yOffset y-axis offset
 	 * @since 1.4
 	 */
-	private FastWordRenderer(double xOffset, double yOffset) {
-		super(xOffset, yOffset);
+	private FastWordRenderer(double xOffset, double yOffset, ColorSupplier wordColorSupplier) {
+		super(xOffset, yOffset, wordColorSupplier);
 		return;
 	}
 
@@ -131,7 +126,7 @@ public class FastWordRenderer extends AbstractWordRenderer {
 		char[] chars = new char[1];
 		for (char c : word.toCharArray()) {
 			chars[0] = c;
-			g.setColor(COLOR);
+			g.setColor(wordColorSupplier().get());
 			g.setFont(nextFont());
 			int xFudge = nextFudge();
 			int yFudge = nextFudge();
@@ -170,7 +165,7 @@ public class FastWordRenderer extends AbstractWordRenderer {
 	public static class Builder extends AbstractWordRenderer.Builder {
 		@Override
 		public FastWordRenderer build() {
-			return new FastWordRenderer(xOffset, yOffset);
+			return new FastWordRenderer(xOffset, yOffset, wordColorSupplier);
 		}
 	}
 }
