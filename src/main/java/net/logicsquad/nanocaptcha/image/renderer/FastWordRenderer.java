@@ -1,6 +1,5 @@
 package net.logicsquad.nanocaptcha.image.renderer;
 
-import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
@@ -14,7 +13,6 @@ import java.util.concurrent.atomic.AtomicInteger;
  * </p>
  * 
  * <ul>
- * <li>{@link Color} choices are limited: text is rendered in black.</li>
  * <li>{@link Font} choices are limited: renders with "Courier Prime" and "Public Sans".</li>
  * <li>Rendered text is <em>not</em> anti-aliased.</li>
  * <li>{@link DefaultWordRenderer} measures the size of each glyph it renders to calculate horizontal spacing. This class uses fixed
