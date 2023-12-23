@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Random;
+import java.util.function.Supplier;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -49,7 +50,7 @@ public abstract class AbstractWordRenderer implements WordRenderer {
     /**
      * Default supplier of the {@link Color}
      */
-    protected static final ColorSupplier DEFAULT_COLOR_SUPPLIER = () -> DEFAULT_COLORS.get(RAND.nextInt(DEFAULT_COLORS.size()));
+    protected static final Supplier<Color> DEFAULT_COLOR_SUPPLIER = () -> DEFAULT_COLORS.get(RAND.nextInt(DEFAULT_COLORS.size()));
 
 	/**
 	 * Default fonts
@@ -101,7 +102,7 @@ public abstract class AbstractWordRenderer implements WordRenderer {
 	/**
 	 * Supplier of {@link Color}
 	 */
-	private final ColorSupplier wordColorSupplier;
+	private final Supplier<Color> wordColorSupplier;
 
 	/**
 	 * Constructor
@@ -119,7 +120,7 @@ public abstract class AbstractWordRenderer implements WordRenderer {
 	 * @param xOffset x-axis offset
 	 * @param yOffset y-axis offset
 	 */
-	protected AbstractWordRenderer(double xOffset, double yOffset, ColorSupplier wordColorSupplier) {
+	protected AbstractWordRenderer(double xOffset, double yOffset, Supplier<Color> wordColorSupplier) {
 		this.xOffset = xOffset;
 		this.yOffset = yOffset;
         this.wordColorSupplier = wordColorSupplier;
@@ -146,7 +147,7 @@ public abstract class AbstractWordRenderer implements WordRenderer {
         /**
          * Supplier of {@link Color}
          */
-        protected ColorSupplier wordColorSupplier;
+        protected Supplier<Color> wordColorSupplier;
 
 		/**
 		 * Constructor
@@ -232,30 +233,6 @@ public abstract class AbstractWordRenderer implements WordRenderer {
 
 	}
 
-	/**
-	 * The AbstractWordRenderer class's inner interface for supplying {@link Color} objects.
-	 * This interface allows for dynamic color provisioning within the rendering process of the AbstractWordRenderer.
-	 * It's designed to be implemented by clients who wish to control the color selection in rendering operations.
-	 * <p>
-	 * As an inner interface of AbstractWordRenderer, ColorSupplier is integral to defining custom color behavior
-	 * for various rendering tasks performed by instances of AbstractWordRenderer or its subclasses.
-	 * <p>
-	 * Example usage (as an inner interface):
-	 * <pre>
-	 *     AbstractWordRenderer.ColorSupplier supplier = () -> Color.RED; // Supplies a constant color
-	 * </pre>
-	 *
-	 * @see AbstractWordRenderer
-	 */
-	public interface ColorSupplier {
-		/**
-		 * Retrieves a {@link Color}.
-		 *
-		 * @return The color to be used next in the rendering process.
-		 */
-		Color get();
-	}
-
 
 	/**
 	 * Returns x-axis offset.
@@ -280,7 +257,7 @@ public abstract class AbstractWordRenderer implements WordRenderer {
 	 *
 	 * @return word color supplier
 	 */
-	protected ColorSupplier wordColorSupplier() {
+	protected Supplier<Color> wordColorSupplier() {
 		return wordColorSupplier;
 	}
 

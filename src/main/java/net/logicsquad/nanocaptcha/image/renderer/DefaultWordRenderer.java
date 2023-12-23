@@ -9,6 +9,7 @@ import java.awt.font.GlyphVector;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Supplier;
 
 /**
  * Renders the content onto the image.
@@ -40,7 +41,7 @@ public class DefaultWordRenderer extends AbstractWordRenderer {
 	 * @param yOffset y-axis offset
 	 * @since 1.4
 	 */
-	private DefaultWordRenderer(double xOffset, double yOffset, ColorSupplier wordColorSupplier) {
+	private DefaultWordRenderer(double xOffset, double yOffset, Supplier<Color> wordColorSupplier) {
 		super(xOffset, yOffset, wordColorSupplier);
 		this.fonts.addAll(DEFAULT_FONTS);
 		return;
