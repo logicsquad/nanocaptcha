@@ -145,7 +145,7 @@ public final class ImageCaptcha {
 		 * @return this
 		 */
 		public Builder addContent(ContentProducer contentProducer) {
-			return addContent(contentProducer, new DefaultWordRenderer());
+			return addContent(contentProducer, new DefaultWordRenderer.Builder().build());
 		}
 
 		/**
