@@ -18,7 +18,7 @@ Getting started
 ---------------
 You can build a minimal image CAPTCHA very easily:
 
-    ImageCaptcha imageCaptcha = new ImageCaptcha.Builder(200, 50).addContent().build();
+    ImageCaptcha imageCaptcha = ImageCaptcha.create();
 
 This creates a 200 x 50 pixel image and adds five random characters
 from the Latin alphabet.  The `getImage()` method returns the image as
@@ -32,18 +32,34 @@ customised by:
 * Adding various `ImageFilter`s.
 * Adding a background or a border.
 
+To create a custom CAPTCHA, you can use an `ImageCaptcha.Builder`,
+e.g.:
+
+    ImageCaptcha imageCaptcha = new ImageCaptcha.Builder(400, 100)
+        .addContent(new LatinContentProducer(7))
+        .addBackground(new GradiatedBackgroundProducer())
+        .addNoise(new CurvedLineNoiseProducer())
+        .build();
+
 Building a minimal audio CAPTCHA is just as easy:
 
-    AudioCaptcha audioCaptcha = new AudioCaptcha.Builder().addContent().build();
+    AudioCaptcha audioCaptcha = AudioCaptcha.create();
 
-There is support for different languages. (Currently English and German
-are supported.) You can set the system property
+This creates a CAPTCHA with an audio clip containing five numbers read
+out in English (unless the default `Locale` has been changed). To
+customise your CAPTCHA, you can use `AudioCaptcha.Builder`.
+
+There is support for different languages. (Currently English and
+German are supported.) You can set the system property
 `net.logicsquad.nanocaptcha.audio.producer.RandomNumberVoiceProducer.defaultLanguage`
 to a 2-digit code for a supported language, e.g., `de`, and the
 `Builder` above will return German digit vocalizations. Alternatively,
 you can supply a `RandomNumberVoiceProducer` explicitly:
 
-    AudioCaptcha audioCaptcha = new AudioCaptcha.Builder().addContent().addVoice(new RandomNumberVoiceProducer(Locale.GERMAN)).build();
+    AudioCaptcha audioCaptcha = new AudioCaptcha.Builder()
+        .addContent()
+        .addVoice(new RandomNumberVoiceProducer(Locale.GERMAN))
+        .build();
 
 You can even mix languages by calling `addVoice(Locale)` more than
 once.
