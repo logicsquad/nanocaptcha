@@ -95,17 +95,6 @@ public class FastWordRenderer extends AbstractWordRenderer {
 	}
 
 	/**
-	 * Constructor
-	 * 
-	 * @deprecated use {@link Builder} instead
-	 */
-	@Deprecated
-	public FastWordRenderer() {
-		this(X_OFFSET_DEFAULT, Y_OFFSET_DEFAULT, DEFAULT_COLOR_SUPPLIER);
-		return;
-	}
-
-	/**
 	 * Constructor taking x- and y-axis offsets
 	 * 
 	 * @param xOffset x-axis offset

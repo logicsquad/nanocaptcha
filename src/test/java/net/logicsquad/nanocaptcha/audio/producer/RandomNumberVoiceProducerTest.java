@@ -2,9 +2,7 @@ package net.logicsquad.nanocaptcha.audio.producer;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-import java.util.List;
 import java.util.Locale;
-import java.util.Map;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -25,7 +23,6 @@ public class RandomNumberVoiceProducerTest {
 
 	@Test
 	public void constructorThrowsOnNull() {
-		assertThrows(NullPointerException.class, () -> new RandomNumberVoiceProducer((Map<Integer, List<String>>) null));
 		assertThrows(NullPointerException.class, () -> new RandomNumberVoiceProducer((Locale) null));
 		return;
 	}

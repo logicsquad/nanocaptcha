@@ -25,17 +25,6 @@ public class DefaultWordRenderer extends AbstractWordRenderer {
 	private final List<Font> fonts = new ArrayList<>();
 
 	/**
-	 * Constructor using default {@link Color} (black) and {@link Font}s (Arial and Courier).
-	 * 
-	 * @deprecated use {@link Builder} instead
-	 */
-	@Deprecated
-	public DefaultWordRenderer() {
-		this(X_OFFSET_DEFAULT, Y_OFFSET_DEFAULT, DEFAULT_COLOR_SUPPLIER);
-		return;
-	}
-
-	/**
 	 * Constructor taking x- and y-axis offsets
 	 * 
 	 * @param xOffset x-axis offset

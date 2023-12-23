@@ -95,28 +95,6 @@ public class RandomNumberVoiceProducer implements VoiceProducer {
 	}
 
 	/**
-	 * Creates a {@code RandomNumberVoiceProducer} for the given {@code voices}, a
-	 * map of numbers to their corresponding filename options. Conceptually the map
-	 * must look like the following:
-	 *
-	 * <pre>
-	 * {1 => ["/my_sounds/1-quiet.wav", "/my_sounds/1-loud.wav"],
-	 *  2 => ["/my_sounds/2-quiet.wav", "/my_sounds/2-loud.wav"]}
-	 * </pre>
-	 *
-	 * @param voices map of digits to list of vocalizations of that digit
-	 * @throws NullPointerException if {@code voices} is {@code null}
-	 * @deprecated Use {@link #RandomNumberVoiceProducer(Locale)} with a supported
-	 *             language instead
-	 */
-	@Deprecated
-	public RandomNumberVoiceProducer(Map<Integer, List<String>> voices) {
-		this.language = defaultLanguage();
-		this.vocalizations = Objects.requireNonNull(voices);
-		return;
-	}
-
-	/**
 	 * Constructor taking a language {@link Locale}. If {@code language} is not a
 	 * supported language, the default language will be used.
 	 * 
