@@ -29,6 +29,7 @@ public class DefaultWordRenderer extends AbstractWordRenderer {
 	 * 
 	 * @deprecated use {@link Builder} instead
 	 */
+	@Deprecated
 	public DefaultWordRenderer() {
 		this(X_OFFSET_DEFAULT, Y_OFFSET_DEFAULT, DEFAULT_COLOR_SUPPLIER);
 		return;
