@@ -11,7 +11,7 @@ import java.util.Random;
  * @see <a href="https://en.wikipedia.org/wiki/Salt-and-pepper_noise">Salt and pepper on Wikipedia</>
  * @since 2.0
  */
-public class SaltAndPepperNoise implements NoiseProducer {
+public class SaltAndPepperNoiseProducer implements NoiseProducer {
 
     /**
      * Random number generator.
@@ -41,7 +41,7 @@ public class SaltAndPepperNoise implements NoiseProducer {
     /**
      * Constructor using default standard deviation and mean.
      */
-    public SaltAndPepperNoise() {
+    public SaltAndPepperNoiseProducer() {
         this(DEFAULT_NOISE_DENSITY);
         return;
     }
@@ -52,7 +52,7 @@ public class SaltAndPepperNoise implements NoiseProducer {
      * @param noiseDensity The density of the noise to be applied (0 to 1 range).
      * @throws IllegalArgumentException when the noise density is not in the range of 0 to 1.
      */
-    public SaltAndPepperNoise(double noiseDensity) {
+    public SaltAndPepperNoiseProducer(double noiseDensity) {
         if (noiseDensity < 0 || noiseDensity > 1) {
             throw new IllegalArgumentException("Noise density must be between 0 and 1.");
         }
