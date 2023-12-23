@@ -34,8 +34,8 @@ public class RippleImageFilterTest {
 	 */
 	@Test
 	public void rippleImageFilterProducesExpectedTransformation() throws IOException {
-		BufferedImage input = ImageIO.read(getClass().getClassLoader().getResourceAsStream("input.png"));
-		BufferedImage expected = ImageIO.read(getClass().getClassLoader().getResourceAsStream("output.png"));
+		BufferedImage input = ImageIO.read(RippleImageFilterTest.class.getClassLoader().getResourceAsStream("input.png"));
+		BufferedImage expected = ImageIO.read(RippleImageFilterTest.class.getClassLoader().getResourceAsStream("output.png"));
 		rippleImageFilter.filter(input);
 		assertTrue(bufferedImagesEqual(expected, input));
 		return;
