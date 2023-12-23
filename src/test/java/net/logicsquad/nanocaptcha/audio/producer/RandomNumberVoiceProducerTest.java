@@ -24,13 +24,8 @@ public class RandomNumberVoiceProducerTest {
 	}
 
 	@Test
-	public void constructorThrowsOnNull1() {
+	public void constructorThrowsOnNull() {
 		assertThrows(NullPointerException.class, () -> new RandomNumberVoiceProducer((Map<Integer, List<String>>) null));
-		return;
-	}
-
-	@Test
-	public void constructorThrowsOnNull2() {
 		assertThrows(NullPointerException.class, () -> new RandomNumberVoiceProducer((Locale) null));
 		return;
 	}
