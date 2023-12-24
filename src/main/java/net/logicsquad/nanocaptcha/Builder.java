@@ -3,7 +3,7 @@ package net.logicsquad.nanocaptcha;
 /**
  * Generic object builder.
  * 
- * @author paulh
+ * @author <a href="mailto:paulh@logicsquad.net">Paul Hoadley</a>
  * @param <T> concrete class
  * @since 1.4
  */

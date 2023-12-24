@@ -13,7 +13,7 @@ import org.junit.jupiter.api.Test;
 /**
  * Unit tests on {@link RippleImageFilter} class.
  * 
- * @author paulh
+ * @author <a href="mailto:paulh@logicsquad.net">Paul Hoadley</a>
  * @since 1.2
  */
 public class RippleImageFilterTest {

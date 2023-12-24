@@ -28,6 +28,7 @@ import java.util.function.Supplier;
  * </p>
  * 
  * @author <a href="mailto:paulh@logicsquad.net">Paul Hoadley</a>
+ * @author <a href="mailto:botyrbojey@gmail.com">bivashy</a>
  * @since 1.1
  */
 public class FastWordRenderer extends AbstractWordRenderer {

@@ -16,6 +16,7 @@ import java.util.function.Supplier;
  *
  * @author <a href="mailto:james.childers@gmail.com">James Childers</a>
  * @author <a href="mailto:paulh@logicsquad.net">Paul Hoadley</a>
+ * @author <a href="mailto:botyrbojey@gmail.com">bivashy</a>
  * @since 1.0
  */
 public class DefaultWordRenderer extends AbstractWordRenderer {

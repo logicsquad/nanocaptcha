@@ -8,6 +8,7 @@ import java.util.Random;
  * Applies salt and pepper noise to an image. This noise type randomly changes
  * some of the pixels to black or white, creating a 'salt and pepper' effect.
  *
+ * @author <a href="mailto:botyrbojey@gmail.com">bivashy</a>
  * @see <a href="https://en.wikipedia.org/wiki/Salt-and-pepper_noise">Salt and pepper on Wikipedia</>
  * @since 2.0
  */

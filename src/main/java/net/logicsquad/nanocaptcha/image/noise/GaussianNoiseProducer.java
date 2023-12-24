@@ -9,6 +9,7 @@ import java.util.Random;
  * probability density function equal to that of the normal distribution, which is
  * also known as the Gaussian distribution.
  *
+ * @author <a href="mailto:botyrbojey@gmail.com">bivashy</a>
  * @see <a href="https://en.wikipedia.org/wiki/Gaussian_noise">Gaussian noise on Wikipedia</a>
  * @since 2.0
  */

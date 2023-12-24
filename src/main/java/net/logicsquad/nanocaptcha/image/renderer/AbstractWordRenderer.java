@@ -18,7 +18,8 @@ import org.slf4j.LoggerFactory;
 /**
  * Superclass for {@link WordRenderer} implementations.
  * 
- * @author paulh
+ * @author <a href="mailto:paulh@logicsquad.net">Paul Hoadley</a>
+ * @author <a href="mailto:botyrbojey@gmail.com">bivashy</a>
  * @since 1.4
  */
 public abstract class AbstractWordRenderer implements WordRenderer {
