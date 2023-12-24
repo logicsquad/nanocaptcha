@@ -198,6 +198,7 @@ public abstract class AbstractWordRenderer implements WordRenderer {
 		 * @param color the first color
 		 * @param colors additional colors (optional)
 		 * @return this
+		 * @since 2.0
 		 */
 		public Builder randomColor(Color color, Color... colors) {
 			List<Color> colorList = new ArrayList<>();
@@ -213,6 +214,7 @@ public abstract class AbstractWordRenderer implements WordRenderer {
 		 *
 		 * @param colors the list of colors to choose from
 		 * @return this
+		 * @since 2.0
 		 */
 		public Builder randomColor(List<Color> colors) {
 			if (!colors.isEmpty()) {
@@ -226,14 +228,13 @@ public abstract class AbstractWordRenderer implements WordRenderer {
 		 *
 		 * @param color the color to be provided by the supplier
 		 * @return this
+		 * @since 2.0
 		 */
 		public Builder color(Color color) {
 			this.wordColorSupplier = () -> color;
 			return this;
 		}
-
 	}
-
 
 	/**
 	 * Returns x-axis offset.
@@ -257,6 +258,7 @@ public abstract class AbstractWordRenderer implements WordRenderer {
 	 * Returns word color supplier.
 	 *
 	 * @return word color supplier
+	 * @since 2.0
 	 */
 	protected Supplier<Color> wordColorSupplier() {
 		return wordColorSupplier;
