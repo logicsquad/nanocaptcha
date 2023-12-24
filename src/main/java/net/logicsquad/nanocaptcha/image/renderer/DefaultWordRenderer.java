@@ -9,6 +9,7 @@ import java.awt.font.GlyphVector;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Supplier;
 
 /**
  * Renders the content onto the image.
@@ -18,11 +19,6 @@ import java.util.List;
  * @since 1.0
  */
 public class DefaultWordRenderer extends AbstractWordRenderer {
-	/**
-	 * List of available {@link Color}s
-	 */
-	private final List<Color> colors = new ArrayList<>();
-
 	/**
 	 * List of available {@link Font}s
 	 */
@@ -34,7 +30,7 @@ public class DefaultWordRenderer extends AbstractWordRenderer {
 	 * @deprecated use {@link Builder} instead
 	 */
 	public DefaultWordRenderer() {
-		this(X_OFFSET_DEFAULT, Y_OFFSET_DEFAULT);
+		this(X_OFFSET_DEFAULT, Y_OFFSET_DEFAULT, DEFAULT_COLOR_SUPPLIER);
 		return;
 	}
 
@@ -45,23 +41,9 @@ public class DefaultWordRenderer extends AbstractWordRenderer {
 	 * @param yOffset y-axis offset
 	 * @since 1.4
 	 */
-	private DefaultWordRenderer(double xOffset, double yOffset) {
-		super(xOffset, yOffset);
-		this.colors.addAll(DEFAULT_COLORS);
+	private DefaultWordRenderer(double xOffset, double yOffset, Supplier<Color> wordColorSupplier) {
+		super(xOffset, yOffset, wordColorSupplier);
 		this.fonts.addAll(DEFAULT_FONTS);
-		return;
-	}
-
-	/**
-	 * Constructor taking a list of {@link Color}s and {@link Font}s to choose from.
-	 *
-	 * @param colors {@link Color}s
-	 * @param fonts  {@link Font}s
-	 * @deprecated use {@link Builder} instead
-	 */
-	public DefaultWordRenderer(List<Color> colors, List<Font> fonts) {
-		this.colors.addAll(colors);
-		this.fonts.addAll(fonts);
 		return;
 	}
 
@@ -81,7 +63,7 @@ public class DefaultWordRenderer extends AbstractWordRenderer {
 		for (char c : word.toCharArray()) {
 			chars[0] = c;
 
-			g.setColor(nextColor());
+			g.setColor(wordColorSupplier().get());
 			Font font = nextFont();
 			g.setFont(font);
 			GlyphVector gv = font.createGlyphVector(frc, chars);
@@ -89,20 +71,6 @@ public class DefaultWordRenderer extends AbstractWordRenderer {
 
 			int width = (int) gv.getVisualBounds().getWidth();
 			xBaseline = xBaseline + width;
-		}
-	}
-
-	/**
-	 * Returns a random {@link Color} from the list.
-	 * 
-	 * @return random {@link Color}
-	 * @since 1.1
-	 */
-	private Color nextColor() {
-		if (colors.size() == 1) {
-			return colors.get(0);
-		} else {
-			return colors.get(RAND.nextInt(colors.size()));
 		}
 	}
 
@@ -128,7 +96,7 @@ public class DefaultWordRenderer extends AbstractWordRenderer {
 	public static class Builder extends AbstractWordRenderer.Builder {
 		@Override
 		public DefaultWordRenderer build() {
-			return new DefaultWordRenderer(xOffset, yOffset);
+			return new DefaultWordRenderer(xOffset, yOffset, wordColorSupplier);
 		}
 	}
 }
