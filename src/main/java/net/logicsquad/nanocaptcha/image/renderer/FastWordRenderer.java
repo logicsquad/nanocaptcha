@@ -8,7 +8,7 @@ import java.util.function.Supplier;
 /**
  * <p>
  * Based on the {@link DefaultWordRenderer}, this implementation strips down to the basics to render {@link BufferedImage}s as much as 5X
- * faster. (This class will render almost 70,000 {@link BufferedImage}s per second on an iMac with a 4GHx Intel Core i7 CPU.) It has the
+ * faster. (This class will render almost 70,000 {@link BufferedImage}s per second on an iMac with a 4GHz Intel Core i7 CPU.) It has the
  * following restrictions compared to {@link DefaultWordRenderer}:
  * </p>
  * 
