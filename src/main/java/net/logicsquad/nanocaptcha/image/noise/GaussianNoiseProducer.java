@@ -88,7 +88,7 @@ public class GaussianNoiseProducer implements NoiseProducer {
      * @param x the input parameter
      * @return the clamped value
      */
-    public static int clamp(int x, int a, int b) {
+    private static int clamp(int x, int a, int b) {
         return (x < a) ? a : (x > b) ? b : x;
     }
 }
