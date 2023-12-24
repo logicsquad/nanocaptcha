@@ -13,7 +13,6 @@ import java.util.Random;
  * @since 2.0
  */
 public class SaltAndPepperNoiseProducer implements NoiseProducer {
-
     /**
      * Random number generator.
      */
@@ -80,5 +79,4 @@ public class SaltAndPepperNoiseProducer implements NoiseProducer {
             }
         }
     }
-
 }
