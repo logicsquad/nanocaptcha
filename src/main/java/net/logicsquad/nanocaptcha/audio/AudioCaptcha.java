@@ -188,6 +188,7 @@ public final class AudioCaptcha {
 		 *
 		 * @return {@link AudioCaptcha} as described by this {@code Builder}
 		 */
+		@Override
 		public AudioCaptcha build() {
 			// Make sure we have at least one voiceProducer
 			if (voiceProducers.isEmpty()) {

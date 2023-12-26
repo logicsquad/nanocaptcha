@@ -266,6 +266,7 @@ public final class ImageCaptcha {
 		 *
 		 * @return {@link ImageCaptcha} as described by this {@code Builder}
 		 */
+		@Override
 		public ImageCaptcha build() {
 			if (background != null) {
 				// Paint the main image over the background

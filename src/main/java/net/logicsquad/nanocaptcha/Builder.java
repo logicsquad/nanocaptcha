@@ -8,5 +8,10 @@ package net.logicsquad.nanocaptcha;
  * @since 1.4
  */
 public interface Builder<T> {
+	/**
+	 * Builds and returns an object of type {@code T} based on the state of this object.
+	 * 
+	 * @return object of type {@code T}
+	 */
 	T build();
 }
