@@ -13,7 +13,7 @@ import java.util.function.Supplier;
  * faster. (This class will render almost 70,000 {@link BufferedImage}s per second on an iMac with a 4GHz Intel Core i7 CPU.) It has the
  * following restrictions compared to {@link DefaultWordRenderer}:
  * </p>
- * 
+ *
  * <ul>
  * <li>{@link Font} choices are limited: renders with "Courier Prime" and "Public Sans".</li>
  * <li>Rendered text is <em>not</em> anti-aliased.</li>
@@ -22,13 +22,13 @@ import java.util.function.Supplier;
  * <li>{@link Font} choice is only random for the first 100 choices: this class pre-computes a list of random indexes into the {@link Font}
  * array, and then <em>re-uses</em> those indexes by cycling through them repeatedly.</li>
  * </ul>
- * 
+ *
  * <p>
  * As noted above, this class will render each glyph with a random horizontal and vertical fudge factor between (-5, 5) from the baseline.
  * The effect is that glyphs can move around and bunch together (or spread apart) more. As with {@link Font} choice, there is only limited
  * randomness here: again, we pre-compute a list of 100 random fudge values in the range, and cycle through that list repeatedly.
  * </p>
- * 
+ *
  * @author <a href="mailto:paulh@logicsquad.net">Paul Hoadley</a>
  * @author <a href="mailto:botyrbojey@gmail.com">bivashy</a>
  * @since 1.1
@@ -99,7 +99,7 @@ public final class FastWordRenderer extends AbstractWordRenderer {
 
 	/**
 	 * Constructor taking x- and y-axis offsets
-	 * 
+	 *
 	 * @param xOffset           x-axis offset
 	 * @param yOffset           y-axis offset
 	 * @param wordColorSupplier {@link Color} supplier
@@ -129,7 +129,7 @@ public final class FastWordRenderer extends AbstractWordRenderer {
 
 	/**
 	 * Returns the next {@link Font} to use.
-	 * 
+	 *
 	 * @return next {@link Font}
 	 */
 	private Font nextFont() {
@@ -142,7 +142,7 @@ public final class FastWordRenderer extends AbstractWordRenderer {
 
 	/**
 	 * Returns the next fudge value to use.
-	 * 
+	 *
 	 * @return fudge value
 	 */
 	private int nextFudge() {
@@ -151,7 +151,7 @@ public final class FastWordRenderer extends AbstractWordRenderer {
 
 	/**
 	 * Builder for {@link FastWordRenderer}.
-	 * 
+	 *
 	 * @since 1.4
 	 */
 	public static class Builder extends AbstractWordRenderer.Builder {

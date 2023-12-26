@@ -76,22 +76,22 @@ public final class ImageCaptcha {
 	 * <p>
 	 * Returns a new {@code ImageCaptcha} with some very basic settings:
 	 * <p>
-	 * 
+	 *
 	 * <ul>
 	 * <li>x- and y-dimensions 200 x 50, unless overridden by properties;</li>
 	 * <li>{@link LatinContentProducer} with length 5; and</li>
 	 * <li>{@link DefaultWordRenderer} with <em>its</em> defaults.</li>
 	 * </ul>
-	 * 
+	 *
 	 * <p>
 	 * To override the x- and y-dimensions for your project, you can set these properties:
 	 * </p>
-	 * 
+	 *
 	 * <ul>
 	 * <li>{@code net.logicsquad.nanocaptcha.image.ImageCaptcha.defaultX}</li>
 	 * <li>{@code net.logicsquad.nanocaptcha.image.ImageCaptcha.defaultY}</li>
 	 * </ul>
-	 * 
+	 *
 	 * @return new {@code ImageCaptcha}
 	 * @since 2.0
 	 */

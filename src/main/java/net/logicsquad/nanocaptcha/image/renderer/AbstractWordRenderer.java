@@ -18,7 +18,7 @@ import org.slf4j.LoggerFactory;
 
 /**
  * Superclass for {@link WordRenderer} implementations.
- * 
+ *
  * @author <a href="mailto:paulh@logicsquad.net">Paul Hoadley</a>
  * @author <a href="mailto:botyrbojey@gmail.com">bivashy</a>
  * @since 1.4
@@ -119,7 +119,7 @@ public abstract class AbstractWordRenderer implements WordRenderer {
 
 	/**
 	 * Constructor taking x- and y-offset overrides
-	 * 
+	 *
 	 * @param xOffset           x-axis offset
 	 * @param yOffset           y-axis offset
 	 * @param wordColorSupplier {@link Color} supplier
@@ -165,7 +165,7 @@ public abstract class AbstractWordRenderer implements WordRenderer {
 
 		/**
 		 * Sets y-offset value.
-		 * 
+		 *
 		 * @param yOffset y-offset (in [0, 1])
 		 * @return this
 		 */
@@ -176,7 +176,7 @@ public abstract class AbstractWordRenderer implements WordRenderer {
 
 		/**
 		 * Sets x-offset value.
-		 * 
+		 *
 		 * @param xOffset x-offset (in [0, 1])
 		 * @return this
 		 */
@@ -187,7 +187,7 @@ public abstract class AbstractWordRenderer implements WordRenderer {
 
 		/**
 		 * Selects a random value for y-offset.
-		 * 
+		 *
 		 * @return this
 		 */
 		public Builder randomiseYOffset() {
@@ -241,7 +241,7 @@ public abstract class AbstractWordRenderer implements WordRenderer {
 
 	/**
 	 * Returns x-axis offset.
-	 * 
+	 *
 	 * @return x-axis offset
 	 */
 	protected double xOffset() {
@@ -250,7 +250,7 @@ public abstract class AbstractWordRenderer implements WordRenderer {
 
 	/**
 	 * Returns y-axis offset.
-	 * 
+	 *
 	 * @return y-axis offset
 	 */
 	protected double yOffset() {
@@ -270,7 +270,7 @@ public abstract class AbstractWordRenderer implements WordRenderer {
 	/**
 	 * Returns a {@link Font} loaded from supplied {@code resourceName}, or {@code null} if unable to load the
 	 * resource.
-	 * 
+	 *
 	 * @param resourceName path to resource
 	 * @return loaded {@link Font}
 	 * @since 1.5

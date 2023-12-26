@@ -97,7 +97,7 @@ public class RandomNumberVoiceProducer implements VoiceProducer {
 	/**
 	 * Constructor taking a language {@link Locale}. If {@code language} is not a
 	 * supported language, the default language will be used.
-	 * 
+	 *
 	 * @param language a {@link Locale} representing a language
 	 * @see <a href="https://github.com/logicsquad/nanocaptcha/issues/7">#7</a>
 	 * @since 1.4
@@ -123,7 +123,7 @@ public class RandomNumberVoiceProducer implements VoiceProducer {
 
 	/**
 	 * Returns a default {@link Locale} to use when not explicitly declared by constructor.
-	 * 
+	 *
 	 * @return default {@link Locale}
 	 * @see <a href="https://github.com/logicsquad/nanocaptcha/issues/7">#7</a>
 	 * @since 1.4
@@ -146,7 +146,7 @@ public class RandomNumberVoiceProducer implements VoiceProducer {
 
 	/**
 	 * Returns a localized path prefix to find the vocalizations.
-	 * 
+	 *
 	 * @return path prefix
 	 * @see <a href="https://github.com/logicsquad/nanocaptcha/issues/7">#7</a>
 	 * @since 1.4
@@ -160,7 +160,7 @@ public class RandomNumberVoiceProducer implements VoiceProducer {
 
 	/**
 	 * Returns the map from numbers to vocalization samples.
-	 * 
+	 *
 	 * @return map of vocalizations
 	 * @see <a href="https://github.com/logicsquad/nanocaptcha/issues/7">#7</a>
 	 * @since 1.4

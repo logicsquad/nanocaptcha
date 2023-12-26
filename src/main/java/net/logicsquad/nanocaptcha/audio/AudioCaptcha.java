@@ -53,17 +53,17 @@ public final class AudioCaptcha {
 	 * <p>
 	 * Returns a new {@code AudioCaptcha} with some very basic settings:
 	 * <p>
-	 * 
+	 *
 	 * <ul>
 	 * <li>{@link NumbersContentProducer} with length 5; and</li>
 	 * <li>{@link RandomNumberVoiceProducer} (in the default {@link Locale}); and</li>
 	 * <li>{@link DefaultWordRenderer} with <em>its</em> defaults.</li>
 	 * </ul>
-	 * 
+	 *
 	 * <p>
 	 * That is, the audio clip will contain five numbers read out in English (unless the default {@link Locale} has been changed).
 	 * </p>
-	 * 
+	 *
 	 * @return new {@code AudioCaptcha}
 	 * @since 2.0
 	 */

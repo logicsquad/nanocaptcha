@@ -56,6 +56,6 @@ public class RandomNumberVoiceProducerTest {
 		// We don't support French yet
 		RandomNumberVoiceProducer r3 = new RandomNumberVoiceProducer(Locale.FRENCH);
 		assertEquals(r3.language, Locale.ENGLISH);
-		return;	
+		return;
 	}
 }

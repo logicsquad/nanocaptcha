@@ -6,7 +6,7 @@ import org.junit.jupiter.api.Test;
 
 /**
  * Unit tests on {@link ChineseContentProducer} class.
- * 
+ *
  * @author <a href="mailto:paulh@logicsquad.net">Paul Hoadley</a>
  * @since 1.1
  */
