@@ -33,7 +33,7 @@ import java.util.function.Supplier;
  * @author <a href="mailto:botyrbojey@gmail.com">bivashy</a>
  * @since 1.1
  */
-public class FastWordRenderer extends AbstractWordRenderer {
+public final class FastWordRenderer extends AbstractWordRenderer {
 	/**
 	 * Horizontal space between glyphs (in pixels)
 	 */

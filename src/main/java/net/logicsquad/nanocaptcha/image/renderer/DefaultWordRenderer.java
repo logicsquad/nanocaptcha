@@ -19,7 +19,7 @@ import java.util.function.Supplier;
  * @author <a href="mailto:botyrbojey@gmail.com">bivashy</a>
  * @since 1.0
  */
-public class DefaultWordRenderer extends AbstractWordRenderer {
+public final class DefaultWordRenderer extends AbstractWordRenderer {
 	/**
 	 * List of available {@link Font}s
 	 */
