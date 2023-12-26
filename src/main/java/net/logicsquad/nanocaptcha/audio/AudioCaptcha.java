@@ -52,7 +52,7 @@ public final class AudioCaptcha {
 	/**
 	 * <p>
 	 * Returns a new {@code AudioCaptcha} with some very basic settings:
-	 * <p>
+	 * </p>
 	 *
 	 * <ul>
 	 * <li>{@link NumbersContentProducer} with length 5; and</li>

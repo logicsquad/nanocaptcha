@@ -75,7 +75,7 @@ public final class ImageCaptcha {
 	/**
 	 * <p>
 	 * Returns a new {@code ImageCaptcha} with some very basic settings:
-	 * <p>
+	 * </p>
 	 *
 	 * <ul>
 	 * <li>x- and y-dimensions 200 x 50, unless overridden by properties;</li>
