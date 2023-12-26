@@ -1,6 +1,8 @@
 package net.logicsquad.nanocaptcha.image.renderer;
 
-import java.awt.*;
+import java.awt.Color;
+import java.awt.Font;
+import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Supplier;
@@ -98,8 +100,9 @@ public class FastWordRenderer extends AbstractWordRenderer {
 	/**
 	 * Constructor taking x- and y-axis offsets
 	 * 
-	 * @param xOffset x-axis offset
-	 * @param yOffset y-axis offset
+	 * @param xOffset           x-axis offset
+	 * @param yOffset           y-axis offset
+	 * @param wordColorSupplier {@link Color} supplier
 	 * @since 1.4
 	 */
 	private FastWordRenderer(double xOffset, double yOffset, Supplier<Color> wordColorSupplier) {

@@ -28,8 +28,9 @@ public class DefaultWordRenderer extends AbstractWordRenderer {
 	/**
 	 * Constructor taking x- and y-axis offsets
 	 * 
-	 * @param xOffset x-axis offset
-	 * @param yOffset y-axis offset
+	 * @param xOffset           x-axis offset
+	 * @param yOffset           y-axis offset
+	 * @param wordColorSupplier {@link Color} supplier
 	 * @since 1.4
 	 */
 	private DefaultWordRenderer(double xOffset, double yOffset, Supplier<Color> wordColorSupplier) {

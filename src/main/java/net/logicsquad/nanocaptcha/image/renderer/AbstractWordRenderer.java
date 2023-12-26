@@ -120,8 +120,9 @@ public abstract class AbstractWordRenderer implements WordRenderer {
 	/**
 	 * Constructor taking x- and y-offset overrides
 	 * 
-	 * @param xOffset x-axis offset
-	 * @param yOffset y-axis offset
+	 * @param xOffset           x-axis offset
+	 * @param yOffset           y-axis offset
+	 * @param wordColorSupplier {@link Color} supplier
 	 */
 	protected AbstractWordRenderer(double xOffset, double yOffset, Supplier<Color> wordColorSupplier) {
 		this.xOffset = xOffset;
