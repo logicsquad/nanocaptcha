@@ -7,6 +7,7 @@ import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Random;
@@ -46,24 +47,25 @@ public abstract class AbstractWordRenderer implements WordRenderer {
 	/**
 	 * Default {@link Color}s
 	 */
-	protected static final List<Color> DEFAULT_COLORS = new ArrayList<>();
+	protected static final List<Color> DEFAULT_COLORS;
+
+	/**
+	 * Default fonts
+	 */
+	protected static final List<Font> DEFAULT_FONTS;
+
+	// Set up default Colors, Fonts
+	static {
+		List<Color> defaultColors = Arrays.asList(Color.BLACK);
+		DEFAULT_COLORS = Collections.unmodifiableList(defaultColors);
+		List<Font> defaultFonts = Arrays.asList(fontFromResource(COURIER_PRIME_FONT), fontFromResource(PUBLIC_SANS_FONT));
+		DEFAULT_FONTS = Collections.unmodifiableList(defaultFonts);
+	}
 
     /**
      * Default supplier of the {@link Color}
      */
     protected static final Supplier<Color> DEFAULT_COLOR_SUPPLIER = () -> DEFAULT_COLORS.get(RAND.nextInt(DEFAULT_COLORS.size()));
-
-	/**
-	 * Default fonts
-	 */
-	protected static final List<Font> DEFAULT_FONTS = new ArrayList<>();
-
-	// Set up default Colors, Fonts
-	static {
-		DEFAULT_COLORS.add(Color.BLACK);
-		DEFAULT_FONTS.add(fontFromResource(COURIER_PRIME_FONT));
-		DEFAULT_FONTS.add(fontFromResource(PUBLIC_SANS_FONT));
-	}
 
 	/**
 	 * Font size (in points)
