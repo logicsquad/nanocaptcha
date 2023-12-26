@@ -19,7 +19,7 @@ public class FiveLetterFirstNameContentProducer implements ContentProducer {
 	/**
 	 * Names list
 	 */
-	private static final String[] FIRST_NAMES = new String[] { "jomah", "yanae", "dagna", "aadel", "aaden", "aafia",
+	private static final String[] FIRST_NAMES = { "jomah", "yanae", "dagna", "aadel", "aaden", "aafia",
 			"aamir", "aaran", "aaren", "aaric", "aarin", "aarle", "aaron", "aarti", "aaryn", "aasia", "aasif", "aasim",
 			"abame", "abani", "abasi", "abbah", "abban", "abbia", "abbie", "abbud", "abbye", "abdel", "abdou", "abdul",
 			"abdur", "abdus", "abebe", "abebi", "abeer", "abeli", "abena", "abeni", "abhay", "abias", "abida", "abiel",

@@ -10,7 +10,7 @@ public class LatinContentProducer extends AbstractContentProducer {
     /**
      * Source characters
      */
-    private static final char[] DEFAULT_CHARS = new char[] { 'a', 'b', 'c', 'd',
+    private static final char[] DEFAULT_CHARS = { 'a', 'b', 'c', 'd',
             'e', 'f', 'g', 'h', 'k', 'm', 'n', 'p', 'r', 'w', 'x', 'y',
             '2', '3', '4', '5', '6', '7', '8', };
 
