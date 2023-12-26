@@ -168,7 +168,7 @@ public abstract class AbstractWordRenderer implements WordRenderer {
 		 * @param yOffset y-offset (in [0, 1])
 		 * @return this
 		 */
-		public Builder setYOffset(double yOffset) {
+		public Builder yOffset(double yOffset) {
 			this.yOffset = yOffset;
 			return this;
 		}
@@ -179,7 +179,7 @@ public abstract class AbstractWordRenderer implements WordRenderer {
 		 * @param xOffset x-offset (in [0, 1])
 		 * @return this
 		 */
-		public Builder setXOffset(double xOffset) {
+		public Builder xOffset(double xOffset) {
 			this.xOffset = xOffset;
 			return this;
 		}
