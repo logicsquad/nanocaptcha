@@ -9,59 +9,33 @@ import java.awt.font.GlyphVector;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Supplier;
 
 /**
  * Renders the content onto the image.
  *
  * @author <a href="mailto:james.childers@gmail.com">James Childers</a>
  * @author <a href="mailto:paulh@logicsquad.net">Paul Hoadley</a>
+ * @author <a href="mailto:botyrbojey@gmail.com">bivashy</a>
  * @since 1.0
  */
-public class DefaultWordRenderer extends AbstractWordRenderer {
-	/**
-	 * List of available {@link Color}s
-	 */
-	private final List<Color> colors = new ArrayList<>();
-
+public final class DefaultWordRenderer extends AbstractWordRenderer {
 	/**
 	 * List of available {@link Font}s
 	 */
 	private final List<Font> fonts = new ArrayList<>();
 
 	/**
-	 * Constructor using default {@link Color} (black) and {@link Font}s (Arial and Courier).
-	 * 
-	 * @deprecated use {@link Builder} instead
-	 */
-	public DefaultWordRenderer() {
-		this(X_OFFSET_DEFAULT, Y_OFFSET_DEFAULT);
-		return;
-	}
-
-	/**
 	 * Constructor taking x- and y-axis offsets
 	 * 
-	 * @param xOffset x-axis offset
-	 * @param yOffset y-axis offset
+	 * @param xOffset           x-axis offset
+	 * @param yOffset           y-axis offset
+	 * @param wordColorSupplier {@link Color} supplier
 	 * @since 1.4
 	 */
-	private DefaultWordRenderer(double xOffset, double yOffset) {
-		super(xOffset, yOffset);
-		this.colors.addAll(DEFAULT_COLORS);
+	private DefaultWordRenderer(double xOffset, double yOffset, Supplier<Color> wordColorSupplier) {
+		super(xOffset, yOffset, wordColorSupplier);
 		this.fonts.addAll(DEFAULT_FONTS);
-		return;
-	}
-
-	/**
-	 * Constructor taking a list of {@link Color}s and {@link Font}s to choose from.
-	 *
-	 * @param colors {@link Color}s
-	 * @param fonts  {@link Font}s
-	 * @deprecated use {@link Builder} instead
-	 */
-	public DefaultWordRenderer(List<Color> colors, List<Font> fonts) {
-		this.colors.addAll(colors);
-		this.fonts.addAll(fonts);
 		return;
 	}
 
@@ -81,7 +55,7 @@ public class DefaultWordRenderer extends AbstractWordRenderer {
 		for (char c : word.toCharArray()) {
 			chars[0] = c;
 
-			g.setColor(nextColor());
+			g.setColor(wordColorSupplier().get());
 			Font font = nextFont();
 			g.setFont(font);
 			GlyphVector gv = font.createGlyphVector(frc, chars);
@@ -89,20 +63,6 @@ public class DefaultWordRenderer extends AbstractWordRenderer {
 
 			int width = (int) gv.getVisualBounds().getWidth();
 			xBaseline = xBaseline + width;
-		}
-	}
-
-	/**
-	 * Returns a random {@link Color} from the list.
-	 * 
-	 * @return random {@link Color}
-	 * @since 1.1
-	 */
-	private Color nextColor() {
-		if (colors.size() == 1) {
-			return colors.get(0);
-		} else {
-			return colors.get(RAND.nextInt(colors.size()));
 		}
 	}
 
@@ -128,7 +88,7 @@ public class DefaultWordRenderer extends AbstractWordRenderer {
 	public static class Builder extends AbstractWordRenderer.Builder {
 		@Override
 		public DefaultWordRenderer build() {
-			return new DefaultWordRenderer(xOffset, yOffset);
+			return new DefaultWordRenderer(xOffset, yOffset, wordColorSupplier);
 		}
 	}
 }

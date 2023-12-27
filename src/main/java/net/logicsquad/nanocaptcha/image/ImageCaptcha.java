@@ -26,6 +26,26 @@ import net.logicsquad.nanocaptcha.image.renderer.WordRenderer;
  */
 public final class ImageCaptcha {
 	/**
+	 * Key for {@code defaultX} property
+	 */
+	private static final String DEFAULT_X_KEY = "net.logicsquad.nanocaptcha.image.ImageCaptcha.defaultX";
+
+	/**
+	 * Key for {@code defaultY} property
+	 */
+	private static final String DEFAULT_Y_KEY = "net.logicsquad.nanocaptcha.image.ImageCaptcha.defaultY";
+
+	/**
+	 * Default x-value if {@code defaultX} not set
+	 */
+	private static final int DEFAULT_X = 200;
+
+	/**
+	 * Default y-value if {@code defaultY} not set
+	 */
+	private static final int DEFAULT_Y = 50;
+
+	/**
 	 * Generated image
 	 */
 	private final BufferedImage image;
@@ -50,6 +70,33 @@ public final class ImageCaptcha {
 		content = builder.content;
 		created = OffsetDateTime.now();
 		return;
+	}
+
+	/**
+	 * <p>
+	 * Returns a new {@code ImageCaptcha} with some very basic settings:
+	 * </p>
+	 *
+	 * <ul>
+	 * <li>x- and y-dimensions 200 x 50, unless overridden by properties;</li>
+	 * <li>{@link LatinContentProducer} with length 5; and</li>
+	 * <li>{@link DefaultWordRenderer} with <em>its</em> defaults.</li>
+	 * </ul>
+	 *
+	 * <p>
+	 * To override the x- and y-dimensions for your project, you can set these properties:
+	 * </p>
+	 *
+	 * <ul>
+	 * <li>{@code net.logicsquad.nanocaptcha.image.ImageCaptcha.defaultX}</li>
+	 * <li>{@code net.logicsquad.nanocaptcha.image.ImageCaptcha.defaultY}</li>
+	 * </ul>
+	 *
+	 * @return new {@code ImageCaptcha}
+	 * @since 2.0
+	 */
+	public static ImageCaptcha create() {
+		return new Builder(Integer.getInteger(DEFAULT_X_KEY, DEFAULT_X), Integer.getInteger(DEFAULT_Y_KEY, DEFAULT_Y)).addContent().build();
 	}
 
 	/**
@@ -145,7 +192,7 @@ public final class ImageCaptcha {
 		 * @return this
 		 */
 		public Builder addContent(ContentProducer contentProducer) {
-			return addContent(contentProducer, new DefaultWordRenderer());
+			return addContent(contentProducer, new DefaultWordRenderer.Builder().build());
 		}
 
 		/**
@@ -219,6 +266,7 @@ public final class ImageCaptcha {
 		 *
 		 * @return {@link ImageCaptcha} as described by this {@code Builder}
 		 */
+		@Override
 		public ImageCaptcha build() {
 			if (background != null) {
 				// Paint the main image over the background

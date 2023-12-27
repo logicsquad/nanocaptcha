@@ -95,31 +95,9 @@ public class RandomNumberVoiceProducer implements VoiceProducer {
 	}
 
 	/**
-	 * Creates a {@code RandomNumberVoiceProducer} for the given {@code voices}, a
-	 * map of numbers to their corresponding filename options. Conceptually the map
-	 * must look like the following:
-	 *
-	 * <pre>
-	 * {1 => ["/my_sounds/1-quiet.wav", "/my_sounds/1-loud.wav"],
-	 *  2 => ["/my_sounds/2-quiet.wav", "/my_sounds/2-loud.wav"]}
-	 * </pre>
-	 *
-	 * @param voices map of digits to list of vocalizations of that digit
-	 * @throws NullPointerException if {@code voices} is {@code null}
-	 * @deprecated Use {@link #RandomNumberVoiceProducer(Locale)} with a supported
-	 *             language instead
-	 */
-	@Deprecated
-	public RandomNumberVoiceProducer(Map<Integer, List<String>> voices) {
-		this.language = defaultLanguage();
-		this.vocalizations = Objects.requireNonNull(voices);
-		return;
-	}
-
-	/**
 	 * Constructor taking a language {@link Locale}. If {@code language} is not a
 	 * supported language, the default language will be used.
-	 * 
+	 *
 	 * @param language a {@link Locale} representing a language
 	 * @see <a href="https://github.com/logicsquad/nanocaptcha/issues/7">#7</a>
 	 * @since 1.4
@@ -145,7 +123,7 @@ public class RandomNumberVoiceProducer implements VoiceProducer {
 
 	/**
 	 * Returns a default {@link Locale} to use when not explicitly declared by constructor.
-	 * 
+	 *
 	 * @return default {@link Locale}
 	 * @see <a href="https://github.com/logicsquad/nanocaptcha/issues/7">#7</a>
 	 * @since 1.4
@@ -168,7 +146,7 @@ public class RandomNumberVoiceProducer implements VoiceProducer {
 
 	/**
 	 * Returns a localized path prefix to find the vocalizations.
-	 * 
+	 *
 	 * @return path prefix
 	 * @see <a href="https://github.com/logicsquad/nanocaptcha/issues/7">#7</a>
 	 * @since 1.4
@@ -182,7 +160,7 @@ public class RandomNumberVoiceProducer implements VoiceProducer {
 
 	/**
 	 * Returns the map from numbers to vocalization samples.
-	 * 
+	 *
 	 * @return map of vocalizations
 	 * @see <a href="https://github.com/logicsquad/nanocaptcha/issues/7">#7</a>
 	 * @since 1.4

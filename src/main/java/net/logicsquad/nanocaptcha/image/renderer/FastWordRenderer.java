@@ -5,16 +5,16 @@ import java.awt.Font;
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.Supplier;
 
 /**
  * <p>
  * Based on the {@link DefaultWordRenderer}, this implementation strips down to the basics to render {@link BufferedImage}s as much as 5X
- * faster. (This class will render almost 70,000 {@link BufferedImage}s per second on an iMac with a 4GHx Intel Core i7 CPU.) It has the
+ * faster. (This class will render almost 70,000 {@link BufferedImage}s per second on an iMac with a 4GHz Intel Core i7 CPU.) It has the
  * following restrictions compared to {@link DefaultWordRenderer}:
  * </p>
- * 
+ *
  * <ul>
- * <li>{@link Color} choices are limited: text is rendered in black.</li>
  * <li>{@link Font} choices are limited: renders with "Courier Prime" and "Public Sans".</li>
  * <li>Rendered text is <em>not</em> anti-aliased.</li>
  * <li>{@link DefaultWordRenderer} measures the size of each glyph it renders to calculate horizontal spacing. This class uses fixed
@@ -22,17 +22,18 @@ import java.util.concurrent.atomic.AtomicInteger;
  * <li>{@link Font} choice is only random for the first 100 choices: this class pre-computes a list of random indexes into the {@link Font}
  * array, and then <em>re-uses</em> those indexes by cycling through them repeatedly.</li>
  * </ul>
- * 
+ *
  * <p>
  * As noted above, this class will render each glyph with a random horizontal and vertical fudge factor between (-5, 5) from the baseline.
  * The effect is that glyphs can move around and bunch together (or spread apart) more. As with {@link Font} choice, there is only limited
  * randomness here: again, we pre-compute a list of 100 random fudge values in the range, and cycle through that list repeatedly.
  * </p>
- * 
+ *
  * @author <a href="mailto:paulh@logicsquad.net">Paul Hoadley</a>
+ * @author <a href="mailto:botyrbojey@gmail.com">bivashy</a>
  * @since 1.1
  */
-public class FastWordRenderer extends AbstractWordRenderer {
+public final class FastWordRenderer extends AbstractWordRenderer {
 	/**
 	 * Horizontal space between glyphs (in pixels)
 	 */
@@ -79,11 +80,6 @@ public class FastWordRenderer extends AbstractWordRenderer {
 	private static AtomicInteger fudgePointer = new AtomicInteger(0);
 
 	/**
-	 * Available {@link Color}
-	 */
-	private static final Color COLOR = Color.BLACK;
-
-	/**
 	 * Available {@link Font}s
 	 */
 	private static final Font[] FONTS = new Font[2];
@@ -102,24 +98,15 @@ public class FastWordRenderer extends AbstractWordRenderer {
 	}
 
 	/**
-	 * Constructor
-	 * 
-	 * @deprecated use {@link Builder} instead
-	 */
-	public FastWordRenderer() {
-		this(X_OFFSET_DEFAULT, Y_OFFSET_DEFAULT);
-		return;
-	}
-
-	/**
 	 * Constructor taking x- and y-axis offsets
-	 * 
-	 * @param xOffset x-axis offset
-	 * @param yOffset y-axis offset
+	 *
+	 * @param xOffset           x-axis offset
+	 * @param yOffset           y-axis offset
+	 * @param wordColorSupplier {@link Color} supplier
 	 * @since 1.4
 	 */
-	private FastWordRenderer(double xOffset, double yOffset) {
-		super(xOffset, yOffset);
+	private FastWordRenderer(double xOffset, double yOffset, Supplier<Color> wordColorSupplier) {
+		super(xOffset, yOffset, wordColorSupplier);
 		return;
 	}
 
@@ -131,7 +118,7 @@ public class FastWordRenderer extends AbstractWordRenderer {
 		char[] chars = new char[1];
 		for (char c : word.toCharArray()) {
 			chars[0] = c;
-			g.setColor(COLOR);
+			g.setColor(wordColorSupplier().get());
 			g.setFont(nextFont());
 			int xFudge = nextFudge();
 			int yFudge = nextFudge();
@@ -142,7 +129,7 @@ public class FastWordRenderer extends AbstractWordRenderer {
 
 	/**
 	 * Returns the next {@link Font} to use.
-	 * 
+	 *
 	 * @return next {@link Font}
 	 */
 	private Font nextFont() {
@@ -155,7 +142,7 @@ public class FastWordRenderer extends AbstractWordRenderer {
 
 	/**
 	 * Returns the next fudge value to use.
-	 * 
+	 *
 	 * @return fudge value
 	 */
 	private int nextFudge() {
@@ -164,13 +151,13 @@ public class FastWordRenderer extends AbstractWordRenderer {
 
 	/**
 	 * Builder for {@link FastWordRenderer}.
-	 * 
+	 *
 	 * @since 1.4
 	 */
 	public static class Builder extends AbstractWordRenderer.Builder {
 		@Override
 		public FastWordRenderer build() {
-			return new FastWordRenderer(xOffset, yOffset);
+			return new FastWordRenderer(xOffset, yOffset, wordColorSupplier);
 		}
 	}
 }

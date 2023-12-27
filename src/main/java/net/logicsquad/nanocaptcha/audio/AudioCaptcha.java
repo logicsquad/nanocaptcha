@@ -48,6 +48,27 @@ public final class AudioCaptcha {
 	}
 
 	/**
+	 * <p>
+	 * Returns a new {@code AudioCaptcha} with some very basic settings:
+	 * </p>
+	 *
+	 * <ul>
+	 * <li>{@link NumbersContentProducer} with length 5; and</li>
+	 * <li>{@link RandomNumberVoiceProducer} (in the default {@link java.util.Locale Locale}).</li>
+	 * </ul>
+	 *
+	 * <p>
+	 * That is, the audio clip will contain five numbers read out in English (unless the default {@code Locale} has been changed).
+	 * </p>
+	 *
+	 * @return new {@code AudioCaptcha}
+	 * @since 2.0
+	 */
+	public static AudioCaptcha create() {
+		return new AudioCaptcha.Builder().addContent().build();
+	}
+
+	/**
 	 * Build for an {@link AudioCaptcha}.
 	 */
 	public static class Builder implements net.logicsquad.nanocaptcha.Builder<AudioCaptcha> {
@@ -164,6 +185,7 @@ public final class AudioCaptcha {
 		 *
 		 * @return {@link AudioCaptcha} as described by this {@code Builder}
 		 */
+		@Override
 		public AudioCaptcha build() {
 			// Make sure we have at least one voiceProducer
 			if (voiceProducers.isEmpty()) {

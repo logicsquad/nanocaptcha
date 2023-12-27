@@ -12,8 +12,8 @@ import org.junit.jupiter.api.Test;
 
 /**
  * Unit tests on {@link RippleImageFilter} class.
- * 
- * @author paulh
+ *
+ * @author <a href="mailto:paulh@logicsquad.net">Paul Hoadley</a>
  * @since 1.2
  */
 public class RippleImageFilterTest {
@@ -29,20 +29,20 @@ public class RippleImageFilterTest {
 	 * Compares a known expected result to an actual transformation. This method is
 	 * to allow us to make changes to the implementation of
 	 * {@link RippleImageFilter} and confirm its functionality is unchanged.
-	 * 
+	 *
 	 * @throws IOException if there is a problem reading images
 	 */
 	@Test
 	public void rippleImageFilterProducesExpectedTransformation() throws IOException {
-		BufferedImage input = ImageIO.read(getClass().getClassLoader().getResourceAsStream("input.png"));
-		BufferedImage expected = ImageIO.read(getClass().getClassLoader().getResourceAsStream("output.png"));
+		BufferedImage input = ImageIO.read(RippleImageFilterTest.class.getClassLoader().getResourceAsStream("input.png"));
+		BufferedImage expected = ImageIO.read(RippleImageFilterTest.class.getClassLoader().getResourceAsStream("output.png"));
 		rippleImageFilter.filter(input);
 		assertTrue(bufferedImagesEqual(expected, input));
 		return;
 	}
 
 	/**
-	 * 
+	 *
 	 * @param expected expected {@link BufferedImage}
 	 * @param actual   actual {@link BufferedImage}
 	 * @return {@code true} if {@code expected} and {@code actual} are the same,

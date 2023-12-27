@@ -74,3 +74,25 @@ up, including: Javadoc comments, visibility tightening, API pruning.
 - `FastWordRenderer` was initialising static variables in its
   constructor. This has been moved out to a static
   block. [#15](https://github.com/logicsquad/nanocaptcha/issues/15)
+
+
+## Release 2.0 (2023-12-27)
+
+### Added
+- Improves colour support in `WordRenderer`
+  implementations. `DefaultWordRenderer` loses the deprecated
+  `DefaultWordRenderer(List<Color> colors, List<Font> fonts)`
+  constructor, and colours are now handled by additions to its
+  `Builder` (via `AbstractWordRenderer.Builder`). `FastWordRenderer`
+  benefits in the same way, and it is no longer restricted to a single
+  colour. Colour options can now be supplied by the `Builder`'s
+  `color()` and `randomColor()` methods. #18
+- Adds two new `NoiseProducer` implementations:
+  `GaussianNoiseProducer` and `SaltAndPepperNoiseProducer`. #19
+- Adds new `create()` static factory method in both `ImageCaptcha` and
+  `AudioCaptcha` to make the simplest case even simpler. #12
+- Adds an SLF4J implementation for unit tests to use. #20
+
+### Changed
+- Removes deprecated constructors in `RandomNumberVoiceProducer`,
+  `DefaultWordRenderer` and `FastWordRenderer`. #11
