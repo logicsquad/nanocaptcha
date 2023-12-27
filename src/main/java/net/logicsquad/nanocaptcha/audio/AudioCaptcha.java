@@ -3,7 +3,6 @@ package net.logicsquad.nanocaptcha.audio;
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
 import java.util.Random;
 
 import net.logicsquad.nanocaptcha.audio.noise.NoiseProducer;
@@ -12,7 +11,6 @@ import net.logicsquad.nanocaptcha.audio.producer.RandomNumberVoiceProducer;
 import net.logicsquad.nanocaptcha.audio.producer.VoiceProducer;
 import net.logicsquad.nanocaptcha.content.ContentProducer;
 import net.logicsquad.nanocaptcha.content.NumbersContentProducer;
-import net.logicsquad.nanocaptcha.image.renderer.DefaultWordRenderer;
 
 /**
  * An audio CAPTCHA.
@@ -56,12 +54,11 @@ public final class AudioCaptcha {
 	 *
 	 * <ul>
 	 * <li>{@link NumbersContentProducer} with length 5; and</li>
-	 * <li>{@link RandomNumberVoiceProducer} (in the default {@link Locale}); and</li>
-	 * <li>{@link DefaultWordRenderer} with <em>its</em> defaults.</li>
+	 * <li>{@link RandomNumberVoiceProducer} (in the default {@link java.util.Locale Locale}).</li>
 	 * </ul>
 	 *
 	 * <p>
-	 * That is, the audio clip will contain five numbers read out in English (unless the default {@link Locale} has been changed).
+	 * That is, the audio clip will contain five numbers read out in English (unless the default {@code Locale} has been changed).
 	 * </p>
 	 *
 	 * @return new {@code AudioCaptcha}
