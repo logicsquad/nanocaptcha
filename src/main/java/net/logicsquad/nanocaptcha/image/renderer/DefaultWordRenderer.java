@@ -7,8 +7,6 @@ import java.awt.RenderingHints;
 import java.awt.font.FontRenderContext;
 import java.awt.font.GlyphVector;
 import java.awt.image.BufferedImage;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.function.Supplier;
 
 /**
@@ -21,21 +19,16 @@ import java.util.function.Supplier;
  */
 public final class DefaultWordRenderer extends AbstractWordRenderer {
 	/**
-	 * List of available {@link Font}s
-	 */
-	private final List<Font> fonts = new ArrayList<>();
-
-	/**
 	 * Constructor taking x- and y-axis offsets
 	 * 
 	 * @param xOffset       x-axis offset
 	 * @param yOffset       y-axis offset
 	 * @param colorSupplier {@link Color} supplier
+	 * @param fontSupplier  {@link Font} supplier
 	 * @since 1.4
 	 */
-	private DefaultWordRenderer(double xOffset, double yOffset, Supplier<Color> colorSupplier) {
-		super(xOffset, yOffset, colorSupplier);
-		this.fonts.addAll(DEFAULT_FONTS);
+	private DefaultWordRenderer(double xOffset, double yOffset, Supplier<Color> colorSupplier, Supplier<Font> fontSupplier) {
+		super(xOffset, yOffset, colorSupplier, fontSupplier);
 		return;
 	}
 
@@ -56,27 +49,13 @@ public final class DefaultWordRenderer extends AbstractWordRenderer {
 			chars[0] = c;
 
 			g.setColor(colorSupplier().get());
-			Font font = nextFont();
+			Font font = fontSupplier().get();
 			g.setFont(font);
 			GlyphVector gv = font.createGlyphVector(frc, chars);
 			g.drawChars(chars, 0, chars.length, xBaseline, yBaseline);
 
 			int width = (int) gv.getVisualBounds().getWidth();
 			xBaseline = xBaseline + width;
-		}
-	}
-
-	/**
-	 * Returns a random {@link Font} from the list.
-	 * 
-	 * @return random {@link Font}
-	 * @since 1.1
-	 */
-	private Font nextFont() {
-		if (fonts.size() == 1) {
-			return fonts.get(0);
-		} else {
-			return fonts.get(RAND.nextInt(fonts.size()));
 		}
 	}
 
@@ -88,7 +67,7 @@ public final class DefaultWordRenderer extends AbstractWordRenderer {
 	public static class Builder extends AbstractWordRenderer.Builder {
 		@Override
 		public DefaultWordRenderer build() {
-			return new DefaultWordRenderer(xOffset, yOffset, colorSupplier);
+			return new DefaultWordRenderer(xOffset, yOffset, colorSupplier, fontSupplier);
 		}
 	}
 }
