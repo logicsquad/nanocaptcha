@@ -28,13 +28,13 @@ public final class DefaultWordRenderer extends AbstractWordRenderer {
 	/**
 	 * Constructor taking x- and y-axis offsets
 	 * 
-	 * @param xOffset           x-axis offset
-	 * @param yOffset           y-axis offset
-	 * @param wordColorSupplier {@link Color} supplier
+	 * @param xOffset       x-axis offset
+	 * @param yOffset       y-axis offset
+	 * @param colorSupplier {@link Color} supplier
 	 * @since 1.4
 	 */
-	private DefaultWordRenderer(double xOffset, double yOffset, Supplier<Color> wordColorSupplier) {
-		super(xOffset, yOffset, wordColorSupplier);
+	private DefaultWordRenderer(double xOffset, double yOffset, Supplier<Color> colorSupplier) {
+		super(xOffset, yOffset, colorSupplier);
 		this.fonts.addAll(DEFAULT_FONTS);
 		return;
 	}
@@ -55,7 +55,7 @@ public final class DefaultWordRenderer extends AbstractWordRenderer {
 		for (char c : word.toCharArray()) {
 			chars[0] = c;
 
-			g.setColor(wordColorSupplier().get());
+			g.setColor(colorSupplier().get());
 			Font font = nextFont();
 			g.setFont(font);
 			GlyphVector gv = font.createGlyphVector(frc, chars);
@@ -88,7 +88,7 @@ public final class DefaultWordRenderer extends AbstractWordRenderer {
 	public static class Builder extends AbstractWordRenderer.Builder {
 		@Override
 		public DefaultWordRenderer build() {
-			return new DefaultWordRenderer(xOffset, yOffset, wordColorSupplier);
+			return new DefaultWordRenderer(xOffset, yOffset, colorSupplier);
 		}
 	}
 }

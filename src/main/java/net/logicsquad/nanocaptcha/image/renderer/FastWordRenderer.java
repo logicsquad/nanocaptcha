@@ -118,7 +118,7 @@ public final class FastWordRenderer extends AbstractWordRenderer {
 		char[] chars = new char[1];
 		for (char c : word.toCharArray()) {
 			chars[0] = c;
-			g.setColor(wordColorSupplier().get());
+			g.setColor(colorSupplier().get());
 			g.setFont(nextFont());
 			int xFudge = nextFudge();
 			int yFudge = nextFudge();
@@ -157,7 +157,7 @@ public final class FastWordRenderer extends AbstractWordRenderer {
 	public static class Builder extends AbstractWordRenderer.Builder {
 		@Override
 		public FastWordRenderer build() {
-			return new FastWordRenderer(xOffset, yOffset, wordColorSupplier);
+			return new FastWordRenderer(xOffset, yOffset, colorSupplier);
 		}
 	}
 }

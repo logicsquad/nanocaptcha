@@ -105,7 +105,7 @@ public abstract class AbstractWordRenderer implements WordRenderer {
 	/**
 	 * Supplier of {@link Color}
 	 */
-	private final Supplier<Color> wordColorSupplier;
+	private final Supplier<Color> colorSupplier;
 
 	/**
 	 * Constructor
@@ -113,21 +113,21 @@ public abstract class AbstractWordRenderer implements WordRenderer {
 	protected AbstractWordRenderer() {
 		this.xOffset = X_OFFSET_DEFAULT;
 		this.yOffset = Y_OFFSET_DEFAULT;
-		this.wordColorSupplier = DEFAULT_COLOR_SUPPLIER;
+		this.colorSupplier = DEFAULT_COLOR_SUPPLIER;
 		return;
 	}
 
 	/**
 	 * Constructor taking x- and y-offset overrides
 	 *
-	 * @param xOffset           x-axis offset
-	 * @param yOffset           y-axis offset
-	 * @param wordColorSupplier {@link Color} supplier
+	 * @param xOffset       x-axis offset
+	 * @param yOffset       y-axis offset
+	 * @param colorSupplier {@link Color} supplier
 	 */
-	protected AbstractWordRenderer(double xOffset, double yOffset, Supplier<Color> wordColorSupplier) {
+	protected AbstractWordRenderer(double xOffset, double yOffset, Supplier<Color> colorSupplier) {
 		this.xOffset = xOffset;
 		this.yOffset = yOffset;
-        this.wordColorSupplier = wordColorSupplier;
+        this.colorSupplier = colorSupplier;
 		return;
 	}
 
@@ -151,7 +151,7 @@ public abstract class AbstractWordRenderer implements WordRenderer {
         /**
          * Supplier of {@link Color}
          */
-        protected Supplier<Color> wordColorSupplier;
+        protected Supplier<Color> colorSupplier;
 
 		/**
 		 * Constructor
@@ -159,7 +159,7 @@ public abstract class AbstractWordRenderer implements WordRenderer {
 		protected Builder() {
 			xOffset = X_OFFSET_DEFAULT;
 			yOffset = Y_OFFSET_DEFAULT;
-            wordColorSupplier = DEFAULT_COLOR_SUPPLIER;
+            colorSupplier = DEFAULT_COLOR_SUPPLIER;
 			return;
 		}
 
@@ -221,7 +221,7 @@ public abstract class AbstractWordRenderer implements WordRenderer {
 		 */
 		public Builder randomColor(List<Color> colors) {
 			if (!colors.isEmpty()) {
-				this.wordColorSupplier = () -> colors.get(RAND.nextInt(colors.size()));
+				this.colorSupplier = () -> colors.get(RAND.nextInt(colors.size()));
 			}
 			return this;
 		}
@@ -234,7 +234,7 @@ public abstract class AbstractWordRenderer implements WordRenderer {
 		 * @since 2.0
 		 */
 		public Builder color(Color color) {
-			this.wordColorSupplier = () -> color;
+			this.colorSupplier = () -> color;
 			return this;
 		}
 	}
@@ -258,13 +258,13 @@ public abstract class AbstractWordRenderer implements WordRenderer {
 	}
 
 	/**
-	 * Returns word color supplier.
+	 * Returns {@link Color} supplier.
 	 *
-	 * @return word color supplier
+	 * @return {@link Color} supplier
 	 * @since 2.0
 	 */
-	protected Supplier<Color> wordColorSupplier() {
-		return wordColorSupplier;
+	protected Supplier<Color> colorSupplier() {
+		return colorSupplier;
 	}
 
 	/**
