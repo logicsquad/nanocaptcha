@@ -118,16 +118,6 @@ public abstract class AbstractWordRenderer implements WordRenderer {
 	private final Supplier<Font> fontSupplier;
 
 	/**
-	 * Constructor
-	 */
-	protected AbstractWordRenderer() {
-		this.xOffset = X_OFFSET_DEFAULT;
-		this.yOffset = Y_OFFSET_DEFAULT;
-		this.colorSupplier = DEFAULT_COLOR_SUPPLIER;
-		return;
-	}
-
-	/**
 	 * Constructor taking x- and y-offset overrides
 	 *
 	 * @param xOffset       x-axis offset
