@@ -137,7 +137,7 @@ public abstract class AbstractWordRenderer implements WordRenderer {
 	/**
 	 * Builder for {@code AbstractWordRenderer}.
 	 */
-	abstract static class Builder implements net.logicsquad.nanocaptcha.Builder<AbstractWordRenderer> {
+	public abstract static class Builder implements net.logicsquad.nanocaptcha.Builder<AbstractWordRenderer> {
 		/**
 		 * X-axis offset
 		 */
