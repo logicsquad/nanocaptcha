@@ -101,3 +101,19 @@ up, including: Javadoc comments, visibility tightening, API pruning.
 - Removed deprecated constructors in `RandomNumberVoiceProducer`,
   `DefaultWordRenderer` and
   `FastWordRenderer`. [#11](https://github.com/logicsquad/nanocaptcha/issues/11)
+
+
+## Release 2.1 (2024-01-04)
+
+### Added
+- Added custom font support via `AbstractWordRenderer.Builder`, with
+  methods analogous to recent additions for `Color` support (in
+  2.0). (Note that while `DefaultWordRenderer` will honour custom
+  fonts set, `FastWordRenderer` uses only the two built-in fonts.)
+  [#21](https://github.com/logicsquad/nanocaptcha/issues/21)
+
+### Fixed
+- Reverted the visibility reduction of `AbstractWordRenderer.Builder`
+  to public. (The change in 2.0 effectively completely broke usage of
+  the `Builder`s in both `WordRenderer` implementations!)
+  [#22](https://github.com/logicsquad/nanocaptcha/issues/22)
