@@ -103,10 +103,11 @@ public final class FastWordRenderer extends AbstractWordRenderer {
 	 * @param xOffset           x-axis offset
 	 * @param yOffset           y-axis offset
 	 * @param wordColorSupplier {@link Color} supplier
+	 * @param fontSupplier      {@link Font} supplier
 	 * @since 1.4
 	 */
-	private FastWordRenderer(double xOffset, double yOffset, Supplier<Color> wordColorSupplier) {
-		super(xOffset, yOffset, wordColorSupplier);
+	private FastWordRenderer(double xOffset, double yOffset, Supplier<Color> wordColorSupplier, Supplier<Font> fontSupplier) {
+		super(xOffset, yOffset, wordColorSupplier, fontSupplier);
 		return;
 	}
 
@@ -118,7 +119,7 @@ public final class FastWordRenderer extends AbstractWordRenderer {
 		char[] chars = new char[1];
 		for (char c : word.toCharArray()) {
 			chars[0] = c;
-			g.setColor(wordColorSupplier().get());
+			g.setColor(colorSupplier().get());
 			g.setFont(nextFont());
 			int xFudge = nextFudge();
 			int yFudge = nextFudge();
@@ -150,14 +151,15 @@ public final class FastWordRenderer extends AbstractWordRenderer {
 	}
 
 	/**
-	 * Builder for {@link FastWordRenderer}.
+	 * Builder for {@link FastWordRenderer}. Note that calls to the {@link Font}-related methods inherited from
+	 * {@link AbstractWordRenderer.Builder} are effectively ignored: {@code FastWordRenderer} uses a fixed set of two {@link Font}s.
 	 *
 	 * @since 1.4
 	 */
 	public static class Builder extends AbstractWordRenderer.Builder {
 		@Override
 		public FastWordRenderer build() {
-			return new FastWordRenderer(xOffset, yOffset, wordColorSupplier);
+			return new FastWordRenderer(xOffset, yOffset, colorSupplier, fontSupplier);
 		}
 	}
 }

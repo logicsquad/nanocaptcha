@@ -79,20 +79,41 @@ up, including: Javadoc comments, visibility tightening, API pruning.
 ## Release 2.0 (2023-12-27)
 
 ### Added
-- Improves colour support in `WordRenderer`
+- Improved colour support in `WordRenderer`
   implementations. `DefaultWordRenderer` loses the deprecated
   `DefaultWordRenderer(List<Color> colors, List<Font> fonts)`
   constructor, and colours are now handled by additions to its
   `Builder` (via `AbstractWordRenderer.Builder`). `FastWordRenderer`
   benefits in the same way, and it is no longer restricted to a single
   colour. Colour options can now be supplied by the `Builder`'s
-  `color()` and `randomColor()` methods. #18
-- Adds two new `NoiseProducer` implementations:
-  `GaussianNoiseProducer` and `SaltAndPepperNoiseProducer`. #19
-- Adds new `create()` static factory method in both `ImageCaptcha` and
-  `AudioCaptcha` to make the simplest case even simpler. #12
-- Adds an SLF4J implementation for unit tests to use. #20
+  `color()` and `randomColor()`
+  methods. [#18](https://github.com/logicsquad/nanocaptcha/issues/18)
+- Added two new `NoiseProducer` implementations:
+  `GaussianNoiseProducer` and
+  `SaltAndPepperNoiseProducer`. [#19](https://github.com/logicsquad/nanocaptcha/issues/19)
+- Added new `create()` static factory method in both `ImageCaptcha`
+  and `AudioCaptcha` to make the simplest case even
+  simpler. [#12](https://github.com/logicsquad/nanocaptcha/issues/12)
+- Added an SLF4J implementation for unit tests to
+  use. [#20](https://github.com/logicsquad/nanocaptcha/issues/20)
 
 ### Changed
-- Removes deprecated constructors in `RandomNumberVoiceProducer`,
-  `DefaultWordRenderer` and `FastWordRenderer`. #11
+- Removed deprecated constructors in `RandomNumberVoiceProducer`,
+  `DefaultWordRenderer` and
+  `FastWordRenderer`. [#11](https://github.com/logicsquad/nanocaptcha/issues/11)
+
+
+## Release 2.1 (2024-01-04)
+
+### Added
+- Added custom font support via `AbstractWordRenderer.Builder`, with
+  methods analogous to recent additions for `Color` support (in
+  2.0). (Note that while `DefaultWordRenderer` will honour custom
+  fonts set, `FastWordRenderer` uses only the two built-in fonts.)
+  [#21](https://github.com/logicsquad/nanocaptcha/issues/21)
+
+### Fixed
+- Reverted the visibility reduction of `AbstractWordRenderer.Builder`
+  to public. (The change in 2.0 effectively completely broke usage of
+  the `Builder`s in both `WordRenderer` implementations!)
+  [#22](https://github.com/logicsquad/nanocaptcha/issues/22)

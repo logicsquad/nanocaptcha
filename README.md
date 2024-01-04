@@ -28,6 +28,7 @@ content itself, call `getContent()`.  Image CAPTCHAs can be further
 customised by:
 
 * Using different `ContentProducer`s (e.g., `ChineseContentProducer`).
+* Supplying your own `Color`s and `Font`s.
 * Adding noise using a `NoiseProducer`.
 * Adding various `ImageFilter`s.
 * Adding a background or a border.
@@ -36,7 +37,10 @@ To create a custom CAPTCHA, you can use an `ImageCaptcha.Builder`,
 e.g.:
 
     ImageCaptcha imageCaptcha = new ImageCaptcha.Builder(400, 100)
-        .addContent(new LatinContentProducer(7))
+        .addContent(new LatinContentProducer(7),
+            new DefaultWordRenderer.Builder()
+                .randomColor(Color.BLACK, Color.BLUE, Color.CYAN, Color.RED)
+                .build())
         .addBackground(new GradiatedBackgroundProducer())
         .addNoise(new CurvedLineNoiseProducer())
         .build();
@@ -88,14 +92,6 @@ You can use NanoCaptcha in your projects by including it as a Maven dependency:
       <artifactId>nanocaptcha</artifactId>
       <version>2.0</version>
     </dependency>
-
-Roadmap
--------
-The following are some potential ideas for future releases:
-
-1. Further reduce the public API surface where possible. A first pass
-   over the SimpleCaptcha code made a few reductions, but there might
-   be scope for more.
 
 Contributing
 ------------

@@ -63,9 +63,14 @@ public abstract class AbstractWordRenderer implements WordRenderer {
 	}
 
     /**
-     * Default supplier of the {@link Color}
+     * Default supplier for {@link Color}
      */
     protected static final Supplier<Color> DEFAULT_COLOR_SUPPLIER = () -> DEFAULT_COLORS.get(RAND.nextInt(DEFAULT_COLORS.size()));
+
+    /**
+     * Default supplier for {@link Font}
+     */
+    protected static final Supplier<Font> DEFAULT_FONT_SUPPLIER = () -> DEFAULT_FONTS.get(RAND.nextInt(DEFAULT_FONTS.size()));
 
 	/**
 	 * Font size (in points)
@@ -105,29 +110,26 @@ public abstract class AbstractWordRenderer implements WordRenderer {
 	/**
 	 * Supplier of {@link Color}
 	 */
-	private final Supplier<Color> wordColorSupplier;
+	private final Supplier<Color> colorSupplier;
 
 	/**
-	 * Constructor
+	 * Supplier for {@link Font}
 	 */
-	protected AbstractWordRenderer() {
-		this.xOffset = X_OFFSET_DEFAULT;
-		this.yOffset = Y_OFFSET_DEFAULT;
-		this.wordColorSupplier = DEFAULT_COLOR_SUPPLIER;
-		return;
-	}
+	private final Supplier<Font> fontSupplier;
 
 	/**
 	 * Constructor taking x- and y-offset overrides
 	 *
-	 * @param xOffset           x-axis offset
-	 * @param yOffset           y-axis offset
-	 * @param wordColorSupplier {@link Color} supplier
+	 * @param xOffset       x-axis offset
+	 * @param yOffset       y-axis offset
+	 * @param colorSupplier {@link Color} supplier
+	 * @param fontSupplier  {@link Font} supplier
 	 */
-	protected AbstractWordRenderer(double xOffset, double yOffset, Supplier<Color> wordColorSupplier) {
+	protected AbstractWordRenderer(double xOffset, double yOffset, Supplier<Color> colorSupplier, Supplier<Font> fontSupplier) {
 		this.xOffset = xOffset;
 		this.yOffset = yOffset;
-        this.wordColorSupplier = wordColorSupplier;
+		this.colorSupplier = colorSupplier;
+		this.fontSupplier = fontSupplier;
 		return;
 	}
 
@@ -137,7 +139,7 @@ public abstract class AbstractWordRenderer implements WordRenderer {
 	/**
 	 * Builder for {@code AbstractWordRenderer}.
 	 */
-	abstract static class Builder implements net.logicsquad.nanocaptcha.Builder<AbstractWordRenderer> {
+	public abstract static class Builder implements net.logicsquad.nanocaptcha.Builder<AbstractWordRenderer> {
 		/**
 		 * X-axis offset
 		 */
@@ -149,9 +151,14 @@ public abstract class AbstractWordRenderer implements WordRenderer {
 		protected double yOffset;
 
         /**
-         * Supplier of {@link Color}
+         * Supplier for {@link Color}
          */
-        protected Supplier<Color> wordColorSupplier;
+        protected Supplier<Color> colorSupplier;
+
+        /**
+         * Supplier for {@link Font}
+         */
+        protected Supplier<Font> fontSupplier;
 
 		/**
 		 * Constructor
@@ -159,7 +166,8 @@ public abstract class AbstractWordRenderer implements WordRenderer {
 		protected Builder() {
 			xOffset = X_OFFSET_DEFAULT;
 			yOffset = Y_OFFSET_DEFAULT;
-            wordColorSupplier = DEFAULT_COLOR_SUPPLIER;
+            colorSupplier = DEFAULT_COLOR_SUPPLIER;
+            fontSupplier = DEFAULT_FONT_SUPPLIER;
 			return;
 		}
 
@@ -196,10 +204,10 @@ public abstract class AbstractWordRenderer implements WordRenderer {
 		}
 
 		/**
-		 * Sets the supplier to randomly select a color from the given colors.
+		 * Sets {@link #colorSupplier} to randomly select a {@link Color} from the given {@link Color}s.
 		 *
-		 * @param color the first color
-		 * @param colors additional colors (optional)
+		 * @param color  the first {@link Color}
+		 * @param colors additional {@link Color}s (optional)
 		 * @return this
 		 * @since 2.0
 		 */
@@ -207,34 +215,75 @@ public abstract class AbstractWordRenderer implements WordRenderer {
 			List<Color> colorList = new ArrayList<>();
 			colorList.add(color);
 			Collections.addAll(colorList, colors);
-			randomColor(colorList);
-			return this;
+			return randomColor(colorList);
 		}
 
 		/**
-		 * Assigns a supplier that randomly selects a color from the provided list.
-		 * If the list is empty, no changes are made to the current color supplier.
+		 * Sets {@link #colorSupplier} to randomly select a {@link Color} from the provided {@code colors}. If the list is empty, no changes are
+		 * made to the current {@link #colorSupplier}.
 		 *
-		 * @param colors the list of colors to choose from
+		 * @param colors the list of {@link Color}s to choose from
 		 * @return this
 		 * @since 2.0
 		 */
 		public Builder randomColor(List<Color> colors) {
 			if (!colors.isEmpty()) {
-				this.wordColorSupplier = () -> colors.get(RAND.nextInt(colors.size()));
+				colorSupplier = () -> colors.get(RAND.nextInt(colors.size()));
 			}
 			return this;
 		}
 
 		/**
-		 * Sets the supplier to provide a specified color.
+		 * Sets {@link #colorSupplier} to provide a specified {@link Color}.
 		 *
-		 * @param color the color to be provided by the supplier
+		 * @param color the {@link Color} to be supplied by {@link #colorSupplier}
 		 * @return this
 		 * @since 2.0
 		 */
 		public Builder color(Color color) {
-			this.wordColorSupplier = () -> color;
+			colorSupplier = () -> color;
+			return this;
+		}
+
+		/**
+		 * Sets {@link #fontSupplier} to randomly select a {@link Font} from the given {@link Font}s.
+		 *
+		 * @param font  the first {@link Font}
+		 * @param fonts additional {@link Font}s (optional)
+		 * @return this
+		 * @since 2.1
+		 */
+		public Builder randomFont(Font font, Font... fonts) {
+			List<Font> fontList = new ArrayList<>();
+			fontList.add(font);
+			Collections.addAll(fontList, fonts);
+			return randomFont(fontList);
+		}
+
+		/**
+		 * Sets {@link #fontSupplier} to randomly select a {@link Font} from the provided {@code fonts}. If the list is empty, no changes are made
+		 * to the current {@link #fontSupplier}.
+		 *
+		 * @param fonts the list of {@link Font}s to choose from
+		 * @return this
+		 * @since 2.1
+		 */
+		public Builder randomFont(List<Font> fonts) {
+			if (!fonts.isEmpty()) {
+				fontSupplier = () -> fonts.get(RAND.nextInt(fonts.size()));
+			}
+			return this;
+		}
+
+		/**
+		 * Sets {@link #fontSupplier} to provide a specified {@link Font}.
+		 *
+		 * @param font the {@link Font} to be supplied by {@link #fontSupplier}
+		 * @return this
+		 * @since 2.1
+		 */
+		public Builder font(Font font) {
+			fontSupplier = () -> font;
 			return this;
 		}
 	}
@@ -258,13 +307,23 @@ public abstract class AbstractWordRenderer implements WordRenderer {
 	}
 
 	/**
-	 * Returns word color supplier.
+	 * Returns {@link Color} supplier.
 	 *
-	 * @return word color supplier
+	 * @return {@link Color} supplier
 	 * @since 2.0
 	 */
-	protected Supplier<Color> wordColorSupplier() {
-		return wordColorSupplier;
+	protected Supplier<Color> colorSupplier() {
+		return colorSupplier;
+	}
+
+	/**
+	 * Returns {@link Font} supplier.
+	 * 
+	 * @return {@link Font} supplier
+	 * @since 2.1
+	 */
+	protected Supplier<Font> fontSupplier() {
+		return fontSupplier;
 	}
 
 	/**
