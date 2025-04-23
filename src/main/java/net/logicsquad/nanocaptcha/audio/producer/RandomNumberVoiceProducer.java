@@ -28,7 +28,7 @@ public class RandomNumberVoiceProducer implements VoiceProducer {
 	/**
 	 * List of supported languages
 	 */
-	private static final List<Locale> SUPPORTED_LANGUAGES = Arrays.asList(Locale.ENGLISH, Locale.GERMAN);
+	private static final List<Locale> SUPPORTED_LANGUAGES = Arrays.asList(Locale.ENGLISH, Locale.GERMAN, Locale.FRENCH);
 
 	/**
 	 * Property key for declaring a default language (which will be used in the
@@ -57,6 +57,11 @@ public class RandomNumberVoiceProducer implements VoiceProducer {
 	private static final List<String> VOICES_DE = Arrays.asList("a", "b");
 
 	/**
+	 * French voices
+	 */
+	private static final List<String> VOICES_FR = Arrays.asList("a", "b");
+
+	/**
 	 * Map from language to list of voice names
 	 */
 	private static final Map<Locale, List<String>> VOICES = new HashMap<>();
@@ -64,6 +69,7 @@ public class RandomNumberVoiceProducer implements VoiceProducer {
 	static {
 		VOICES.put(Locale.ENGLISH, VOICES_EN);
 		VOICES.put(Locale.GERMAN, VOICES_DE);
+		VOICES.put(Locale.FRENCH, VOICES_FR);
 	}
 
 	/**
