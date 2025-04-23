@@ -53,9 +53,11 @@ public class RandomNumberVoiceProducerTest {
 		assertEquals(r1.language, Locale.ENGLISH);
 		RandomNumberVoiceProducer r2 = new RandomNumberVoiceProducer(Locale.GERMAN);
 		assertEquals(r2.language, Locale.GERMAN);
-		// We don't support French yet
 		RandomNumberVoiceProducer r3 = new RandomNumberVoiceProducer(Locale.FRENCH);
-		assertEquals(r3.language, Locale.ENGLISH);
+		assertEquals(r3.language, Locale.FRENCH);
+		// We don't support Italian yet
+		RandomNumberVoiceProducer r4 = new RandomNumberVoiceProducer(Locale.ITALIAN);
+		assertEquals(r4.language, Locale.ENGLISH);
 		return;
 	}
 }
