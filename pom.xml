@@ -45,6 +45,7 @@
     <maven.compiler.source>1.8</maven.compiler.source>
     <maven.compiler.target>1.8</maven.compiler.target>
     <pmd.version>7.10.0</pmd.version>
+    <maven-site-plugin.version>3.21.0</maven-site-plugin.version>
   </properties>
 
   <profiles>
@@ -211,6 +212,11 @@
             </goals>
           </execution>
         </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-site-plugin</artifactId>
+        <version>${maven-site-plugin.version}</version>
       </plugin>
     </plugins>
   </build>
