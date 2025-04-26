@@ -53,8 +53,8 @@ This creates a CAPTCHA with an audio clip containing five numbers read
 out in English (unless the default `Locale` has been changed). To
 customise your CAPTCHA, you can use `AudioCaptcha.Builder`.
 
-There is support for different languages. (Currently English and
-German are supported.) You can set the system property
+There is support for different languages. (Currently English, German
+and French are supported.) You can set the system property
 `net.logicsquad.nanocaptcha.audio.producer.RandomNumberVoiceProducer.defaultLanguage`
 to a 2-digit code for a supported language, e.g., `de`, and the
 `Builder` above will return German digit vocalizations. Alternatively,
