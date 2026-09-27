@@ -26,9 +26,9 @@ jobs:
         run: rm -rf ~/.m2/settings.xml
 
       - name: Create settings.xml
-        uses: s4u/maven-settings-action@v1
+        uses: s4u/maven-settings-action@v4.0.0
         with:
-          servers: '[{"id": "ossrh", "username": "${{secrets.OSSRH_USERNAME}}", "password": "${{secrets.OSSRH_PASSWORD}}"}]'
+          servers: '[{"id": "central", "username": "${{secrets.CENTRAL_USERNAME}}", "password": "${{secrets.CENTRAL_PASSWORD}}"}]'
 
       - name: Build and deploy to Maven Central
         run: mvn --batch-mode --update-snapshots clean deploy -Prelease -Dgpg.keyname=${{secrets.GPG_KEYNAME}} -Dgpg.passphrase=${{secrets.GPG_PASSPHRASE}}
