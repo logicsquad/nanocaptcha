@@ -2,10 +2,14 @@ package net.logicsquad.nanocaptcha.audio.producer;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+
+import net.logicsquad.nanocaptcha.audio.Sample;
 
 /**
  * Unit tests on {@link RandomNumberVoiceProducer} class.
@@ -58,6 +62,19 @@ public class RandomNumberVoiceProducerTest {
 		// We don't support Italian yet
 		RandomNumberVoiceProducer r4 = new RandomNumberVoiceProducer(Locale.ITALIAN);
 		assertEquals(r4.language, Locale.ENGLISH);
+		return;
+	}
+
+	@Test
+	public void everyVoiceHasAUsableSampleForEveryDigit() {
+		for (Map.Entry<Locale, List<String>> entry : RandomNumberVoiceProducer.VOICES.entrySet()) {
+			for (String voice : entry.getValue()) {
+				for (int i = 0; i < 10; i++) {
+					String filename = String.format("/sounds/%s/numbers/%d_%s.wav", entry.getKey().getLanguage(), i, voice);
+					assertDoesNotThrow(() -> new Sample(filename), filename);
+				}
+			}
+		}
 		return;
 	}
 }

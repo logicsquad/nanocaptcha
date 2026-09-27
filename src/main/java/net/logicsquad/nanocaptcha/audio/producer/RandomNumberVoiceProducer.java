@@ -49,7 +49,7 @@ public class RandomNumberVoiceProducer implements VoiceProducer {
 	/**
 	 * English voices
 	 */
-	private static final List<String> VOICES_EN = Arrays.asList("a", "b", "c", "d", "e", "f", "g");
+	private static final List<String> VOICES_EN = Arrays.asList("a", "b", "c");
 
 	/**
 	 * German voices
@@ -59,12 +59,12 @@ public class RandomNumberVoiceProducer implements VoiceProducer {
 	/**
 	 * French voices
 	 */
-	private static final List<String> VOICES_FR = Arrays.asList("a", "b");
+	private static final List<String> VOICES_FR = Arrays.asList("a");
 
 	/**
 	 * Map from language to list of voice names
 	 */
-	private static final Map<Locale, List<String>> VOICES = new HashMap<>();
+	static final Map<Locale, List<String>> VOICES = new HashMap<>();
 
 	static {
 		VOICES.put(Locale.ENGLISH, VOICES_EN);
