@@ -3,8 +3,8 @@
 
 Every file under src/main/resources/sounds/<language>/numbers comes from this
 script, as do the audio fixtures in src/test/resources. It uses only Piper
-voices trained entirely on public-domain or CC BY recordings; LICENSE.txt
-credits them. The Whisper speech recogniser checks every digit, and any take
+voices trained entirely on public-domain or CC BY recordings; NOTICE credits
+them. The Whisper speech recogniser checks every digit, and any take
 it doesn't hear as the right digit is replaced.
 
 Run it from the project root, in a virtual environment:
