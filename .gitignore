@@ -6,3 +6,5 @@ bin
 build
 target
 *~
+.venv
+.audio-models
