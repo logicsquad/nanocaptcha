@@ -25,10 +25,10 @@ public class SampleTest {
 	private static final String WAV_BAD_FILENAME = "/hello.wav";
 
 	// This sample is a copy of one of the known-good samples
-	private static final String WAV_GOOD_FILENAME = "/0-alex.wav";
+	private static final String WAV_GOOD_FILENAME = "/0_a.wav";
 
 	// Known sample count
-	private static final int WAV_GOOD_SAMPLES = 9847;
+	private static final int WAV_GOOD_SAMPLES = 15221;
 
 	@Test
 	public void stringConstructorThrowsOnNull() {
