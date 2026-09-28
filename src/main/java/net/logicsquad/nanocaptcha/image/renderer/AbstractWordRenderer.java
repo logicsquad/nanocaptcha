@@ -13,9 +13,6 @@ import java.util.List;
 import java.util.Random;
 import java.util.function.Supplier;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 /**
  * Superclass for {@link WordRenderer} implementations.
  *
@@ -24,11 +21,6 @@ import org.slf4j.LoggerFactory;
  * @since 1.4
  */
 public abstract class AbstractWordRenderer implements WordRenderer {
-	/**
-	 * Logger
-	 */
-	private static final Logger LOG = LoggerFactory.getLogger(AbstractWordRenderer.class);
-
 	/**
 	 * Resource path to "Courier Prime"
 	 */
@@ -327,19 +319,25 @@ public abstract class AbstractWordRenderer implements WordRenderer {
 	}
 
 	/**
-	 * Returns a {@link Font} loaded from supplied {@code resourceName}, or {@code null} if unable to load the
-	 * resource.
+	 * Returns a {@link Font} loaded from supplied {@code resourceName}.
 	 *
 	 * @param resourceName path to resource
 	 * @return loaded {@link Font}
+	 * @throws IllegalStateException if the font can't be loaded
 	 * @since 1.5
+	 * @see <a href="https://github.com/logicsquad/nanocaptcha/issues/37">#37</a>
 	 */
 	private static Font fontFromResource(String resourceName) {
 		try (InputStream is = DefaultWordRenderer.class.getResourceAsStream(resourceName)) {
+			if (is == null) {
+				throw new IllegalStateException("NanoCaptcha's font '" + resourceName + "' is missing from the classpath.");
+			}
 			return Font.createFont(Font.TRUETYPE_FONT, is).deriveFont((long) FONT_SIZE);
 		} catch (IOException | FontFormatException e) {
-			LOG.error("Unable to load font '{}'.", resourceName, e);
-			return null;
+			throw new IllegalStateException("NanoCaptcha can't load its font '" + resourceName + "'. This usually means the JDK "
+					+ "can't use fonts at all, as in slim and Alpine container images: install fontconfig and a font package, "
+					+ "or use a JDK image that includes them. "
+					+ "See https://github.com/logicsquad/nanocaptcha#running-in-containers", e);
 		}
 	}
 }
