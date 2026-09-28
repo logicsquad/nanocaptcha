@@ -5,9 +5,11 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.io.UncheckedIOException;
 import java.util.Objects;
 
+import javax.sound.sampled.AudioFileFormat;
 import javax.sound.sampled.AudioFormat;
 import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
@@ -150,6 +152,36 @@ public class Sample {
 	 */
 	public AudioInputStream getAudioInputStream() {
 		return new AudioInputStream(new ByteArrayInputStream(data), SC_AUDIO_FORMAT, getSampleCount());
+	}
+
+	/**
+	 * Writes this {@code Sample} to {@code out} as a WAV file, leaving {@code out} open.
+	 *
+	 * @param out an {@link OutputStream}
+	 * @throws IOException if unable to write to {@code out}
+	 * @since 2.2
+	 * @see <a href="https://github.com/logicsquad/nanocaptcha/issues/40">#40</a>
+	 */
+	public void writeWav(OutputStream out) throws IOException {
+		AudioSystem.write(getAudioInputStream(), AudioFileFormat.Type.WAVE, Objects.requireNonNull(out));
+	}
+
+	/**
+	 * Returns this {@code Sample} as the contents of a WAV file.
+	 *
+	 * @return WAV file contents
+	 * @since 2.2
+	 * @see <a href="https://github.com/logicsquad/nanocaptcha/issues/40">#40</a>
+	 */
+	public byte[] toWav() {
+		ByteArrayOutputStream out = new ByteArrayOutputStream(data.length + 44);
+		try {
+			writeWav(out);
+		} catch (IOException e) {
+			// ByteArrayOutputStream doesn't throw this
+			throw new UncheckedIOException(e);
+		}
+		return out.toByteArray();
 	}
 
 	/**

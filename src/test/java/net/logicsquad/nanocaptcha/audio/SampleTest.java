@@ -8,6 +8,7 @@ import java.io.FilterInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UncheckedIOException;
+import java.nio.charset.StandardCharsets;
 
 import javax.sound.sampled.AudioFileFormat;
 import javax.sound.sampled.AudioInputStream;
@@ -118,6 +119,29 @@ public class SampleTest {
 		double[] decoded = new Sample(trickle).getInterleavedSamples();
 		assertEquals(values.length, decoded.length);
 		assertEquals(values[values.length - 1] / 32768.0, decoded[decoded.length - 1], 0.0);
+		return;
+	}
+
+	@Test
+	public void toWavReturnsAWavFileWithEverySample() {
+		Sample sample = new Sample(WAV_GOOD_FILENAME);
+		byte[] wav = sample.toWav();
+		assertEquals("RIFF", new String(wav, 0, 4, StandardCharsets.US_ASCII));
+		assertEquals("WAVE", new String(wav, 8, 4, StandardCharsets.US_ASCII));
+		assertEquals(44 + WAV_GOOD_SAMPLES * 2, wav.length);
+		assertArrayEquals(sample.getInterleavedSamples(), new Sample(new ByteArrayInputStream(wav)).getInterleavedSamples());
+		return;
+	}
+
+	@Test
+	public void writeWavWritesTheSameBytesEveryTime() throws IOException {
+		Sample sample = new Sample(WAV_GOOD_FILENAME);
+		ByteArrayOutputStream first = new ByteArrayOutputStream();
+		ByteArrayOutputStream second = new ByteArrayOutputStream();
+		sample.writeWav(first);
+		sample.writeWav(second);
+		assertArrayEquals(sample.toWav(), first.toByteArray());
+		assertArrayEquals(first.toByteArray(), second.toByteArray());
 		return;
 	}
 
