@@ -15,9 +15,9 @@ import net.logicsquad.nanocaptcha.audio.Sample;
  * </p>
  *
  * <ul>
- * <li>{@code radio_tuning.wav}</li>
- * <li>{@code restaurant.wav}</li>
- * <li>{@code swimming.wav}</li>
+ * <li>{@code babble.wav}</li>
+ * <li>{@code radio_static.wav}</li>
+ * <li>{@code rain.wav}</li>
  * </ul>
  *
  * @author <a href="mailto:james.childers@gmail.com">James Childers</a>
@@ -38,10 +38,10 @@ public class RandomNoiseProducer implements NoiseProducer {
     /**
      * Built-in noise samples
      */
-	private static final String[] BUILT_IN_NOISES = {
-			"/sounds/noises/radio_tuning.wav",
-			"/sounds/noises/restaurant.wav",
-			"/sounds/noises/swimming.wav", };
+	static final String[] BUILT_IN_NOISES = {
+			"/sounds/noises/babble.wav",
+			"/sounds/noises/radio_static.wav",
+			"/sounds/noises/rain.wav", };
 
 	/**
 	 * Noise files to use

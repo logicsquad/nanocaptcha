@@ -234,8 +234,10 @@ licensed under the MIT License:
    use its speakers 10191 and 5055, and the French digits its speaker
    94.
 
-The background noises (src/main/resources/sounds/noises) came from
-SimpleCaptcha, and their original source is unknown.
+The background noises (src/main/resources/sounds/noises) were generated
+by the same script. The babble mixes other speakers from the two
+Multilingual LibriSpeech voices above, reading sentences written for
+NanoCaptcha, and the radio static and rain are synthesised from noise.
 
 NanoCaptcha contains the "Courier Prime" and "Public Sans" fonts, both
 used under license.
