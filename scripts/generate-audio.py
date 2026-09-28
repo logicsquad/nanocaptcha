@@ -1,11 +1,11 @@
 #!/usr/bin/env python3
-"""Generates NanoCaptcha's spoken digits and audio test fixtures with Piper.
+"""Generates NanoCaptcha's spoken digits, background noises and audio fixtures.
 
-Every file under src/main/resources/sounds/<language>/numbers comes from this
-script, as do the audio fixtures in src/test/resources. It uses only Piper
-voices trained entirely on public-domain or CC BY recordings; NOTICE credits
-them. The Whisper speech recogniser checks every digit, and any take
-it doesn't hear as the right digit is replaced.
+Every file under src/main/resources/sounds comes from this script, as do the
+audio fixtures in src/test/resources. It uses only Piper voices trained
+entirely on public-domain or CC BY recordings; NOTICE credits them. The
+Whisper speech recogniser checks every digit, and any take it doesn't hear as
+the right digit is replaced.
 
 Run it from the project root, in a virtual environment:
 
@@ -101,6 +101,43 @@ VOICES = [
 
 # Phonemes that separate words
 BREAKS = {" ", ",", ".", ";", ":", "!", "?"}
+
+# The background noises are about as loud as SimpleCaptcha's were on average,
+# so noisy CAPTCHAs stay as hard to hear, and long enough for any likely one.
+NOISE_SECONDS = 15
+NOISE_RMS_DBFS = -24.0
+NOISE_CREST_DB = 15.0
+
+# The babble mixes other speakers from the German and French voices, reading
+# these sentences, which avoid numbers.
+BABBLE_VOICES = {"de": "de_DE-mls-medium", "fr": "fr_FR-mls-medium"}
+BABBLE_SPEAKERS = 4
+SENTENCES = {
+    "de": [
+        "Der Zug fährt heute etwas später ab.",
+        "Kannst du mir bitte das Salz reichen?",
+        "Im Garten blühen schon die Rosen.",
+        "Wir treffen uns morgen vor dem Kino.",
+        "Das Wetter soll am Wochenende besser werden.",
+        "Sie hat das Buch in der Bibliothek vergessen.",
+        "Der Kaffee ist leider schon kalt geworden.",
+        "Nach dem Essen gehen wir am Fluss spazieren.",
+        "Mein Bruder repariert gerade sein Fahrrad.",
+        "Die Kinder spielen draußen im Schnee.",
+    ],
+    "fr": [
+        "Le train partira plus tard aujourd'hui.",
+        "Peux-tu me passer le sel, s'il te plaît ?",
+        "Les roses fleurissent déjà dans le jardin.",
+        "Nous nous retrouvons demain devant le cinéma.",
+        "Le temps devrait s'améliorer ce week-end.",
+        "Elle a oublié son livre à la bibliothèque.",
+        "Le café est malheureusement déjà froid.",
+        "Après le repas, nous marcherons le long de la rivière.",
+        "Mon frère répare son vélo dans la cour.",
+        "Les enfants jouent dehors dans la neige.",
+    ],
+}
 
 
 def load(name, models_dir):
@@ -293,6 +330,121 @@ def finish(audio, rate):
     return normalise(resample(trim(audio.astype(np.float64), rate), rate, SAMPLE_RATE), SAMPLE_RATE)
 
 
+def rms(x):
+    """Returns the root mean square of x."""
+    return np.sqrt(np.mean(x ** 2))
+
+
+def band(x, low=None, high=None):
+    """Band-limits x, with a gentle roll-off either side of the pass band."""
+    f = np.fft.rfftfreq(len(x), 1 / SAMPLE_RATE)
+    gain = np.ones_like(f)
+    if low:
+        gain /= np.sqrt(1 + (low / np.maximum(f, 1e-9)) ** 8)
+    if high:
+        gain /= np.sqrt(1 + (f / high) ** 8)
+    return np.fft.irfft(np.fft.rfft(x) * gain, len(x))
+
+
+def pink(rng, n):
+    """Returns n samples of pink noise."""
+    f = np.fft.rfftfreq(n, 1 / SAMPLE_RATE)
+    f[0] = f[1]
+    return np.fft.irfft(np.fft.rfft(rng.standard_normal(n)) / np.sqrt(f), n)
+
+
+def drift(rng, n, per_second, low, high):
+    """Returns n samples of an envelope wandering slowly between low and high."""
+    points = int(n / SAMPLE_RATE * per_second) + 2
+    values = rng.uniform(low, high, points)
+    t = np.linspace(0, points - 1, n)
+    i = np.minimum(t.astype(int), points - 2)
+    w = (1 - np.cos(np.pi * (t - i))) / 2
+    return values[i] * (1 - w) + values[i + 1] * w
+
+
+def read_aloud(rng, voice, speaker, sentences, n):
+    """Returns n samples of one speaker reading the sentences in a random order, at unit RMS."""
+    config = SynthesisConfig(speaker_id=voice.config.speaker_id_map[speaker])
+    parts, total = [], 0
+    while total < n + 2 * SAMPLE_RATE:
+        for k in rng.permutation(len(sentences)):
+            audio = np.concatenate([chunk.audio_float_array for chunk in voice.synthesize(sentences[k], config)])
+            parts += [resample(audio.astype(np.float64), voice.config.sample_rate, SAMPLE_RATE),
+                      np.zeros(int(SAMPLE_RATE * rng.uniform(0.15, 0.45)))]
+            total += len(parts[-2]) + len(parts[-1])
+    x = np.concatenate(parts)
+    start = rng.integers(0, len(x) - n)
+    x = x[start:start + n]
+    return x / rms(x)
+
+
+def babble(rng, voices, n):
+    """Returns several speakers from each voice, all talking at once."""
+    shipping = {speaker for *_, speaker in VOICES if speaker}
+    mix = np.zeros(n)
+    for language, voice in voices.items():
+        candidates = sorted(s for s in voice.config.speaker_id_map if s not in shipping)
+        for speaker in rng.choice(candidates, BABBLE_SPEAKERS, replace=False):
+            mix += read_aloud(rng, voice, speaker, SENTENCES[language], n)
+    return mix
+
+
+def radio_static(rng, murmur):
+    """Returns static, with crackle and the whistle of a dial tuned past stations."""
+    n = len(murmur)
+    static = band(rng.standard_normal(n), 300, 3400) * drift(rng, n, 0.8, 0.45, 1.0)
+    crackle = np.zeros(n)
+    for i in np.flatnonzero(rng.random(n) < 30 / SAMPLE_RATE):
+        length = min(int(SAMPLE_RATE * 0.004), n - i)
+        decay = np.exp(-np.arange(length) / (SAMPLE_RATE * 0.0008))
+        crackle[i:i + length] += rng.standard_normal(length) * decay * rng.lognormal(0, 0.7)
+    crackle = band(crackle, 600, 5000)
+    whistle, station = np.zeros(n), np.zeros(n)
+    t = 0.6 + rng.uniform(0, 0.8)
+    while t < n / SAMPLE_RATE - 1.8:
+        length = int(SAMPLE_RATE * rng.uniform(1.0, 1.6))
+        i = int(SAMPLE_RATE * t)
+        u = np.linspace(-1, 1, length)
+        # The whistle falls to its lowest as a station is tuned in, then rises.
+        low, high = rng.uniform(90, 250), rng.uniform(1800, 3000)
+        frequency = low + (high - low) * u ** 2
+        whistle[i:i + length] += np.sin(2 * np.pi * np.cumsum(frequency) / SAMPLE_RATE) * np.exp(-(u / 0.7) ** 2)
+        station[i:i + length] += murmur[i:i + length] * np.exp(-(u / 0.3) ** 2)
+        t += length / SAMPLE_RATE + rng.uniform(1.2, 2.6)
+    station = band(station, 350, 2600)
+    return static / rms(static) + 0.35 * crackle / rms(crackle) + 0.5 * whistle + 0.6 * station / rms(murmur)
+
+
+def rain(rng, n, drops_per_second=320):
+    """Returns many small drops falling on water, over a soft hiss."""
+    drops = np.zeros(n + SAMPLE_RATE)
+    for start in rng.uniform(0, n / SAMPLE_RATE, int(n / SAMPLE_RATE * drops_per_second)):
+        f0 = np.exp(rng.uniform(np.log(1300), np.log(4800)))
+        tau = rng.uniform(0.0015, 0.007)
+        length = int(SAMPLE_RATE * tau * 6)
+        t = np.arange(length) / SAMPLE_RATE
+        # Each drop rings like a small bubble, rising in pitch as it dies away.
+        frequency = f0 * (1 + 0.6 * t / (tau * 6))
+        i = int(start * SAMPLE_RATE)
+        drops[i:i + length] += np.sin(2 * np.pi * np.cumsum(frequency) / SAMPLE_RATE) * np.exp(-t / tau) * rng.lognormal(0, 0.8)
+    drops = drops[:n]
+    hiss = band(pink(rng, n), 150, 6500) * drift(rng, n, 0.3, 0.8, 1.0)
+    return drops / rms(drops) + 0.55 * hiss / rms(hiss)
+
+
+def finish_noise(x):
+    """Returns a finished noise: peaks rounded off, scaled to the target loudness, and faded in and out."""
+    c = 10 ** (NOISE_CREST_DB / 20)
+    x = c * np.tanh(x / rms(x) / c)
+    x *= 10 ** (NOISE_RMS_DBFS / 20) / rms(x)
+    x *= min(1.0, 10 ** (PEAK_CEILING_DBFS / 20) / np.abs(x).max())
+    fade = int(SAMPLE_RATE * 0.05)
+    x[:fade] *= np.linspace(0, 1, fade)
+    x[-fade:] *= np.linspace(1, 0, fade)
+    return x
+
+
 def write_wav(path, audio, rate):
     """Writes audio as a 16-bit mono WAV file."""
     pcm = np.clip(np.round(audio * 32767), -32768, 32767).astype("<i2")
@@ -333,6 +485,25 @@ def generate_digits(models_dir):
     return loaded
 
 
+def generate_noises(models_dir):
+    """Writes the background noises, removing any files left over."""
+    rng = np.random.default_rng(SEED)
+    # Fresh copies of the voices, so the babble doesn't change with the digits
+    voices = {language: load(name, models_dir) for language, name in BABBLE_VOICES.items()}
+    n = NOISE_SECONDS * SAMPLE_RATE
+    murmur = babble(rng, voices, n)
+    noises = {"babble": murmur, "radio_static": radio_static(rng, murmur), "rain": rain(rng, n)}
+    directory = SOUNDS / "noises"
+    directory.mkdir(parents=True, exist_ok=True)
+    for name, noise in noises.items():
+        write_wav(directory / f"{name}.wav", finish_noise(noise), SAMPLE_RATE)
+    for stale in sorted(directory.glob("*.wav")):
+        if stale.stem not in noises:
+            stale.unlink()
+            print(f"removed {stale.relative_to(ROOT)}")
+    print("noises: " + ", ".join(f"{name}.wav" for name in noises))
+
+
 def generate_fixtures(loaded, models_dir):
     """Writes the audio fixtures SampleTest uses."""
     import soundfile  # only needed here, for MP3
@@ -356,6 +527,7 @@ def main():
                         help="directory for downloaded Piper and Whisper models (default: .audio-models)")
     args = parser.parse_args()
     loaded = generate_digits(args.models)
+    generate_noises(args.models)
     generate_fixtures(loaded, args.models)
 
 
