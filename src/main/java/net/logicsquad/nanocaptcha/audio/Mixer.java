@@ -17,6 +17,11 @@ import javax.sound.sampled.AudioInputStream;
  */
 public final class Mixer {
 	/**
+	 * Length of the crossfade at each join when a {@link Sample} is repeated: 50 ms
+	 */
+	private static final int CROSSFADE_SAMPLES = (int) (Sample.SC_AUDIO_FORMAT.getSampleRate() * 0.05);
+
+	/**
 	 * Private constructor for non-instantiability.
 	 */
 	private Mixer() {
@@ -56,8 +61,10 @@ public final class Mixer {
 	/**
 	 * Returns {@code sample1} mixed with {@code sample2} as a new {@link Sample}.
 	 * Additionally, {@code sample1}'s volume is adjusted by the multiplier
-	 * {@code volume1}, and {@code sample2}'s by {@code volume2}. Values beyond
-	 * full scale are clipped.
+	 * {@code volume1}, and {@code sample2}'s by {@code volume2}. The result is as
+	 * long as {@code sample1}: if {@code sample2} is shorter, it's repeated,
+	 * crossfading at each join, and if it's longer, the rest is left out. Values
+	 * beyond full scale are clipped.
 	 *
 	 * @param sample1 first {@link Sample}
 	 * @param volume1 first multiplier
@@ -111,14 +118,47 @@ public final class Mixer {
 	 * @return mixed sample
 	 */
 	private static double[] mix(double[] sample1, double volume1, double[] sample2, double volume2) {
+		double[] background = loop(sample2, sample1.length);
 		for (int i = 0; i < sample1.length; i++) {
-			if (i >= sample2.length) {
-				sample1[i] = 0;
-				break;
-			}
-			sample1[i] = sample1[i] * volume1 + sample2[i] * volume2;
+			sample1[i] = sample1[i] * volume1 + background[i] * volume2;
 		}
 		return sample1;
+	}
+
+	/**
+	 * Returns {@code sample} repeated to {@code length} samples, crossfading over
+	 * {@link #CROSSFADE_SAMPLES} at each join so the repeats don't click. A
+	 * {@code sample} that's already long enough is returned unchanged.
+	 *
+	 * @param sample raw sample data
+	 * @param length number of samples needed
+	 * @return {@code sample}, repeated
+	 * @see <a href="https://github.com/logicsquad/nanocaptcha/issues/42">#42</a>
+	 */
+	private static double[] loop(double[] sample, int length) {
+		if (sample.length >= length) {
+			return sample;
+		}
+		double[] looped = new double[length];
+		if (sample.length == 0) {
+			return looped;
+		}
+		int fade = Math.min(CROSSFADE_SAMPLES, sample.length / 2);
+		for (int start = 0; start < length; start += sample.length - fade) {
+			boolean first = start == 0;
+			boolean more = start + sample.length - fade < length;
+			for (int i = 0; i < sample.length && start + i < length; i++) {
+				double gain = 1.0;
+				if (!first && i < fade) {
+					gain = (double) i / fade;
+				}
+				if (more && i >= sample.length - fade) {
+					gain *= (double) (sample.length - i) / fade;
+				}
+				looped[start + i] += sample[i] * gain;
+			}
+		}
+		return looped;
 	}
 
 	/**
