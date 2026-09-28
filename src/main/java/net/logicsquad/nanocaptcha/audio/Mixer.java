@@ -56,7 +56,8 @@ public final class Mixer {
 	/**
 	 * Returns {@code sample1} mixed with {@code sample2} as a new {@link Sample}.
 	 * Additionally, {@code sample1}'s volume is adjusted by the multiplier
-	 * {@code volume1}, and {@code sample2}'s by {@code volume2}.
+	 * {@code volume1}, and {@code sample2}'s by {@code volume2}. Values beyond
+	 * full scale are clipped.
 	 *
 	 * @param sample1 first {@link Sample}
 	 * @param volume1 first multiplier
@@ -65,6 +66,7 @@ public final class Mixer {
 	 * @return mixed {@link Sample}
 	 * @throws NullPointerException if {@code sample1} or {@code sample2} is
 	 *                              {@code null}
+	 * @see <a href="https://github.com/logicsquad/nanocaptcha/issues/42">#42</a>
 	 */
 	public static Sample mix(Sample sample1, double volume1, Sample sample2, double volume2) {
 		Objects.requireNonNull(sample1);
@@ -147,7 +149,8 @@ public final class Mixer {
 		byte[] buffer = new byte[bufferLength];
 		int in;
 		for (int i = 0; i < sample.length; i++) {
-			in = (int) (sample[i] * 32_767);
+			// Clip, rather than let values beyond full scale wrap to the opposite polarity.
+			in = (int) (Math.max(-1.0, Math.min(1.0, sample[i])) * 32_767);
 			buffer[2 * i] = (byte) (in & 255);
 			buffer[2 * i + 1] = (byte) (in >> 8);
 		}
