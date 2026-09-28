@@ -111,6 +111,11 @@ public final class FastWordRenderer extends AbstractWordRenderer {
 		return;
 	}
 
+	/**
+	 * {@inheritDoc}
+	 *
+	 * @throws IllegalArgumentException if a font can't display a character in {@code word}
+	 */
 	@Override
 	public void render(final String word, BufferedImage image) {
 		Graphics2D g = image.createGraphics();
@@ -120,7 +125,12 @@ public final class FastWordRenderer extends AbstractWordRenderer {
 		for (char c : word.toCharArray()) {
 			chars[0] = c;
 			g.setColor(colorSupplier().get());
-			g.setFont(nextFont());
+			Font font = nextFont();
+			if (!font.canDisplay(c)) {
+				throw new IllegalArgumentException(cannotDisplay(font, c)
+						+ " FastWordRenderer only uses its built-in fonts, so use DefaultWordRenderer with a font that can.");
+			}
+			g.setFont(font);
 			int xFudge = nextFudge();
 			int yFudge = nextFudge();
 			g.drawChars(chars, 0, 1, xBaseline + xFudge, yBaseline - yFudge);

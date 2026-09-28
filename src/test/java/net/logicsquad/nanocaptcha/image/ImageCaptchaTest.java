@@ -30,6 +30,32 @@ public class ImageCaptchaTest {
 		return;
 	}
 
+	@Test
+	public void defaultWordRendererRejectsCharactersItsFontCantDisplay() {
+		assertRejectsChinese(new DefaultWordRenderer.Builder().build());
+		return;
+	}
+
+	@Test
+	public void fastWordRendererRejectsCharactersItsFontsCantDisplay() {
+		assertRejectsChinese(new FastWordRenderer.Builder().build());
+		return;
+	}
+
+	/**
+	 * Checks that {@code renderer} throws on Chinese content, which the built-in fonts can't display, instead of
+	 * drawing empty boxes.
+	 *
+	 * @param renderer a {@link WordRenderer} using the built-in fonts
+	 */
+	private static void assertRejectsChinese(WordRenderer renderer) {
+		ImageCaptcha.Builder builder = new ImageCaptcha.Builder(200, 50);
+		IllegalArgumentException e = assertThrows(IllegalArgumentException.class,
+				() -> builder.addContent(() -> "\u4E2D\u6587", renderer));
+		assertTrue(e.getMessage().contains("(U+4E2D)"), e.getMessage());
+		return;
+	}
+
 	/**
 	 * Renders a CAPTCHA with {@code renderer} on a transparent image, and checks that something was drawn.
 	 *

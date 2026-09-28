@@ -32,6 +32,11 @@ public final class DefaultWordRenderer extends AbstractWordRenderer {
 		return;
 	}
 
+	/**
+	 * {@inheritDoc}
+	 *
+	 * @throws IllegalArgumentException if a font can't display a character in {@code word}
+	 */
 	@Override
 	public void render(final String word, BufferedImage image) {
 		Graphics2D g = image.createGraphics();
@@ -50,6 +55,10 @@ public final class DefaultWordRenderer extends AbstractWordRenderer {
 
 			g.setColor(colorSupplier().get());
 			Font font = fontSupplier().get();
+			if (!font.canDisplay(c)) {
+				throw new IllegalArgumentException(
+						cannotDisplay(font, c) + " Supply a font that can with DefaultWordRenderer.Builder.font().");
+			}
 			g.setFont(font);
 			GlyphVector gv = font.createGlyphVector(frc, chars);
 			g.drawChars(chars, 0, chars.length, xBaseline, yBaseline);

@@ -340,4 +340,16 @@ public abstract class AbstractWordRenderer implements WordRenderer {
 					+ "See https://github.com/logicsquad/nanocaptcha#running-in-containers", e);
 		}
 	}
+
+	/**
+	 * Returns a message saying that {@code font} can't display {@code c}.
+	 *
+	 * @param font a {@link Font}
+	 * @param c    a character {@code font} can't display
+	 * @return message
+	 * @see <a href="https://github.com/logicsquad/nanocaptcha/issues/38">#38</a>
+	 */
+	static String cannotDisplay(Font font, char c) {
+		return String.format("Font '%s' can't display '%c' (U+%04X).", font.getFontName(), c, (int) c);
+	}
 }
