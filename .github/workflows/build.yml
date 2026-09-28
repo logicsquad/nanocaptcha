@@ -23,3 +23,61 @@ jobs:
           java-version: ${{ matrix.java }}
       - name: Build with Maven
         run: mvn --batch-mode --update-snapshots verify
+
+  # Slim and Alpine images can leave out the fontconfig and fonts the JDK
+  # needs to draw text (#37). The tests are built here, then run inside each
+  # image: first without fonts, where NanoCaptcha should explain what's
+  # missing, then with the packages the README suggests.
+  containers:
+    name: containers (${{ matrix.system }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - system: Alpine
+            image: amazoncorretto:21-alpine
+            fonts: apk add --no-cache fontconfig ttf-dejavu
+          - system: Debian
+            image: debian-slim-jdk
+            fonts: apt-get update && apt-get install -y --no-install-recommends fontconfig fonts-dejavu-core
+
+    steps:
+      - uses: actions/checkout@v7
+      - name: Set up JDK 21
+        uses: actions/setup-java@v6
+        with:
+          distribution: corretto
+          java-version: 21
+      - name: Build the tests
+        run: |
+          mvn --batch-mode test-compile dependency:build-classpath -Dmdep.outputFile=target/classpath.txt
+          # The console launcher from the same JUnit release as the tests
+          platform=$(tr ':' '\n' < target/classpath.txt | sed -n 's#.*/junit-platform-engine-\(.*\)\.jar$#\1#p')
+          mvn --batch-mode dependency:copy -Dartifact=org.junit.platform:junit-platform-console-standalone:$platform \
+            -DoutputDirectory=target -Dmdep.stripVersion=true
+      - name: Build a slim Debian image with a JDK copied in
+        if: matrix.system == 'Debian'
+        run: |
+          docker build --tag debian-slim-jdk - <<'DOCKERFILE'
+          FROM eclipse-temurin:21-jre AS jdk
+          FROM debian:bookworm-slim
+          COPY --from=jdk /opt/java/openjdk /opt/java/openjdk
+          ENV PATH=/opt/java/openjdk/bin:$PATH
+          DOCKERFILE
+      - name: Without fonts, NanoCaptcha says what's missing
+        run: |
+          classpath="target/test-classes:target/classes:$(cat target/classpath.txt)"
+          if docker run --rm -v "$PWD:/work" -v "$HOME/.m2:$HOME/.m2" -w /work ${{ matrix.image }} \
+              java -jar target/junit-platform-console-standalone.jar execute --disable-banner \
+              --class-path "$classpath" --select-class net.logicsquad.nanocaptcha.image.ImageCaptchaTest > without-fonts.txt 2>&1; then
+            echo "The image can already draw text, so it doesn't test anything."
+            exit 1
+          fi
+          grep "NanoCaptcha can't load its font" without-fonts.txt || { cat without-fonts.txt; exit 1; }
+      - name: With fontconfig and a font, every test passes
+        run: |
+          classpath="target/test-classes:target/classes:$(cat target/classpath.txt)"
+          docker run --rm -v "$PWD:/work" -v "$HOME/.m2:$HOME/.m2" -w /work ${{ matrix.image }} sh -c \
+            "${{ matrix.fonts }} > /dev/null && java -jar target/junit-platform-console-standalone.jar execute --disable-banner \
+            --class-path '$classpath' --scan-class-path"
