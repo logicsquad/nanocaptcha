@@ -10,6 +10,7 @@ import org.junit.jupiter.api.Test;
  * @author <a href="mailto:paulh@logicsquad.net">Paul Hoadley</a>
  * @since 1.1
  */
+@SuppressWarnings("deprecation")
 public class ChineseContentProducerTest {
 	// All we're doing here is checking that the static char array is initialized as
 	// expected.
