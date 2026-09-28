@@ -66,6 +66,25 @@ public class RandomNumberVoiceProducerTest {
 	}
 
 	@Test
+	public void localeConstructorMatchesRegionalLocalesOnLanguage() {
+		assertEquals(Locale.GERMAN, new RandomNumberVoiceProducer(Locale.GERMANY).language);
+		assertEquals(Locale.GERMAN, new RandomNumberVoiceProducer(Locale.forLanguageTag("de-AT")).language);
+		assertEquals(Locale.FRENCH, new RandomNumberVoiceProducer(Locale.FRANCE).language);
+		assertEquals(Locale.FRENCH, new RandomNumberVoiceProducer(Locale.CANADA_FRENCH).language);
+		assertEquals(Locale.ENGLISH, new RandomNumberVoiceProducer(Locale.US).language);
+		// Italian still isn't supported, in any region
+		assertEquals(Locale.ENGLISH, new RandomNumberVoiceProducer(Locale.ITALY).language);
+		return;
+	}
+
+	@Test
+	public void regionalLocaleProducesItsLanguagesVoices() {
+		assertNotNull(new RandomNumberVoiceProducer(Locale.GERMANY).getVocalization('7'));
+		assertNotNull(new RandomNumberVoiceProducer(Locale.CANADA_FRENCH).getVocalization('7'));
+		return;
+	}
+
+	@Test
 	public void everyVoiceHasAUsableSampleForEveryDigit() {
 		for (Map.Entry<Locale, List<String>> entry : RandomNumberVoiceProducer.VOICES.entrySet()) {
 			for (String voice : entry.getValue()) {

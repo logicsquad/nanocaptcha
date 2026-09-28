@@ -94,23 +94,28 @@ public class RandomNumberVoiceProducer implements VoiceProducer {
 	private String pathPrefix;
 
 	/**
-	 * Constructor resulting in object providing built-in voices to vocalize digits.
+	 * Constructor resulting in object providing built-in voices to vocalize digits in the default language: English,
+	 * unless the {@code net.logicsquad.nanocaptcha.audio.producer.RandomNumberVoiceProducer.defaultLanguage} system
+	 * property names another supported language. The JVM's default {@link Locale} isn't used.
 	 */
 	public RandomNumberVoiceProducer() {
 		this(defaultLanguage());
 	}
 
 	/**
-	 * Constructor taking a language {@link Locale}. If {@code language} is not a
-	 * supported language, the default language will be used.
+	 * Constructor taking a language {@link Locale}. Only the language counts, so a regional {@link Locale} such as
+	 * {@link Locale#GERMANY} or {@code fr-CA} gets that language's voices. If {@code language} is not a supported
+	 * language, the default language will be used.
 	 *
 	 * @param language a {@link Locale} representing a language
 	 * @see <a href="https://github.com/logicsquad/nanocaptcha/issues/7">#7</a>
+	 * @see <a href="https://github.com/logicsquad/nanocaptcha/issues/39">#39</a>
 	 * @since 1.4
 	 */
 	public RandomNumberVoiceProducer(Locale language) {
 		Objects.requireNonNull(language);
-		this.language = SUPPORTED_LANGUAGES.contains(language) ? language : defaultLanguage();
+		this.language = SUPPORTED_LANGUAGES.stream().filter(l -> l.getLanguage().equals(language.getLanguage())).findFirst()
+				.orElseGet(RandomNumberVoiceProducer::defaultLanguage);
 		return;
 	}
 
