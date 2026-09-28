@@ -54,11 +54,13 @@ public final class AudioCaptcha {
 	 *
 	 * <ul>
 	 * <li>{@link NumbersContentProducer} with length 5; and</li>
-	 * <li>{@link RandomNumberVoiceProducer} (in the default {@link java.util.Locale Locale}).</li>
+	 * <li>{@link RandomNumberVoiceProducer} in its default language.</li>
 	 * </ul>
 	 *
 	 * <p>
-	 * That is, the audio clip will contain five numbers read out in English (unless the default {@code Locale} has been changed).
+	 * That is, the audio clip will contain five numbers read out in English, unless the
+	 * {@code net.logicsquad.nanocaptcha.audio.producer.RandomNumberVoiceProducer.defaultLanguage} system property names
+	 * another supported language. The JVM's default {@link java.util.Locale Locale} isn't used.
 	 * </p>
 	 *
 	 * @return new {@code AudioCaptcha}

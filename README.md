@@ -64,23 +64,27 @@ Building a minimal audio CAPTCHA is just as easy:
     AudioCaptcha audioCaptcha = AudioCaptcha.create();
 
 This creates a CAPTCHA with an audio clip containing five numbers read
-out in English (unless the default `Locale` has been changed). To
-customise your CAPTCHA, you can use `AudioCaptcha.Builder`.
+out in English. To customise your CAPTCHA, you can use
+`AudioCaptcha.Builder`.
 
 There is support for different languages. (Currently English, German
 and French are supported.) You can set the system property
 `net.logicsquad.nanocaptcha.audio.producer.RandomNumberVoiceProducer.defaultLanguage`
-to a 2-digit code for a supported language, e.g., `de`, and the
-`Builder` above will return German digit vocalizations. Alternatively,
-you can supply a `RandomNumberVoiceProducer` explicitly:
+to a 2-digit code for a supported language, e.g., `de`, and
+`AudioCaptcha.create()` will return German digit vocalizations. The
+JVM's default `Locale` isn't used. Alternatively, you can supply a
+`RandomNumberVoiceProducer` explicitly, for example in the language of
+each visitor to a web application:
 
     AudioCaptcha audioCaptcha = new AudioCaptcha.Builder()
         .addContent()
-        .addVoice(new RandomNumberVoiceProducer(Locale.GERMAN))
+        .addVoice(new RandomNumberVoiceProducer(request.getLocale()))
         .build();
 
-You can even mix languages by calling `addVoice(Locale)` more than
-once.
+Only the language counts, so `de-AT` gets German and `fr-CA` gets
+French, and an unsupported language gets the default. You can even mix
+languages by calling `addVoice()` with more than one
+`RandomNumberVoiceProducer`.
 
 As with image CAPTCHAs, these can be further customised by:
 
