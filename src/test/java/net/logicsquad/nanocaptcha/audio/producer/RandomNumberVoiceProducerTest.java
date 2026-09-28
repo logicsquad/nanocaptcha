@@ -2,9 +2,12 @@ package net.logicsquad.nanocaptcha.audio.producer;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+import java.util.Collections;
+import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Set;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -81,6 +84,18 @@ public class RandomNumberVoiceProducerTest {
 	public void regionalLocaleProducesItsLanguagesVoices() {
 		assertNotNull(new RandomNumberVoiceProducer(Locale.GERMANY).getVocalization('7'));
 		assertNotNull(new RandomNumberVoiceProducer(Locale.CANADA_FRENCH).getVocalization('7'));
+		return;
+	}
+
+	@Test
+	public void readsEachVocalizationOnlyOnce() {
+		RandomNumberVoiceProducer producer = new RandomNumberVoiceProducer(Locale.ENGLISH);
+		Set<Sample> distinct = Collections.newSetFromMap(new IdentityHashMap<>());
+		for (int i = 0; i < 100; i++) {
+			distinct.add(producer.getVocalization('5'));
+		}
+		// One Sample per voice, however many times the digit is asked for
+		assertEquals(RandomNumberVoiceProducer.VOICES.get(Locale.ENGLISH).size(), distinct.size());
 		return;
 	}
 

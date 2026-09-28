@@ -2,7 +2,9 @@ package net.logicsquad.nanocaptcha.audio.noise;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
 import net.logicsquad.nanocaptcha.audio.Mixer;
@@ -44,6 +46,12 @@ public class RandomNoiseProducer implements NoiseProducer {
 			"/sounds/noises/rain.wav", };
 
 	/**
+	 * Noises already read, by file name. A {@link Sample} doesn't change once it's created, so each file only needs
+	 * reading once.
+	 */
+	private static final Map<String, Sample> SAMPLES = new ConcurrentHashMap<>();
+
+	/**
 	 * Noise files to use
 	 */
     private final String[] noiseFiles;
@@ -76,7 +84,7 @@ public class RandomNoiseProducer implements NoiseProducer {
 	public Sample addNoise(List<Sample> samples) {
 		Sample appended = Mixer.concatenate(samples);
 		String noiseFile = noiseFiles[RAND.nextInt(noiseFiles.length)];
-		Sample noise = new Sample(noiseFile);
+		Sample noise = SAMPLES.computeIfAbsent(noiseFile, Sample::new);
 		// Decrease the volume of the noise to make sure the voices can be heard
 		return Mixer.mix(appended, 1.0, noise, NOISE_VOLUME);
 	}

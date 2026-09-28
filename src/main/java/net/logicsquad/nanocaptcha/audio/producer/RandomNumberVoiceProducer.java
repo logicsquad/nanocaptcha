@@ -8,6 +8,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Random;
+import java.util.concurrent.ConcurrentHashMap;
 
 import net.logicsquad.nanocaptcha.audio.Sample;
 
@@ -24,6 +25,12 @@ public class RandomNumberVoiceProducer implements VoiceProducer {
 	 * Random number generator
 	 */
 	private static final Random RAND = new Random();
+
+	/**
+	 * Vocalizations already read, by file name. A {@link Sample} doesn't change once it's created, so each file only needs
+	 * reading once.
+	 */
+	private static final Map<String, Sample> SAMPLES = new ConcurrentHashMap<>();
 
 	/**
 	 * List of supported languages
@@ -126,7 +133,7 @@ public class RandomNumberVoiceProducer implements VoiceProducer {
 			int idx = Integer.parseInt(stringNumber);
 			List<String> files = vocalizations().get(idx);
 			String filename = files.get(RAND.nextInt(files.size()));
-			return new Sample(filename);
+			return SAMPLES.computeIfAbsent(filename, Sample::new);
 		} catch (NumberFormatException e) {
 			throw new IllegalArgumentException("RandomNumberVoiceProducer can only vocalize numbers.", e);
 		}
