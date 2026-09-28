@@ -93,6 +93,27 @@ You can use NanoCaptcha in your projects by including it as a Maven dependency:
       <version>2.1</version>
     </dependency>
 
+Running in containers
+---------------------
+NanoCaptcha draws image CAPTCHAs with its own fonts, but the JDK can
+only use fonts when fontconfig and at least one font are installed.
+Some container images leave them out, including Alpine-based JDK
+images and slim images with a JDK copied in. There, NanoCaptcha fails
+the first time it draws an image CAPTCHA, with an error beginning
+"NanoCaptcha can't load its font". To fix it, add the packages to your
+image:
+
+    # Debian and Ubuntu
+    RUN apt-get update && apt-get install -y --no-install-recommends fontconfig fonts-dejavu-core
+
+    # Alpine
+    RUN apk add --no-cache fontconfig ttf-dejavu
+
+or start from a JDK image that already includes them, such as
+`eclipse-temurin`. Alpine's packages don't help a JDK built for glibc,
+such as the one in `bellsoft/liberica-openjdk-alpine`, so use its
+`-musl` variant instead. Audio CAPTCHAs don't need fonts.
+
 Contributing
 ------------
 By all means, open issue tickets and pull requests if you have something
