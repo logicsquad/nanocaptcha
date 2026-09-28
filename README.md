@@ -27,7 +27,7 @@ string against the text content of the image. If you need the text
 content itself, call `getContent()`.  Image CAPTCHAs can be further
 customised by:
 
-* Using different `ContentProducer`s (e.g., `ChineseContentProducer`).
+* Using different `ContentProducer`s (e.g., `NumbersContentProducer`).
 * Supplying your own `Color`s and `Font`s.
 * Adding noise using a `NoiseProducer`.
 * Adding various `ImageFilter`s.
@@ -44,6 +44,20 @@ e.g.:
         .addBackground(new GradiatedBackgroundProducer())
         .addNoise(new CurvedLineNoiseProducer())
         .build();
+
+The built-in fonts can display everything NanoCaptcha's own content
+producers generate, except for `ChineseContentProducer` and
+`ArabicContentProducer`, which are deprecated and will be removed in
+3.0. For those, or for your own content in other scripts, supply a
+font that can display it, such as one installed on the server:
+
+    new DefaultWordRenderer.Builder()
+        .font(new Font("Noto Sans CJK SC", Font.BOLD, 40))
+        .build()
+
+`FastWordRenderer` only uses the built-in fonts. If a renderer's font
+can't display a character, it throws an `IllegalArgumentException`
+rather than drawing an empty box.
 
 Building a minimal audio CAPTCHA is just as easy:
 
