@@ -52,7 +52,7 @@ public final class FastWordRenderer extends AbstractWordRenderer {
 	/**
 	 * Current index pointer
 	 */
-	private static AtomicInteger idxPointer = new AtomicInteger(0);
+	static final AtomicInteger idxPointer = new AtomicInteger(0);
 
 	/**
 	 * Minimum fudge value
@@ -77,7 +77,7 @@ public final class FastWordRenderer extends AbstractWordRenderer {
 	/**
 	 * Current fudge pointer
 	 */
-	private static AtomicInteger fudgePointer = new AtomicInteger(0);
+	static final AtomicInteger fudgePointer = new AtomicInteger(0);
 
 	/**
 	 * Available {@link Font}s
@@ -142,12 +142,14 @@ public final class FastWordRenderer extends AbstractWordRenderer {
 	 * Returns the next {@link Font} to use.
 	 *
 	 * @return next {@link Font}
+	 * @see <a href="https://github.com/logicsquad/nanocaptcha/issues/44">#44</a>
 	 */
 	private Font nextFont() {
 		if (FONTS.length == 1) {
 			return FONTS[0];
 		} else {
-			return FONTS[INDEXES[idxPointer.getAndIncrement() % FONT_INDEX_SIZE]];
+			// floorMod, not %: the pointer goes negative once it passes Integer.MAX_VALUE.
+			return FONTS[INDEXES[Math.floorMod(idxPointer.getAndIncrement(), FONT_INDEX_SIZE)]];
 		}
 	}
 
@@ -155,9 +157,11 @@ public final class FastWordRenderer extends AbstractWordRenderer {
 	 * Returns the next fudge value to use.
 	 *
 	 * @return fudge value
+	 * @see <a href="https://github.com/logicsquad/nanocaptcha/issues/44">#44</a>
 	 */
 	private int nextFudge() {
-		return FUDGES[fudgePointer.getAndIncrement() % FUDGE_INDEX_SIZE];
+		// floorMod, not %: the pointer goes negative once it passes Integer.MAX_VALUE.
+		return FUDGES[Math.floorMod(fudgePointer.getAndIncrement(), FUDGE_INDEX_SIZE)];
 	}
 
 	/**
