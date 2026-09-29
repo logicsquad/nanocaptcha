@@ -117,3 +117,87 @@ up, including: Javadoc comments, visibility tightening, API pruning.
   to public. (The change in 2.0 effectively completely broke usage of
   the `Builder`s in both `WordRenderer` implementations!)
   [#22](https://github.com/logicsquad/nanocaptcha/issues/22)
+
+
+## Release 2.2 (unreleased)
+
+### Added
+- Added French to the languages for audio
+  CAPTCHAs. [#28](https://github.com/logicsquad/nanocaptcha/issues/28)
+- Added an `Automatic-Module-Name` of `net.logicsquad.nanocaptcha` to
+  the JAR
+  manifest. [#34](https://github.com/logicsquad/nanocaptcha/issues/34)
+- The JAR now includes `LICENSE` and `NOTICE` under
+  `META-INF/`. [#36](https://github.com/logicsquad/nanocaptcha/issues/36)
+- Added `toWav()` and `writeWav()` to `Sample`, for sending audio
+  CAPTCHAs to a
+  browser. [#40](https://github.com/logicsquad/nanocaptcha/issues/40)
+- Added `toPng()`, `writePng()` and `toDataUri()` to `ImageCaptcha`,
+  for sending image CAPTCHAs to a
+  browser. [#45](https://github.com/logicsquad/nanocaptcha/issues/45)
+
+### Changed
+- Modernised the build: it compiles with `--release 8` on current
+  JDKs, CI tests on Java 8, 11, 17, 21 and 25 and in slim containers,
+  releases go through the Central Publisher Portal, and static
+  analysis and site reports are
+  gone. [#30](https://github.com/logicsquad/nanocaptcha/issues/30)
+  [#31](https://github.com/logicsquad/nanocaptcha/issues/31)
+  [#32](https://github.com/logicsquad/nanocaptcha/issues/32)
+  [#33](https://github.com/logicsquad/nanocaptcha/issues/33)
+- Regenerated all the spoken digits with the Piper text-to-speech
+  engine, from voices whose licences allow redistribution, using
+  `scripts/generate-audio.py`. There are now three English voices, two
+  German and one French, all at the same loudness, and `NOTICE` says
+  where they come
+  from. [#35](https://github.com/logicsquad/nanocaptcha/issues/35)
+  [#43](https://github.com/logicsquad/nanocaptcha/issues/43)
+- Replaced the background noises from SimpleCaptcha, whose source was
+  unknown, with generated babble, radio static and rain, 15 seconds
+  each. `radio_tuning.wav`, `restaurant.wav`, `swimming.wav` and
+  `zombie.wav` are
+  gone. [#36](https://github.com/logicsquad/nanocaptcha/issues/36)
+  [#51](https://github.com/logicsquad/nanocaptcha/issues/51)
+- `DefaultWordRenderer` and `FastWordRenderer` now throw an
+  `IllegalArgumentException` for a character their font can't
+  display, instead of drawing an empty
+  box. [#38](https://github.com/logicsquad/nanocaptcha/issues/38)
+- An `ImageCaptcha.Builder` now makes a single CAPTCHA: adding content
+  a second time, or calling any method after `build()`, throws an
+  `IllegalStateException`. [#48](https://github.com/logicsquad/nanocaptcha/issues/48)
+
+### Deprecated
+- Deprecated `ChineseContentProducer` and `ArabicContentProducer`,
+  which the built-in fonts can't display. They will be removed in
+  3.0. [#38](https://github.com/logicsquad/nanocaptcha/issues/38)
+
+### Fixed
+- If the built-in fonts can't be loaded, `AbstractWordRenderer` now
+  fails straight away with a message explaining why, instead of with
+  a `NullPointerException` later. The README has a new section on
+  running in
+  containers. [#37](https://github.com/logicsquad/nanocaptcha/issues/37)
+- `RandomNumberVoiceProducer(Locale)` now matches on the language, so
+  regional locales such as `de-AT` and `fr-CA` get their language's
+  voices instead of English. The docs no longer say that the JVM's
+  default `Locale` is
+  used. [#39](https://github.com/logicsquad/nanocaptcha/issues/39)
+- `Sample` could only be read once, and never closed its stream. It
+  now reads its audio once and can be read any number of times, and
+  the built-in clips are
+  cached. [#40](https://github.com/logicsquad/nanocaptcha/issues/40)
+- Audio was decoded with the low byte of each sample sign-extended,
+  so about half the samples came out 256 steps too
+  low. [#41](https://github.com/logicsquad/nanocaptcha/issues/41)
+- `Mixer` now clips mixed audio instead of letting it wrap to the
+  opposite polarity, and repeats background noise that's shorter than
+  the voice. [#42](https://github.com/logicsquad/nanocaptcha/issues/42)
+- `FastWordRenderer` no longer throws
+  `ArrayIndexOutOfBoundsException` after rendering about a billion
+  characters. [#44](https://github.com/logicsquad/nanocaptcha/issues/44)
+- `AudioCaptcha.isCorrect()` now returns `false` for a `null`
+  argument, as `ImageCaptcha.isCorrect()`
+  does. [#46](https://github.com/logicsquad/nanocaptcha/issues/46)
+- `addBorder()` now draws the whole left edge on images taller than
+  they are
+  wide. [#47](https://github.com/logicsquad/nanocaptcha/issues/47)
