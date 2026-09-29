@@ -71,7 +71,8 @@ public class Sample {
 	 * Constructor taking the name of a resource, which it reads and then closes.
 	 *
 	 * @param filename filename
-	 * @throws NullPointerException if {@code filename} is {@code null}
+	 * @throws NullPointerException     if {@code filename} is {@code null}
+	 * @throws IllegalArgumentException if there's no resource called {@code filename}
 	 */
 	public Sample(String filename) {
 		this(read(Objects.requireNonNull(filename)));
@@ -109,6 +110,11 @@ public class Sample {
 	 */
 	private static byte[] read(String filename) {
 		try (InputStream is = Sample.class.getResourceAsStream(filename)) {
+			if (is == null) {
+				throw new IllegalArgumentException("Can't find the audio resource '" + filename + "'. Sample(String) only finds "
+						+ "resources that NanoCaptcha itself can see, and a name without a leading '/' is relative to "
+						+ "net.logicsquad.nanocaptcha.audio.");
+			}
 			return read(is);
 		} catch (IOException e) {
 			throw new UncheckedIOException(e);

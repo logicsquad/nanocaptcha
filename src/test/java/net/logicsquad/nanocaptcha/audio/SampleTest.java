@@ -43,6 +43,13 @@ public class SampleTest {
 	}
 
 	@Test
+	public void stringConstructorNamesAMissingResource() {
+		IllegalArgumentException e = assertThrows(IllegalArgumentException.class, () -> new Sample("/no/such/sample.wav"));
+		assertTrue(e.getMessage().contains("'/no/such/sample.wav'"), e.getMessage());
+		return;
+	}
+
+	@Test
 	public void inputStreamConstructorThrowsOnNull() {
 		assertThrows(NullPointerException.class, () -> new Sample((InputStream) null));
 		return;

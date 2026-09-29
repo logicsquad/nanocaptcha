@@ -208,6 +208,9 @@ up, including: Javadoc comments, visibility tightening, API pruning.
 - `addBorder()` now draws the whole left edge on images taller than
   they are
   wide. [#47](https://github.com/logicsquad/nanocaptcha/issues/47)
+- A missing audio resource now throws an `IllegalArgumentException`
+  naming it, instead of a `NullPointerException` with no
+  message. [#50](https://github.com/logicsquad/nanocaptcha/issues/50)
 
 ### Security
 - Content producers now choose CAPTCHA answers with a `SecureRandom`
