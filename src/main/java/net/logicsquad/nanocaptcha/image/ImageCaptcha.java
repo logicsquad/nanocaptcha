@@ -4,7 +4,17 @@ import java.awt.AlphaComposite;
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.io.UncheckedIOException;
 import java.time.OffsetDateTime;
+import java.util.Base64;
+import java.util.Objects;
+
+import javax.imageio.ImageIO;
+import javax.imageio.stream.ImageOutputStream;
+import javax.imageio.stream.MemoryCacheImageOutputStream;
 
 import net.logicsquad.nanocaptcha.content.ContentProducer;
 import net.logicsquad.nanocaptcha.content.LatinContentProducer;
@@ -320,6 +330,54 @@ public final class ImageCaptcha {
 	 */
 	public BufferedImage getImage() {
 		return image;
+	}
+
+	/**
+	 * Writes the image for this {@code ImageCaptcha} to {@code out} as a PNG file, transparency included, leaving
+	 * {@code out} open.
+	 *
+	 * @param out an {@link OutputStream}
+	 * @throws IOException if unable to write to {@code out}
+	 * @since 2.2
+	 * @see <a href="https://github.com/logicsquad/nanocaptcha/issues/45">#45</a>
+	 */
+	public void writePng(OutputStream out) throws IOException {
+		// Given a plain OutputStream, ImageIO would buffer through a temporary file. Closing this doesn't close out.
+		try (ImageOutputStream ios = new MemoryCacheImageOutputStream(Objects.requireNonNull(out))) {
+			if (!ImageIO.write(image, "png", ios)) {
+				throw new IllegalStateException("ImageIO has no PNG writer for this image");
+			}
+		}
+	}
+
+	/**
+	 * Returns the image for this {@code ImageCaptcha} as the contents of a PNG file, transparency included.
+	 *
+	 * @return PNG file contents
+	 * @since 2.2
+	 * @see <a href="https://github.com/logicsquad/nanocaptcha/issues/45">#45</a>
+	 */
+	public byte[] toPng() {
+		ByteArrayOutputStream out = new ByteArrayOutputStream();
+		try {
+			writePng(out);
+		} catch (IOException e) {
+			// Everything here is in memory, so this shouldn't happen
+			throw new UncheckedIOException(e);
+		}
+		return out.toByteArray();
+	}
+
+	/**
+	 * Returns the image for this {@code ImageCaptcha} as a {@code data:} URI holding a PNG, ready to use as the
+	 * {@code src} of an HTML {@code <img>} element.
+	 *
+	 * @return {@code data:} URI
+	 * @since 2.2
+	 * @see <a href="https://github.com/logicsquad/nanocaptcha/issues/45">#45</a>
+	 */
+	public String toDataUri() {
+		return "data:image/png;base64," + Base64.getEncoder().encodeToString(toPng());
 	}
 
 	/**
