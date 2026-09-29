@@ -201,3 +201,9 @@ up, including: Javadoc comments, visibility tightening, API pruning.
 - `addBorder()` now draws the whole left edge on images taller than
   they are
   wide. [#47](https://github.com/logicsquad/nanocaptcha/issues/47)
+
+### Security
+- Content producers now choose CAPTCHA answers with a `SecureRandom`
+  instead of a `java.util.Random`, whose next values can be worked out
+  from enough earlier
+  ones. [#49](https://github.com/logicsquad/nanocaptcha/issues/49)

@@ -1,7 +1,7 @@
 package net.logicsquad.nanocaptcha.content;
 
+import java.security.SecureRandom;
 import java.util.Arrays;
-import java.util.Random;
 
 /**
  * Parent class for {@link ContentProducer}s that produce text of a given length
@@ -19,9 +19,13 @@ public abstract class AbstractContentProducer implements ContentProducer {
 	protected static final int DEFAULT_LENGTH = 5;
 
 	/**
-	 * Random number generator
+	 * Random number generator. The content is the CAPTCHA's answer, so this is a
+	 * {@link SecureRandom}: a {@link java.util.Random}'s next values can be worked
+	 * out from enough earlier ones.
+	 *
+	 * @see <a href="https://github.com/logicsquad/nanocaptcha/issues/49">#49</a>
 	 */
-	private static final Random RAND = new Random();
+	private static final SecureRandom RAND = new SecureRandom();
 
 	/**
 	 * Length of strings produced by this object

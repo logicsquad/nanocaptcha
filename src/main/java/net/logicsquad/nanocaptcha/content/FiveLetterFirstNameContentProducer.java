@@ -1,6 +1,6 @@
 package net.logicsquad.nanocaptcha.content;
 
-import java.util.Random;
+import java.security.SecureRandom;
 
 /**
  * {@link ContentProducer} implementation that chooses from a static list of
@@ -12,9 +12,13 @@ import java.util.Random;
  */
 public class FiveLetterFirstNameContentProducer implements ContentProducer {
 	/**
-	 * {@link Random} number generator
+	 * Random number generator. The content is the CAPTCHA's answer, so this is a
+	 * {@link SecureRandom}: a {@link java.util.Random}'s next values can be worked
+	 * out from enough earlier ones.
+	 *
+	 * @see <a href="https://github.com/logicsquad/nanocaptcha/issues/49">#49</a>
 	 */
-	private static final Random RAND = new Random();
+	private static final SecureRandom RAND = new SecureRandom();
 
 	/**
 	 * Names list
