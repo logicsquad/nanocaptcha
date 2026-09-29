@@ -118,6 +118,14 @@ public final class ImageCaptcha {
 	 * <pre>
 	 * ImageCaptcha image = addBackground().addContent().addNoise().addFilter().addBorder().build();
 	 * </pre>
+	 *
+	 * <p>
+	 * For the same reason, a {@code Builder} makes a single {@link ImageCaptcha}, so use a new one for each CAPTCHA.
+	 * Adding content a second time, or calling any method after {@link #build()}, throws an
+	 * {@link IllegalStateException}.
+	 * </p>
+	 *
+	 * @see <a href="https://github.com/logicsquad/nanocaptcha/issues/48">#48</a>
 	 */
 	public static class Builder implements net.logicsquad.nanocaptcha.Builder<ImageCaptcha> {
 		/**
@@ -139,6 +147,16 @@ public final class ImageCaptcha {
 		 * Should we add a border?
 		 */
 		private boolean addBorder;
+
+		/**
+		 * Has content been added?
+		 */
+		private boolean contentAdded;
+
+		/**
+		 * Has {@link #build()} been called?
+		 */
+		private boolean built;
 
 		/**
 		 * Constructor taking a width and height (in pixels) for the generated image.
@@ -170,6 +188,7 @@ public final class ImageCaptcha {
 		 * @return this
 		 */
 		public Builder addBackground(BackgroundProducer backgroundProducer) {
+			checkNotBuilt();
 			background = backgroundProducer.getBackground(image.getWidth(), image.getHeight());
 			return this;
 		}
@@ -212,9 +231,18 @@ public final class ImageCaptcha {
 		 * @param contentProducer a {@link ContentProducer}
 		 * @param wordRenderer    a {@link WordRenderer}
 		 * @return this
+		 * @throws IllegalStateException if this {@code Builder} already has content, or has already built its
+		 *                               {@link ImageCaptcha}
+		 * @see <a href="https://github.com/logicsquad/nanocaptcha/issues/48">#48</a>
 		 */
 		public Builder addContent(ContentProducer contentProducer, WordRenderer wordRenderer) {
-			content += contentProducer.getContent();
+			checkNotBuilt();
+			if (contentAdded) {
+				throw new IllegalStateException("This Builder already has content. It draws as it goes, so it can only add content once.");
+			}
+			// Before drawing, which can fail part way through
+			contentAdded = true;
+			content = contentProducer.getContent();
 			wordRenderer.render(content, image);
 			return this;
 		}
@@ -236,6 +264,7 @@ public final class ImageCaptcha {
 		 * @return this
 		 */
 		public Builder addNoise(NoiseProducer noiseProducer) {
+			checkNotBuilt();
 			noiseProducer.makeNoise(image);
 			return this;
 		}
@@ -257,6 +286,7 @@ public final class ImageCaptcha {
 		 * @return this
 		 */
 		public Builder addFilter(ImageFilter filter) {
+			checkNotBuilt();
 			filter.filter(image);
 			return this;
 		}
@@ -268,6 +298,7 @@ public final class ImageCaptcha {
 		 * @see <a href="https://github.com/logicsquad/nanocaptcha/issues/47">#47</a>
 		 */
 		public Builder addBorder() {
+			checkNotBuilt();
 			addBorder = true;
 			return this;
 		}
@@ -276,9 +307,13 @@ public final class ImageCaptcha {
 		 * Builds the image CAPTCHA described by this object.
 		 *
 		 * @return {@link ImageCaptcha} as described by this {@code Builder}
+		 * @throws IllegalStateException if this {@code Builder} has already built its {@link ImageCaptcha}
+		 * @see <a href="https://github.com/logicsquad/nanocaptcha/issues/48">#48</a>
 		 */
 		@Override
 		public ImageCaptcha build() {
+			checkNotBuilt();
+			built = true;
 			if (background != null) {
 				// Paint the main image over the background
 				Graphics2D g = background.createGraphics();
@@ -293,6 +328,18 @@ public final class ImageCaptcha {
 				g.dispose();
 			}
 			return new ImageCaptcha(this);
+		}
+
+		/**
+		 * Throws if {@link #build()} has been called. The {@link ImageCaptcha} it returned has this {@code Builder}'s
+		 * image, so nothing here may change it afterwards.
+		 *
+		 * @throws IllegalStateException if this {@code Builder} has already built its {@link ImageCaptcha}
+		 */
+		private void checkNotBuilt() {
+			if (built) {
+				throw new IllegalStateException("This Builder has already built its ImageCaptcha. Use a new Builder for each CAPTCHA.");
+			}
 		}
 	}
 

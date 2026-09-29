@@ -63,6 +63,29 @@ public class ImageCaptchaTest {
 	}
 
 	@Test
+	public void builderRefusesASecondAddContent() {
+		ImageCaptcha.Builder builder = new ImageCaptcha.Builder(200, 50).addContent();
+		assertThrows(IllegalStateException.class, () -> builder.addContent());
+		return;
+	}
+
+	@Test
+	public void builderRefusesEverythingAfterBuild() {
+		ImageCaptcha.Builder builder = new ImageCaptcha.Builder(200, 50).addContent();
+		ImageCaptcha captcha = builder.build();
+		byte[] png = captcha.toPng();
+		assertThrows(IllegalStateException.class, () -> builder.build());
+		assertThrows(IllegalStateException.class, () -> builder.addBackground());
+		assertThrows(IllegalStateException.class, () -> builder.addContent());
+		assertThrows(IllegalStateException.class, () -> builder.addNoise());
+		assertThrows(IllegalStateException.class, () -> builder.addFilter());
+		assertThrows(IllegalStateException.class, () -> builder.addBorder());
+		// None of them touched the CAPTCHA already built
+		assertArrayEquals(png, captcha.toPng());
+		return;
+	}
+
+	@Test
 	public void addBorderDrawsEveryEdgePixelAndNothingElse() {
 		// Wide, and tall
 		for (int[] size : new int[][] { { 200, 50 }, { 60, 200 } }) {
