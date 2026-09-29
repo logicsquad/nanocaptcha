@@ -265,6 +265,7 @@ public final class ImageCaptcha {
 		 * Draws a single-pixel wide black border around the image.
 		 *
 		 * @return this
+		 * @see <a href="https://github.com/logicsquad/nanocaptcha/issues/47">#47</a>
 		 */
 		public Builder addBorder() {
 			addBorder = true;
@@ -287,13 +288,9 @@ public final class ImageCaptcha {
 			}
 			if (addBorder) {
 				Graphics2D g = image.createGraphics();
-				int width = image.getWidth();
-				int height = image.getHeight();
 				g.setColor(Color.BLACK);
-				g.drawLine(0, 0, 0, width);
-				g.drawLine(0, 0, width, 0);
-				g.drawLine(0, height - 1, width, height - 1);
-				g.drawLine(width - 1, height - 1, width - 1, 0);
+				g.drawRect(0, 0, image.getWidth() - 1, image.getHeight() - 1);
+				g.dispose();
 			}
 			return new ImageCaptcha(this);
 		}

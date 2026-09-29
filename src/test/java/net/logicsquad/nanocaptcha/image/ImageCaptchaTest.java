@@ -2,6 +2,7 @@ package net.logicsquad.nanocaptcha.image;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+import java.awt.Color;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -58,6 +59,23 @@ public class ImageCaptchaTest {
 		assertTrue(captcha.isCorrect(captcha.getContent()));
 		assertFalse(captcha.isCorrect(captcha.getContent() + "a"));
 		assertFalse(captcha.isCorrect(null));
+		return;
+	}
+
+	@Test
+	public void addBorderDrawsEveryEdgePixelAndNothingElse() {
+		// Wide, and tall
+		for (int[] size : new int[][] { { 200, 50 }, { 60, 200 } }) {
+			BufferedImage image = new ImageCaptcha.Builder(size[0], size[1]).addBorder().build().getImage();
+			int width = image.getWidth();
+			int height = image.getHeight();
+			for (int x = 0; x < width; x++) {
+				for (int y = 0; y < height; y++) {
+					boolean edge = x == 0 || y == 0 || x == width - 1 || y == height - 1;
+					assertEquals(edge ? Color.BLACK.getRGB() : 0, image.getRGB(x, y), width + " x " + height + ", pixel " + x + ", " + y);
+				}
+			}
+		}
 		return;
 	}
 
