@@ -59,6 +59,23 @@ font that can display it, such as one installed on the server:
 can't display a character, it throws an `IllegalArgumentException`
 rather than drawing an empty box.
 
+To send an image CAPTCHA to a browser, `writePng()` writes it to an
+`OutputStream` as a PNG file, for example in a servlet:
+
+    response.setContentType("image/png");
+    imageCaptcha.writePng(response.getOutputStream());
+
+`toPng()` returns the same PNG file as a `byte[]`, and `toDataUri()`
+returns it as a `data:` URI, which can go straight into the `src` of
+an `<img>` tag, so there's no separate request for the image.
+
+Unless you add an opaque background, the image is transparent where
+nothing is drawn, and JPEG can't store transparency. On JDK 11 and
+later, `ImageIO.write(imageCaptcha.getImage(), "jpg", out)` returns
+`false` and writes nothing, and on JDK 8 it writes a JPEG that most
+viewers show in the wrong colours. Use PNG, or if you need a JPEG, add
+a background such as `FlatColorBackgroundProducer`.
+
 Building a minimal audio CAPTCHA is just as easy:
 
     AudioCaptcha audioCaptcha = AudioCaptcha.create();
@@ -100,6 +117,10 @@ snippet will play the clip locally:
 
 (The call to `Thread.sleep()` is simply to keep the JVM alive long
 enough to play the clip.)
+
+To send the clip to a browser instead, `getAudio().writeWav()` writes
+it to an `OutputStream` as a WAV file, and `getAudio().toWav()`
+returns the WAV file as a `byte[]`.
 
 Using NanoCaptcha
 -----------------
