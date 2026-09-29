@@ -319,6 +319,7 @@ public final class ImageCaptcha {
 				Graphics2D g = background.createGraphics();
 				g.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 1.0f));
 				g.drawImage(image, null, null);
+				g.dispose();
 				image = background;
 			}
 			if (addBorder) {

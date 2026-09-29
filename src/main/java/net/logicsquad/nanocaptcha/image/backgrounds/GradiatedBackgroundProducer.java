@@ -72,9 +72,6 @@ public class GradiatedBackgroundProducer implements BackgroundProducer {
 		g.setPaint(ytow);
 		// draw gradient color
 		g.fill(new Rectangle2D.Double(0, 0, width, height));
-
-		// draw the transparent image over the background
-		g.drawImage(img, 0, 0, null);
 		g.dispose();
 
 		return img;

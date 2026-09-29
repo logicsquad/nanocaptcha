@@ -62,6 +62,7 @@ public class StraightLineNoiseProducer implements NoiseProducer {
 		int y1 = ThreadLocalRandom.current().nextInt(height) + 1;
 		int y2 = ThreadLocalRandom.current().nextInt(height) + 1;
 		drawLine(graphics, y1, width, y2);
+		graphics.dispose();
 	}
 
 	private void drawLine(Graphics g, int y1, int x2, int y2) {

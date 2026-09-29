@@ -34,7 +34,7 @@ public class SaltAndPepperNoiseProducer implements NoiseProducer {
     private final double noiseDensity;
 
     /**
-     * Constructor using default standard deviation and mean.
+     * Constructor using the default noise density.
      */
     public SaltAndPepperNoiseProducer() {
         this(DEFAULT_NOISE_DENSITY);

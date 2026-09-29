@@ -173,6 +173,8 @@ up, including: Javadoc comments, visibility tightening, API pruning.
   now use `ThreadLocalRandom`, so threads making CAPTCHAs at the same
   time don't contend for shared
   generators. [#49](https://github.com/logicsquad/nanocaptcha/issues/49)
+- Minor code tidy-ups, with no change in
+  behaviour. [#52](https://github.com/logicsquad/nanocaptcha/issues/52)
 
 ### Deprecated
 - Deprecated `ChineseContentProducer` and `ArabicContentProducer`,

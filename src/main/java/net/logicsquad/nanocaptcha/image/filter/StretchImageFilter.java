@@ -59,5 +59,6 @@ public class StretchImageFilter implements ImageFilter {
 		AffineTransform at = new AffineTransform();
 		at.scale(xScale, yScale);
 		g.drawRenderedImage(image, at);
+		g.dispose();
 	}
 }

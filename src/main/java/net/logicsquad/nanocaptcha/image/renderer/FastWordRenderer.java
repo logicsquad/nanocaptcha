@@ -121,22 +121,26 @@ public final class FastWordRenderer extends AbstractWordRenderer {
 	@Override
 	public void render(final String word, BufferedImage image) {
 		Graphics2D g = image.createGraphics();
-		int xBaseline = (int) (image.getWidth() * xOffset());
-		int yBaseline = image.getHeight() - (int) (image.getHeight() * yOffset());
-		char[] chars = new char[1];
-		for (char c : word.toCharArray()) {
-			chars[0] = c;
-			g.setColor(colorSupplier().get());
-			Font font = nextFont();
-			if (!font.canDisplay(c)) {
-				throw new IllegalArgumentException(cannotDisplay(font, c)
-						+ " FastWordRenderer only uses its built-in fonts, so use DefaultWordRenderer with a font that can.");
+		try {
+			int xBaseline = (int) (image.getWidth() * xOffset());
+			int yBaseline = image.getHeight() - (int) (image.getHeight() * yOffset());
+			char[] chars = new char[1];
+			for (char c : word.toCharArray()) {
+				chars[0] = c;
+				g.setColor(colorSupplier().get());
+				Font font = nextFont();
+				if (!font.canDisplay(c)) {
+					throw new IllegalArgumentException(cannotDisplay(font, c)
+							+ " FastWordRenderer only uses its built-in fonts, so use DefaultWordRenderer with a font that can.");
+				}
+				g.setFont(font);
+				int xFudge = nextFudge();
+				int yFudge = nextFudge();
+				g.drawChars(chars, 0, 1, xBaseline + xFudge, yBaseline - yFudge);
+				xBaseline = xBaseline + SHIFT;
 			}
-			g.setFont(font);
-			int xFudge = nextFudge();
-			int yFudge = nextFudge();
-			g.drawChars(chars, 0, 1, xBaseline + xFudge, yBaseline - yFudge);
-			xBaseline = xBaseline + SHIFT;
+		} finally {
+			g.dispose();
 		}
 	}
 

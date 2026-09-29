@@ -40,31 +40,34 @@ public final class DefaultWordRenderer extends AbstractWordRenderer {
 	@Override
 	public void render(final String word, BufferedImage image) {
 		Graphics2D g = image.createGraphics();
+		try {
+			RenderingHints hints = new RenderingHints(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+			hints.add(new RenderingHints(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY));
+			g.setRenderingHints(hints);
 
-		RenderingHints hints = new RenderingHints(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-		hints.add(new RenderingHints(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY));
-		g.setRenderingHints(hints);
+			FontRenderContext frc = g.getFontRenderContext();
+			int xBaseline = (int) Math.round(image.getWidth() * xOffset());
+			int yBaseline = image.getHeight() - (int) Math.round(image.getHeight() * yOffset());
 
-		FontRenderContext frc = g.getFontRenderContext();
-		int xBaseline = (int) Math.round(image.getWidth() * xOffset());
-		int yBaseline = image.getHeight() - (int) Math.round(image.getHeight() * yOffset());
+			char[] chars = new char[1];
+			for (char c : word.toCharArray()) {
+				chars[0] = c;
 
-		char[] chars = new char[1];
-		for (char c : word.toCharArray()) {
-			chars[0] = c;
+				g.setColor(colorSupplier().get());
+				Font font = fontSupplier().get();
+				if (!font.canDisplay(c)) {
+					throw new IllegalArgumentException(
+							cannotDisplay(font, c) + " Supply a font that can with DefaultWordRenderer.Builder.font().");
+				}
+				g.setFont(font);
+				GlyphVector gv = font.createGlyphVector(frc, chars);
+				g.drawChars(chars, 0, chars.length, xBaseline, yBaseline);
 
-			g.setColor(colorSupplier().get());
-			Font font = fontSupplier().get();
-			if (!font.canDisplay(c)) {
-				throw new IllegalArgumentException(
-						cannotDisplay(font, c) + " Supply a font that can with DefaultWordRenderer.Builder.font().");
+				int width = (int) gv.getVisualBounds().getWidth();
+				xBaseline = xBaseline + width;
 			}
-			g.setFont(font);
-			GlyphVector gv = font.createGlyphVector(frc, chars);
-			g.drawChars(chars, 0, chars.length, xBaseline, yBaseline);
-
-			int width = (int) gv.getVisualBounds().getWidth();
-			xBaseline = xBaseline + width;
+		} finally {
+			g.dispose();
 		}
 	}
 

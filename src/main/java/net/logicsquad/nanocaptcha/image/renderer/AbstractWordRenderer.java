@@ -338,7 +338,7 @@ public abstract class AbstractWordRenderer implements WordRenderer {
 			if (is == null) {
 				throw new IllegalStateException("NanoCaptcha's font '" + resourceName + "' is missing from the classpath.");
 			}
-			return Font.createFont(Font.TRUETYPE_FONT, is).deriveFont((long) FONT_SIZE);
+			return Font.createFont(Font.TRUETYPE_FONT, is).deriveFont((float) FONT_SIZE);
 		} catch (IOException | FontFormatException e) {
 			throw new IllegalStateException("NanoCaptcha can't load its font '" + resourceName + "'. This usually means the JDK "
 					+ "can't use fonts at all, as in slim and Alpine container images: install fontconfig and a font package, "
