@@ -14,6 +14,15 @@ CAPTCHAs. NanoCaptcha is intended to be:
 * Minimally-dependent: using NanoCaptcha should not involve pulling in
   a plethora of JARs, and ideally none at all.
 
+It's worth being clear about what a CAPTCHA like this can do. Modern
+OCR and speech recognition can read short text and digit CAPTCHAs
+reliably, so NanoCaptcha is a speed bump for untargeted form spam,
+not a barrier to a determined attacker. Its strengths are that it's
+self-hosted, sends nothing to third parties, doesn't need JavaScript,
+and has an audio alternative. For stronger self-hosted protection,
+combine it with a honeypot field, timing checks, or a proof-of-work
+scheme such as [ALTCHA](https://github.com/altcha-org/altcha-lib-java).
+
 Getting started
 ---------------
 You can build a minimal image CAPTCHA very easily:
@@ -140,6 +149,52 @@ is an automatic module (`net.logicsquad.nanocaptcha`), which can't
 declare that it needs SLF4J, so if your application doesn't use SLF4J
 itself, add `--add-modules org.slf4j` to the `java` command line or
 `requires org.slf4j;` to your `module-info.java`.
+
+Using NanoCaptcha in a web application
+--------------------------------------
+Most of the protection a CAPTCHA gives comes from how it's used:
+
+* Keep only the answer, from `getContent()`, on the server and tied to
+  the visitor's session, along with when it was created, from
+  `getCreated()`. Never send the answer to the browser, in a hidden
+  field, a cookie or anywhere else. There's no need to keep the CAPTCHA
+  itself.
+
+* Allow one attempt per CAPTCHA, right or wrong, and then make a new
+  one. A five-digit answer has 100,000 possibilities, and five
+  characters from `LatinContentProducer` about 6.4 million, so
+  unlimited guesses would get through eventually.
+
+* Expire CAPTCHAs after a few minutes.
+
+* Rate-limit how often each client can get a new CAPTCHA and submit an
+  answer.
+
+* Mobile keyboards often capitalise the first letter, but
+  `LatinContentProducer` uses lowercase letters, and `isCorrect()` is
+  case-sensitive. Add `autocapitalize="none"` to the input field, or
+  compare the answer in lowercase.
+
+* Send images as PNG and audio as WAV, as described above, and offer
+  an audio CAPTCHA as an alternative to the image.
+
+For example, in a servlet:
+
+    // Showing the form
+    ImageCaptcha captcha = ImageCaptcha.create();
+    session.setAttribute("captchaAnswer", captcha.getContent());
+    session.setAttribute("captchaCreated", captcha.getCreated());
+    // ... and put captcha.toDataUri() in the form's <img> tag
+
+    // Checking the form: one attempt, within five minutes
+    String answer = (String) session.getAttribute("captchaAnswer");
+    OffsetDateTime created = (OffsetDateTime) session.getAttribute("captchaCreated");
+    session.removeAttribute("captchaAnswer");
+    session.removeAttribute("captchaCreated");
+    String given = request.getParameter("captcha");
+    boolean passed = answer != null && given != null
+        && created.isAfter(OffsetDateTime.now().minusMinutes(5))
+        && answer.equals(given.trim().toLowerCase(Locale.ROOT));
 
 Running in containers
 ---------------------

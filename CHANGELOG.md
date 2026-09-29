@@ -145,6 +145,9 @@ up, including: Javadoc comments, visibility tightening, API pruning.
   can load your own audio through your own classes, which also works
   on the module
   path. [#50](https://github.com/logicsquad/nanocaptcha/issues/50)
+- Added a README section on using NanoCaptcha in a web application,
+  and a note on what a CAPTCHA like this can and can't
+  do. [#54](https://github.com/logicsquad/nanocaptcha/issues/54)
 
 ### Changed
 - Modernised the build: it compiles with `--release 8` on current
