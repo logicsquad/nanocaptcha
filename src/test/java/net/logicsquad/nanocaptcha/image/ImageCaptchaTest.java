@@ -17,10 +17,16 @@ import javax.imageio.ImageIO;
 import org.junit.jupiter.api.Test;
 
 import net.logicsquad.nanocaptcha.content.LatinContentProducer;
+import net.logicsquad.nanocaptcha.image.backgrounds.BackgroundProducer;
+import net.logicsquad.nanocaptcha.image.backgrounds.FlatColorBackgroundProducer;
 import net.logicsquad.nanocaptcha.image.backgrounds.GradiatedBackgroundProducer;
+import net.logicsquad.nanocaptcha.image.backgrounds.SquigglesBackgroundProducer;
+import net.logicsquad.nanocaptcha.image.backgrounds.TransparentBackgroundProducer;
+import net.logicsquad.nanocaptcha.image.filter.FishEyeImageFilter;
 import net.logicsquad.nanocaptcha.image.filter.ImageFilter;
 import net.logicsquad.nanocaptcha.image.filter.RippleImageFilter;
 import net.logicsquad.nanocaptcha.image.filter.ShearImageFilter;
+import net.logicsquad.nanocaptcha.image.filter.StretchImageFilter;
 import net.logicsquad.nanocaptcha.image.noise.CurvedLineNoiseProducer;
 import net.logicsquad.nanocaptcha.image.noise.GaussianNoiseProducer;
 import net.logicsquad.nanocaptcha.image.noise.NoiseProducer;
@@ -131,6 +137,37 @@ public class ImageCaptchaTest {
 	}
 
 	@Test
+	public void everyBackgroundNoiseProducerFilterAndRendererWorkTogether() {
+		List<BackgroundProducer> backgrounds = Arrays.asList(new TransparentBackgroundProducer(), new FlatColorBackgroundProducer(),
+				new GradiatedBackgroundProducer(), new SquigglesBackgroundProducer());
+		List<NoiseProducer> noiseProducers = Arrays.asList(new CurvedLineNoiseProducer(), new StraightLineNoiseProducer(),
+				new GaussianNoiseProducer(), new SaltAndPepperNoiseProducer());
+		List<ImageFilter> filters = Arrays.asList(new RippleImageFilter(), new ShearImageFilter(), new FishEyeImageFilter(),
+				new StretchImageFilter());
+		List<WordRenderer> renderers = Arrays.asList(new DefaultWordRenderer.Builder().build(), new FastWordRenderer.Builder().build());
+		// Wide, and tall
+		for (int[] size : new int[][] { { 200, 50 }, { 60, 200 } }) {
+			for (BackgroundProducer background : backgrounds) {
+				for (NoiseProducer noiseProducer : noiseProducers) {
+					for (ImageFilter filter : filters) {
+						for (WordRenderer renderer : renderers) {
+							String what = size[0] + " x " + size[1] + ": " + name(background) + ", " + name(noiseProducer) + ", "
+									+ name(filter) + ", " + name(renderer);
+							BufferedImage image = new ImageCaptcha.Builder(size[0], size[1]).addBackground(background)
+									.addContent(new LatinContentProducer(), renderer).addNoise(noiseProducer).addFilter(filter).build()
+									.getImage();
+							assertEquals(size[0], image.getWidth(), what);
+							assertEquals(size[1], image.getHeight(), what);
+							assertTrue(Arrays.stream(pixels(image)).distinct().count() > 1, what + ": one colour");
+						}
+					}
+				}
+			}
+		}
+		return;
+	}
+
+	@Test
 	public void toPngHoldsTheImage() throws IOException {
 		// Transparent, with a transparent background, and opaque
 		List<ImageCaptcha> captchas = Arrays.asList(ImageCaptcha.create(),
@@ -233,5 +270,15 @@ public class ImageCaptchaTest {
 	 */
 	private static int[] pixels(BufferedImage image) {
 		return image.getRGB(0, 0, image.getWidth(), image.getHeight(), null, 0, image.getWidth());
+	}
+
+	/**
+	 * Returns the simple name of {@code object}'s class, to say which combination failed.
+	 *
+	 * @param object an object
+	 * @return class name
+	 */
+	private static String name(Object object) {
+		return object.getClass().getSimpleName();
 	}
 }
