@@ -105,7 +105,7 @@ public class RandomNumberVoiceProducerTest {
 			for (String voice : entry.getValue()) {
 				for (int i = 0; i < 10; i++) {
 					String filename = String.format("/sounds/%s/numbers/%d_%s.wav", entry.getKey().getLanguage(), i, voice);
-					assertDoesNotThrow(() -> new Sample(filename), filename);
+					assertDoesNotThrow(() -> new Sample(RandomNumberVoiceProducer.class.getResource(filename)), filename);
 				}
 			}
 		}

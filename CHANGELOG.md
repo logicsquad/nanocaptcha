@@ -135,6 +135,10 @@ up, including: Javadoc comments, visibility tightening, API pruning.
 - Added `toPng()`, `writePng()` and `toDataUri()` to `ImageCaptcha`,
   for sending image CAPTCHAs to a
   browser. [#45](https://github.com/logicsquad/nanocaptcha/issues/45)
+- Added `Sample(URL)` and `RandomNoiseProducer(List<Sample>)`, so you
+  can load your own audio through your own classes, which also works
+  on the module
+  path. [#50](https://github.com/logicsquad/nanocaptcha/issues/50)
 
 ### Changed
 - Modernised the build: it compiles with `--release 8` on current
@@ -177,6 +181,10 @@ up, including: Javadoc comments, visibility tightening, API pruning.
 - Deprecated `AbstractWordRenderer.RAND`, which NanoCaptcha's own
   renderers no longer use. It will be removed in
   3.0. [#49](https://github.com/logicsquad/nanocaptcha/issues/49)
+- Deprecated `Sample(String)` and `RandomNoiseProducer(String[])`,
+  which only find resources that NanoCaptcha's own class loader and
+  module can see. They will be removed in
+  3.0. [#50](https://github.com/logicsquad/nanocaptcha/issues/50)
 
 ### Fixed
 - If the built-in fonts can't be loaded, `AbstractWordRenderer` now

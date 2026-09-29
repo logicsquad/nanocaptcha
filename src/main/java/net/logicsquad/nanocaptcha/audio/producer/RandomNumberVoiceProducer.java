@@ -1,5 +1,6 @@
 package net.logicsquad.nanocaptcha.audio.producer;
 
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -128,10 +129,27 @@ public class RandomNumberVoiceProducer implements VoiceProducer {
 			int idx = Integer.parseInt(stringNumber);
 			List<String> files = vocalizations().get(idx);
 			String filename = files.get(ThreadLocalRandom.current().nextInt(files.size()));
-			return SAMPLES.computeIfAbsent(filename, Sample::new);
+			return SAMPLES.computeIfAbsent(filename, RandomNumberVoiceProducer::readBuiltIn);
 		} catch (NumberFormatException e) {
 			throw new IllegalArgumentException("RandomNumberVoiceProducer can only vocalize numbers.", e);
 		}
+	}
+
+	/**
+	 * Reads the built-in vocalization {@code filename} through this class, which can always see NanoCaptcha's own
+	 * resources.
+	 *
+	 * @param filename resource name
+	 * @return vocalization
+	 * @throws IllegalStateException if the vocalization is missing
+	 * @see <a href="https://github.com/logicsquad/nanocaptcha/issues/50">#50</a>
+	 */
+	private static Sample readBuiltIn(String filename) {
+		URL url = RandomNumberVoiceProducer.class.getResource(filename);
+		if (url == null) {
+			throw new IllegalStateException("NanoCaptcha's vocalization '" + filename + "' is missing from the classpath.");
+		}
+		return new Sample(url);
 	}
 
 	/**

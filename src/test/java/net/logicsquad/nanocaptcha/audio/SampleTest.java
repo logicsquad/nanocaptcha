@@ -8,6 +8,7 @@ import java.io.FilterInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UncheckedIOException;
+import java.net.URL;
 import java.nio.charset.StandardCharsets;
 
 import javax.sound.sampled.AudioFileFormat;
@@ -37,15 +38,31 @@ public class SampleTest {
 	private static final int WAV_GOOD_SAMPLES = 15221;
 
 	@Test
+	@SuppressWarnings("deprecation")
 	public void stringConstructorThrowsOnNull() {
 		assertThrows(NullPointerException.class, () -> new Sample((String) null));
 		return;
 	}
 
 	@Test
+	@SuppressWarnings("deprecation")
+	public void stringConstructorStillReadsResources() {
+		assertEquals(WAV_GOOD_SAMPLES, new Sample(WAV_GOOD_FILENAME).getSampleCount());
+		return;
+	}
+
+	@Test
+	@SuppressWarnings("deprecation")
 	public void stringConstructorNamesAMissingResource() {
 		IllegalArgumentException e = assertThrows(IllegalArgumentException.class, () -> new Sample("/no/such/sample.wav"));
 		assertTrue(e.getMessage().contains("'/no/such/sample.wav'"), e.getMessage());
+		return;
+	}
+
+	@Test
+	public void urlConstructorThrowsOnNull() {
+		NullPointerException e = assertThrows(NullPointerException.class, () -> new Sample((URL) null));
+		assertTrue(e.getMessage().contains("getResource()"), e.getMessage());
 		return;
 	}
 
@@ -57,13 +74,13 @@ public class SampleTest {
 
 	@Test
 	public void constructorThrowsOnWrongFormat() {
-		assertThrows(RuntimeException.class, () -> new Sample(MP3_FILENAME));
+		assertThrows(RuntimeException.class, () -> new Sample(resource(MP3_FILENAME)));
 		return;
 	}
 
 	@Test
-	public void stringConstructorThrowsOnWrongAudioParameters() {
-		assertThrows(IllegalArgumentException.class, () -> new Sample(WAV_BAD_FILENAME));
+	public void urlConstructorThrowsOnWrongAudioParameters() {
+		assertThrows(IllegalArgumentException.class, () -> new Sample(resource(WAV_BAD_FILENAME)));
 		return;
 	}
 
@@ -77,7 +94,7 @@ public class SampleTest {
 
 	@Test
 	public void canCreateSampleFromSuitableInput() {
-		Sample sample = new Sample(WAV_GOOD_FILENAME);
+		Sample sample = new Sample(resource(WAV_GOOD_FILENAME));
 		assertNotNull(sample);
 		assertEquals(WAV_GOOD_SAMPLES, sample.getSampleCount());
 		return;
@@ -85,7 +102,7 @@ public class SampleTest {
 
 	@Test
 	public void audioCanBeReadMoreThanOnce() throws IOException {
-		Sample sample = new Sample(WAV_GOOD_FILENAME);
+		Sample sample = new Sample(resource(WAV_GOOD_FILENAME));
 		byte[] first = readAll(sample.getAudioInputStream());
 		byte[] second = readAll(sample.getAudioInputStream());
 		assertEquals(WAV_GOOD_SAMPLES * 2, first.length);
@@ -131,7 +148,7 @@ public class SampleTest {
 
 	@Test
 	public void toWavReturnsAWavFileWithEverySample() {
-		Sample sample = new Sample(WAV_GOOD_FILENAME);
+		Sample sample = new Sample(resource(WAV_GOOD_FILENAME));
 		byte[] wav = sample.toWav();
 		assertEquals("RIFF", new String(wav, 0, 4, StandardCharsets.US_ASCII));
 		assertEquals("WAVE", new String(wav, 8, 4, StandardCharsets.US_ASCII));
@@ -142,7 +159,7 @@ public class SampleTest {
 
 	@Test
 	public void writeWavWritesTheSameBytesEveryTime() throws IOException {
-		Sample sample = new Sample(WAV_GOOD_FILENAME);
+		Sample sample = new Sample(resource(WAV_GOOD_FILENAME));
 		ByteArrayOutputStream first = new ByteArrayOutputStream();
 		ByteArrayOutputStream second = new ByteArrayOutputStream();
 		sample.writeWav(first);
@@ -150,6 +167,16 @@ public class SampleTest {
 		assertArrayEquals(sample.toWav(), first.toByteArray());
 		assertArrayEquals(first.toByteArray(), second.toByteArray());
 		return;
+	}
+
+	/**
+	 * Returns the {@link URL} of the test resource {@code name}.
+	 *
+	 * @param name resource name
+	 * @return {@link URL}
+	 */
+	private static URL resource(String name) {
+		return SampleTest.class.getResource(name);
 	}
 
 	/**
