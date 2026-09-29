@@ -42,16 +42,17 @@ up, including: Javadoc comments, visibility tightening, API pruning.
 
 ## Release 1.3 (2022-10-05)
 
+### Added
+- Added logging through SLF4J to `Sample`, with a dependency on the
+  Log4j 2 binding, `log4j-slf4j-impl` 2.18.0.
+
 ### Fixed
 - Inserted a `BufferedInputStream` into the `Sample(InputStream)`
   constructor to allow audio to be played from resources in the
   JAR. [#6](https://github.com/logicsquad/nanocaptcha/issues/6)
 
-### Security
-- Updated SLF4J 2.9.0 → 2.18.0.
 
-
-## Release 1.4 (2023-03-12)
+## Release 1.4 (2023-03-13)
 
 ### Added
 - Improved support for alternate languages, and added German digit
@@ -63,8 +64,13 @@ up, including: Javadoc comments, visibility tightening, API pruning.
   improves variability in "tall"
   images. [#13](https://github.com/logicsquad/nanocaptcha/issues/13)
 
+### Changed
+- Replaced the dependency on `log4j-slf4j-impl` with `slf4j-api`
+  2.0.6, so applications choose their own SLF4J
+  binding. [#10](https://github.com/logicsquad/nanocaptcha/issues/10)
 
-## Release 1.5 (2023-02-22)
+
+## Release 1.5 (2023-03-22)
 
 ### Fixed
 - `WordRenderer` implementations now use built-in fonts by default: we
