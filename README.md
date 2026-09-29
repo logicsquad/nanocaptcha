@@ -135,6 +135,12 @@ You can use NanoCaptcha in your projects by including it as a Maven dependency:
       <version>2.1</version>
     </dependency>
 
+NanoCaptcha's audio classes use SLF4J. On the module path NanoCaptcha
+is an automatic module (`net.logicsquad.nanocaptcha`), which can't
+declare that it needs SLF4J, so if your application doesn't use SLF4J
+itself, add `--add-modules org.slf4j` to the `java` command line or
+`requires org.slf4j;` to your `module-info.java`.
+
 Running in containers
 ---------------------
 NanoCaptcha draws image CAPTCHAs with its own fonts, but the JDK can
