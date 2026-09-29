@@ -11,6 +11,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Random;
+import java.util.concurrent.ThreadLocalRandom;
 import java.util.function.Supplier;
 
 /**
@@ -33,7 +34,12 @@ public abstract class AbstractWordRenderer implements WordRenderer {
 
     /**
      * Random number generator
+     *
+     * @deprecated NanoCaptcha's own renderers now use {@link ThreadLocalRandom}, so that threads don't contend for one
+     *             generator, and subclasses should do the same. This field will be removed in 3.0.
+     * @see <a href="https://github.com/logicsquad/nanocaptcha/issues/49">#49</a>
      */
+    @Deprecated
     protected static final Random RAND = new Random();
 
 	/**
@@ -57,12 +63,12 @@ public abstract class AbstractWordRenderer implements WordRenderer {
     /**
      * Default supplier for {@link Color}
      */
-    protected static final Supplier<Color> DEFAULT_COLOR_SUPPLIER = () -> DEFAULT_COLORS.get(RAND.nextInt(DEFAULT_COLORS.size()));
+    protected static final Supplier<Color> DEFAULT_COLOR_SUPPLIER = () -> DEFAULT_COLORS.get(ThreadLocalRandom.current().nextInt(DEFAULT_COLORS.size()));
 
     /**
      * Default supplier for {@link Font}
      */
-    protected static final Supplier<Font> DEFAULT_FONT_SUPPLIER = () -> DEFAULT_FONTS.get(RAND.nextInt(DEFAULT_FONTS.size()));
+    protected static final Supplier<Font> DEFAULT_FONT_SUPPLIER = () -> DEFAULT_FONTS.get(ThreadLocalRandom.current().nextInt(DEFAULT_FONTS.size()));
 
 	/**
 	 * Font size (in points)
@@ -191,7 +197,7 @@ public abstract class AbstractWordRenderer implements WordRenderer {
 		 * @return this
 		 */
 		public Builder randomiseYOffset() {
-			this.yOffset = Y_OFFSET_MIN + (Y_OFFSET_MAX - Y_OFFSET_MIN) * RAND.nextDouble();
+			this.yOffset = Y_OFFSET_MIN + (Y_OFFSET_MAX - Y_OFFSET_MIN) * ThreadLocalRandom.current().nextDouble();
 			return this;
 		}
 
@@ -220,7 +226,7 @@ public abstract class AbstractWordRenderer implements WordRenderer {
 		 */
 		public Builder randomColor(List<Color> colors) {
 			if (!colors.isEmpty()) {
-				colorSupplier = () -> colors.get(RAND.nextInt(colors.size()));
+				colorSupplier = () -> colors.get(ThreadLocalRandom.current().nextInt(colors.size()));
 			}
 			return this;
 		}
@@ -262,7 +268,7 @@ public abstract class AbstractWordRenderer implements WordRenderer {
 		 */
 		public Builder randomFont(List<Font> fonts) {
 			if (!fonts.isEmpty()) {
-				fontSupplier = () -> fonts.get(RAND.nextInt(fonts.size()));
+				fontSupplier = () -> fonts.get(ThreadLocalRandom.current().nextInt(fonts.size()));
 			}
 			return this;
 		}

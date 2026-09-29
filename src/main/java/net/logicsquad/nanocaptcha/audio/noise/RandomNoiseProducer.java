@@ -3,8 +3,8 @@ package net.logicsquad.nanocaptcha.audio.noise;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
-import java.util.Random;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.Collectors;
 
 import net.logicsquad.nanocaptcha.audio.Mixer;
@@ -31,11 +31,6 @@ public class RandomNoiseProducer implements NoiseProducer {
 	 * Relative volume of background noise
 	 */
 	private static final double NOISE_VOLUME = 0.6;
-
-	/**
-	 * Random number generator
-	 */
-    private static final Random RAND = new Random();
 
     /**
      * Built-in noise samples
@@ -83,7 +78,7 @@ public class RandomNoiseProducer implements NoiseProducer {
 	@Override
 	public Sample addNoise(List<Sample> samples) {
 		Sample appended = Mixer.concatenate(samples);
-		String noiseFile = noiseFiles[RAND.nextInt(noiseFiles.length)];
+		String noiseFile = noiseFiles[ThreadLocalRandom.current().nextInt(noiseFiles.length)];
 		Sample noise = SAMPLES.computeIfAbsent(noiseFile, Sample::new);
 		// Decrease the volume of the noise to make sure the voices can be heard
 		return Mixer.mix(appended, 1.0, noise, NOISE_VOLUME);

@@ -4,7 +4,7 @@ import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
-import java.util.Random;
+import java.util.concurrent.ThreadLocalRandom;
 
 /**
  * Draws a straight line through the given image.
@@ -14,11 +14,6 @@ import java.util.Random;
  * @since 1.0
  */
 public class StraightLineNoiseProducer implements NoiseProducer {
-	/**
-	 * Random number generator
-	 */
-	private static final Random RAND = new Random();
-
 	/**
 	 * Default line {@link Color}
 	 */
@@ -64,8 +59,8 @@ public class StraightLineNoiseProducer implements NoiseProducer {
 		Graphics2D graphics = image.createGraphics();
 		int height = image.getHeight();
 		int width = image.getWidth();
-		int y1 = RAND.nextInt(height) + 1;
-		int y2 = RAND.nextInt(height) + 1;
+		int y1 = ThreadLocalRandom.current().nextInt(height) + 1;
+		int y2 = ThreadLocalRandom.current().nextInt(height) + 1;
 		drawLine(graphics, y1, width, y2);
 	}
 

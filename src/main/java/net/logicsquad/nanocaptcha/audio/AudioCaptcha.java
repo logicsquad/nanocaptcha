@@ -3,7 +3,7 @@ package net.logicsquad.nanocaptcha.audio;
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
+import java.util.concurrent.ThreadLocalRandom;
 
 import net.logicsquad.nanocaptcha.audio.noise.NoiseProducer;
 import net.logicsquad.nanocaptcha.audio.noise.RandomNoiseProducer;
@@ -74,11 +74,6 @@ public final class AudioCaptcha {
 	 * Build for an {@link AudioCaptcha}.
 	 */
 	public static class Builder implements net.logicsquad.nanocaptcha.Builder<AudioCaptcha> {
-		/**
-		 * Random number generator
-		 */
-		private static final Random RAND = new Random();
-
 		/**
 		 * Text content
 		 */
@@ -203,13 +198,13 @@ public final class AudioCaptcha {
 			for (char c : ansAry) {
 				// Create Sample for this character from one of the
 				// VoiceProducers
-				vProd = voiceProducers.get(RAND.nextInt(voiceProducers.size()));
+				vProd = voiceProducers.get(ThreadLocalRandom.current().nextInt(voiceProducers.size()));
 				samples.add(vProd.getVocalization(c));
 			}
 
 			// 3. Add noise, if any, and return the result
 			if (!noiseProducers.isEmpty()) {
-				NoiseProducer nProd = noiseProducers.get(RAND.nextInt(noiseProducers.size()));
+				NoiseProducer nProd = noiseProducers.get(ThreadLocalRandom.current().nextInt(noiseProducers.size()));
 				audio = nProd.addNoise(samples);
 				return new AudioCaptcha(this);
 			}

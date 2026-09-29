@@ -165,11 +165,18 @@ up, including: Javadoc comments, visibility tightening, API pruning.
 - An `ImageCaptcha.Builder` now makes a single CAPTCHA: adding content
   a second time, or calling any method after `build()`, throws an
   `IllegalStateException`. [#48](https://github.com/logicsquad/nanocaptcha/issues/48)
+- Rendering, noise, filters and the audio's choice of voice and noise
+  now use `ThreadLocalRandom`, so threads making CAPTCHAs at the same
+  time don't contend for shared
+  generators. [#49](https://github.com/logicsquad/nanocaptcha/issues/49)
 
 ### Deprecated
 - Deprecated `ChineseContentProducer` and `ArabicContentProducer`,
   which the built-in fonts can't display. They will be removed in
   3.0. [#38](https://github.com/logicsquad/nanocaptcha/issues/38)
+- Deprecated `AbstractWordRenderer.RAND`, which NanoCaptcha's own
+  renderers no longer use. It will be removed in
+  3.0. [#49](https://github.com/logicsquad/nanocaptcha/issues/49)
 
 ### Fixed
 - If the built-in fonts can't be loaded, `AbstractWordRenderer` now

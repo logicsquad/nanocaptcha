@@ -18,6 +18,14 @@ import org.junit.jupiter.api.Test;
 
 import net.logicsquad.nanocaptcha.content.LatinContentProducer;
 import net.logicsquad.nanocaptcha.image.backgrounds.GradiatedBackgroundProducer;
+import net.logicsquad.nanocaptcha.image.filter.ImageFilter;
+import net.logicsquad.nanocaptcha.image.filter.RippleImageFilter;
+import net.logicsquad.nanocaptcha.image.filter.ShearImageFilter;
+import net.logicsquad.nanocaptcha.image.noise.CurvedLineNoiseProducer;
+import net.logicsquad.nanocaptcha.image.noise.GaussianNoiseProducer;
+import net.logicsquad.nanocaptcha.image.noise.NoiseProducer;
+import net.logicsquad.nanocaptcha.image.noise.SaltAndPepperNoiseProducer;
+import net.logicsquad.nanocaptcha.image.noise.StraightLineNoiseProducer;
 import net.logicsquad.nanocaptcha.image.renderer.DefaultWordRenderer;
 import net.logicsquad.nanocaptcha.image.renderer.FastWordRenderer;
 import net.logicsquad.nanocaptcha.image.renderer.WordRenderer;
@@ -98,6 +106,26 @@ public class ImageCaptchaTest {
 					assertEquals(edge ? Color.BLACK.getRGB() : 0, image.getRGB(x, y), width + " x " + height + ", pixel " + x + ", " + y);
 				}
 			}
+		}
+		return;
+	}
+
+	@Test
+	public void randomNoiseProducersAndFiltersChangeTheImage() {
+		List<NoiseProducer> noiseProducers = Arrays.asList(new CurvedLineNoiseProducer(), new StraightLineNoiseProducer(),
+				new GaussianNoiseProducer(), new SaltAndPepperNoiseProducer());
+		for (NoiseProducer noiseProducer : noiseProducers) {
+			BufferedImage image = ImageCaptcha.create().getImage();
+			int[] before = pixels(image);
+			noiseProducer.makeNoise(image);
+			assertFalse(Arrays.equals(before, pixels(image)), noiseProducer.getClass().getSimpleName() + " changed nothing");
+		}
+		List<ImageFilter> filters = Arrays.asList(new RippleImageFilter(), new ShearImageFilter());
+		for (ImageFilter filter : filters) {
+			BufferedImage image = ImageCaptcha.create().getImage();
+			int[] before = pixels(image);
+			filter.filter(image);
+			assertFalse(Arrays.equals(before, pixels(image)), filter.getClass().getSimpleName() + " changed nothing");
 		}
 		return;
 	}
@@ -195,5 +223,15 @@ public class ImageCaptchaTest {
 		}
 		assertTrue(drawn > 100, "only " + drawn + " pixels drawn");
 		return;
+	}
+
+	/**
+	 * Returns a copy of {@code image}'s pixels.
+	 *
+	 * @param image a {@link BufferedImage}
+	 * @return ARGB pixels, row by row
+	 */
+	private static int[] pixels(BufferedImage image) {
+		return image.getRGB(0, 0, image.getWidth(), image.getHeight(), null, 0, image.getWidth());
 	}
 }

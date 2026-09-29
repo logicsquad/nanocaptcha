@@ -4,6 +4,7 @@ import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
+import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Supplier;
 
@@ -89,11 +90,12 @@ public final class FastWordRenderer extends AbstractWordRenderer {
 		FONTS[0] = DEFAULT_FONTS.get(0);
 		FONTS[1] = DEFAULT_FONTS.get(1);
 
+		ThreadLocalRandom random = ThreadLocalRandom.current();
 		for (int i = 0; i < FONT_INDEX_SIZE; i++) {
-			INDEXES[i] = RAND.nextInt(FONTS.length);
+			INDEXES[i] = random.nextInt(FONTS.length);
 		}
 		for (int i = 0; i < FUDGE_INDEX_SIZE; i++) {
-			FUDGES[i] = RAND.nextInt((FUDGE_MAX - FUDGE_MIN) + 1) + FUDGE_MIN;
+			FUDGES[i] = random.nextInt((FUDGE_MAX - FUDGE_MIN) + 1) + FUDGE_MIN;
 		}
 	}
 

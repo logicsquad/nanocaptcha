@@ -2,7 +2,7 @@ package net.logicsquad.nanocaptcha.image.noise;
 
 import java.awt.image.BufferedImage;
 import java.awt.image.WritableRaster;
-import java.util.Random;
+import java.util.concurrent.ThreadLocalRandom;
 
 /**
  * Adds Gaussian noise to the image. Gaussian noise is statistical noise having a
@@ -14,11 +14,6 @@ import java.util.Random;
  * @since 2.0
  */
 public class GaussianNoiseProducer implements NoiseProducer {
-    /**
-     * Random number generator.
-     */
-    private static final Random RAND = new Random();
-
     /**
      * Default standard deviation.
      */
@@ -67,12 +62,13 @@ public class GaussianNoiseProducer implements NoiseProducer {
     @Override
     public void makeNoise(BufferedImage image) {
         WritableRaster raster = image.getRaster();
+        ThreadLocalRandom random = ThreadLocalRandom.current();
         for (int y = 0; y < raster.getHeight(); y++) {
             for (int x = 0; x < raster.getWidth(); x++) {
                 int[] pixelSamples = raster.getPixel(x, y, (int[]) null);
 
                 for (int i = 0; i < pixelSamples.length; i++) {
-                    pixelSamples[i] = clamp((int) (pixelSamples[i] + RAND.nextGaussian() * standardDeviation + mean), 0, 255);
+                    pixelSamples[i] = clamp((int) (pixelSamples[i] + random.nextGaussian() * standardDeviation + mean), 0, 255);
                 }
 
                 raster.setPixel(x, y, pixelSamples);

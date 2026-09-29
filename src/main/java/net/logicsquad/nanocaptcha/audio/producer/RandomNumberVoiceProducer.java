@@ -7,8 +7,8 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Random;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ThreadLocalRandom;
 
 import net.logicsquad.nanocaptcha.audio.Sample;
 
@@ -21,11 +21,6 @@ import net.logicsquad.nanocaptcha.audio.Sample;
  * @since 1.0
  */
 public class RandomNumberVoiceProducer implements VoiceProducer {
-	/**
-	 * Random number generator
-	 */
-	private static final Random RAND = new Random();
-
 	/**
 	 * Vocalizations already read, by file name. A {@link Sample} doesn't change once it's created, so each file only needs
 	 * reading once.
@@ -132,7 +127,7 @@ public class RandomNumberVoiceProducer implements VoiceProducer {
 		try {
 			int idx = Integer.parseInt(stringNumber);
 			List<String> files = vocalizations().get(idx);
-			String filename = files.get(RAND.nextInt(files.size()));
+			String filename = files.get(ThreadLocalRandom.current().nextInt(files.size()));
 			return SAMPLES.computeIfAbsent(filename, Sample::new);
 		} catch (NumberFormatException e) {
 			throw new IllegalArgumentException("RandomNumberVoiceProducer can only vocalize numbers.", e);
