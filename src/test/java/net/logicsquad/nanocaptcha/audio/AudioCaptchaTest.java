@@ -24,6 +24,15 @@ public class AudioCaptchaTest {
 		return;
 	}
 
+	@Test
+	public void isCorrectAcceptsOnlyTheContent() {
+		AudioCaptcha captcha = AudioCaptcha.create();
+		assertTrue(captcha.isCorrect(captcha.getContent()));
+		assertFalse(captcha.isCorrect(captcha.getContent() + "0"));
+		assertFalse(captcha.isCorrect(null));
+		return;
+	}
+
 	/**
 	 * Writes {@code captcha}'s audio twice, and checks that both copies hold the same audio (#40).
 	 *

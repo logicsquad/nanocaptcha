@@ -53,6 +53,15 @@ public class ImageCaptchaTest {
 	}
 
 	@Test
+	public void isCorrectAcceptsOnlyTheContent() {
+		ImageCaptcha captcha = ImageCaptcha.create();
+		assertTrue(captcha.isCorrect(captcha.getContent()));
+		assertFalse(captcha.isCorrect(captcha.getContent() + "a"));
+		assertFalse(captcha.isCorrect(null));
+		return;
+	}
+
+	@Test
 	public void toPngHoldsTheImage() throws IOException {
 		// Transparent, with a transparent background, and opaque
 		List<ImageCaptcha> captchas = Arrays.asList(ImageCaptcha.create(),
