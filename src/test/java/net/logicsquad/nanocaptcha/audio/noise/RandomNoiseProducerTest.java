@@ -6,6 +6,9 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.Collections;
+import java.util.HashSet;
+import java.util.Random;
+import java.util.Set;
 
 import javax.sound.sampled.AudioInputStream;
 
@@ -37,6 +40,28 @@ public class RandomNoiseProducerTest {
 			// Noise is mixed in at 0.6 of its level
 			assertEquals(0.3 * 32767, value, 2);
 		}
+		return;
+	}
+
+	@Test
+	public void noiseStartsAtARandomPointWithEnoughLeft() throws IOException {
+		// A rising ramp shows where each mix starts, and whether it wraps around
+		byte[] data = new byte[16_000 * 2];
+		for (int i = 0; i < 16_000; i++) {
+			data[2 * i] = (byte) i;
+			data[2 * i + 1] = (byte) (i >> 8);
+		}
+		Sample ramp = new Sample(new AudioInputStream(new ByteArrayInputStream(data), Sample.SC_AUDIO_FORMAT, 16_000));
+		Set<Short> starts = new HashSet<>();
+		for (int seed = 0; seed < 20; seed++) {
+			short[] noise = pcm(RandomNoiseProducer.from(ramp, 1600, new Random(seed)));
+			assertTrue(noise.length >= 1600, "only " + noise.length + " samples left");
+			assertEquals(16_000 - noise.length, noise[0]);
+			starts.add(noise[0]);
+		}
+		assertTrue(starts.size() > 15, "starts: " + starts);
+		// Noise too short to spare any is used from the start
+		assertSame(ramp, RandomNoiseProducer.from(ramp, 20_000, new Random(1)));
 		return;
 	}
 

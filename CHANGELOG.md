@@ -295,3 +295,9 @@ up, including: Javadoc comments, visibility tightening, API pruning.
   each glyph from its outline is slower: in a quick benchmark, about
   19,000 CAPTCHAs a second, down from
   160,000. [#75](https://github.com/logicsquad/nanocaptcha/issues/75)
+- Audio CAPTCHAs now play each digit at a random volume, with a
+  random gap of up to a quarter of a second after it, and
+  `RandomNoiseProducer` starts its noise at a random point. The audio
+  was the bundled clips end to end, with the noise from its start at
+  a fixed volume, so the noise could be subtracted and the clips
+  matched. [#75](https://github.com/logicsquad/nanocaptcha/issues/75)
