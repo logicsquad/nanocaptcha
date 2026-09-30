@@ -258,6 +258,12 @@ up, including: Javadoc comments, visibility tightening, API pruning.
   3.0. [#57](https://github.com/logicsquad/nanocaptcha/issues/57)
 
 ### Fixed
+- `RippleImageFilter`, which `addFilter()` adds by default, drew the
+  rippled image over the original, so the undistorted text still
+  showed underneath. `ImageFilter.applyFilter()` now replaces the
+  image with the filtered one, which makes the ripple much more
+  visible, and changes how filtered CAPTCHAs
+  look. [#56](https://github.com/logicsquad/nanocaptcha/issues/56)
 - `StretchImageFilter` no longer smears the top rows of the image
   down the rest of it, which could leave the whole CAPTCHA a single
   colour. [#80](https://github.com/logicsquad/nanocaptcha/issues/80)
