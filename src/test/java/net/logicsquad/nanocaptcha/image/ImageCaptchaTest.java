@@ -158,10 +158,7 @@ public class ImageCaptchaTest {
 									.getImage();
 							assertEquals(size[0], image.getWidth(), what);
 							assertEquals(size[1], image.getHeight(), what);
-							// StretchImageFilter can smear an image into one colour until #80 is fixed
-							if (!(filter instanceof StretchImageFilter)) {
-								assertTrue(Arrays.stream(pixels(image)).distinct().count() > 1, what + ": one colour");
-							}
+							assertTrue(Arrays.stream(pixels(image)).distinct().count() > 1, what + ": one colour");
 						}
 					}
 				}

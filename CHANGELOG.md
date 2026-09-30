@@ -241,3 +241,11 @@ up, including: Javadoc comments, visibility tightening, API pruning.
   instead of a `java.util.Random`, whose next values can be worked out
   from enough earlier
   ones. [#49](https://github.com/logicsquad/nanocaptcha/issues/49)
+
+
+## Release 2.3
+
+### Fixed
+- `StretchImageFilter` no longer smears the top rows of the image
+  down the rest of it, which could leave the whole CAPTCHA a single
+  colour. [#80](https://github.com/logicsquad/nanocaptcha/issues/80)

@@ -55,10 +55,12 @@ public class StretchImageFilter implements ImageFilter {
 
 	@Override
 	public void filter(BufferedImage image) {
+		// Drawn onto itself, the image would be read from pixels the same draw has already written
+		BufferedImage copy = new BufferedImage(image.getColorModel(), image.copyData(null), image.isAlphaPremultiplied(), null);
 		Graphics2D g = image.createGraphics();
 		AffineTransform at = new AffineTransform();
 		at.scale(xScale, yScale);
-		g.drawRenderedImage(image, at);
+		g.drawRenderedImage(copy, at);
 		g.dispose();
 	}
 }
