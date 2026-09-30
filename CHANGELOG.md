@@ -245,6 +245,12 @@ up, including: Javadoc comments, visibility tightening, API pruning.
 
 ## Release 2.3
 
+### Changed
+- Backgrounds, noise producers and filters are now tested against
+  golden images, and `FishEyeImageFilter` uses `ThreadLocalRandom`
+  like the other filters, instead of
+  `Math.random()`. [#62](https://github.com/logicsquad/nanocaptcha/issues/62)
+
 ### Deprecated
 - Deprecated `StretchImageFilter`, which can't stretch an image in
   place, so it draws a stretched part of the image over the rest. It

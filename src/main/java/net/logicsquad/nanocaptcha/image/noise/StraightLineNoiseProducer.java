@@ -4,6 +4,7 @@ import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
+import java.util.Random;
 import java.util.concurrent.ThreadLocalRandom;
 
 /**
@@ -56,11 +57,21 @@ public class StraightLineNoiseProducer implements NoiseProducer {
 
 	@Override
 	public void makeNoise(BufferedImage image) {
+		makeNoise(image, ThreadLocalRandom.current());
+	}
+
+	/**
+	 * Adds noise to {@code image}, using {@code random}, so that tests can seed it.
+	 *
+	 * @param image  a {@link BufferedImage}
+	 * @param random a {@link Random}
+	 */
+	void makeNoise(BufferedImage image, Random random) {
 		Graphics2D graphics = image.createGraphics();
 		int height = image.getHeight();
 		int width = image.getWidth();
-		int y1 = ThreadLocalRandom.current().nextInt(height) + 1;
-		int y2 = ThreadLocalRandom.current().nextInt(height) + 1;
+		int y1 = random.nextInt(height) + 1;
+		int y2 = random.nextInt(height) + 1;
 		drawLine(graphics, y1, width, y2);
 		graphics.dispose();
 	}

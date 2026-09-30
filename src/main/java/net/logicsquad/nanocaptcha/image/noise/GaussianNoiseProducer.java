@@ -2,6 +2,7 @@ package net.logicsquad.nanocaptcha.image.noise;
 
 import java.awt.image.BufferedImage;
 import java.awt.image.WritableRaster;
+import java.util.Random;
 import java.util.concurrent.ThreadLocalRandom;
 
 /**
@@ -61,8 +62,17 @@ public class GaussianNoiseProducer implements NoiseProducer {
      */
     @Override
     public void makeNoise(BufferedImage image) {
+        makeNoise(image, ThreadLocalRandom.current());
+    }
+
+    /**
+     * Adds noise to {@code image}, using {@code random}, so that tests can seed it.
+     *
+     * @param image  a {@link BufferedImage}
+     * @param random a {@link Random}
+     */
+    void makeNoise(BufferedImage image, Random random) {
         WritableRaster raster = image.getRaster();
-        ThreadLocalRandom random = ThreadLocalRandom.current();
         for (int y = 0; y < raster.getHeight(); y++) {
             for (int x = 0; x < raster.getWidth(); x++) {
                 int[] pixelSamples = raster.getPixel(x, y, (int[]) null);

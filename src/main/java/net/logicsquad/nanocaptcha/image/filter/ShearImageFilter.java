@@ -3,6 +3,7 @@ package net.logicsquad.nanocaptcha.image.filter;
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
+import java.util.Random;
 import java.util.concurrent.ThreadLocalRandom;
 
 /**
@@ -48,17 +49,27 @@ public class ShearImageFilter implements ImageFilter {
 
 	@Override
 	public void filter(BufferedImage bi) {
+		filter(bi, ThreadLocalRandom.current());
+	}
+
+	/**
+	 * Transforms {@code bi} in place, using {@code random}, so that tests can seed it.
+	 *
+	 * @param bi     a {@link BufferedImage}
+	 * @param random a {@link Random}
+	 */
+	void filter(BufferedImage bi, Random random) {
 		Graphics2D g = bi.createGraphics();
-		shearX(g, bi.getWidth(), bi.getHeight());
-		shearY(g, bi.getWidth(), bi.getHeight());
+		shearX(g, bi.getWidth(), bi.getHeight(), random);
+		shearY(g, bi.getWidth(), bi.getHeight(), random);
 		g.dispose();
 	}
 
-	private void shearX(Graphics2D g, int w1, int h1) {
-		int period = ThreadLocalRandom.current().nextInt(10) + 5;
+	private void shearX(Graphics2D g, int w1, int h1, Random random) {
+		int period = random.nextInt(10) + 5;
 		boolean borderGap = true;
 		int frames = 15;
-		int phase = ThreadLocalRandom.current().nextInt(5) + 2;
+		int phase = random.nextInt(5) + 2;
 		for (int i = 0; i < h1; i++) {
 			double d = (period >> 1) * Math.sin((double) i / (double) period + (TWO_PI * phase) / frames);
 			g.copyArea(0, i, w1, 1, (int) d, 0);
@@ -70,8 +81,8 @@ public class ShearImageFilter implements ImageFilter {
 		}
 	}
 
-	private void shearY(Graphics2D g, int w1, int h1) {
-		int period = ThreadLocalRandom.current().nextInt(30) + 10;
+	private void shearY(Graphics2D g, int w1, int h1, Random random) {
+		int period = random.nextInt(30) + 10;
 		boolean borderGap = true;
 		int frames = 15;
 		int phase = 7;
