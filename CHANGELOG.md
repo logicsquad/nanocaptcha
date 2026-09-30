@@ -245,6 +245,12 @@ up, including: Javadoc comments, visibility tightening, API pruning.
 
 ## Release 2.3
 
+### Deprecated
+- Deprecated `StretchImageFilter`, which can't stretch an image in
+  place, so it draws a stretched part of the image over the rest. It
+  will be removed in
+  3.0. [#57](https://github.com/logicsquad/nanocaptcha/issues/57)
+
 ### Fixed
 - `StretchImageFilter` no longer smears the top rows of the image
   down the rest of it, which could leave the whole CAPTCHA a single

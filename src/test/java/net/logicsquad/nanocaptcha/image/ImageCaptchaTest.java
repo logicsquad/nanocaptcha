@@ -137,6 +137,7 @@ public class ImageCaptchaTest {
 	}
 
 	@Test
+	@SuppressWarnings("deprecation")
 	public void everyBackgroundNoiseProducerFilterAndRendererWorkTogether() {
 		List<BackgroundProducer> backgrounds = Arrays.asList(new TransparentBackgroundProducer(), new FlatColorBackgroundProducer(),
 				new GradiatedBackgroundProducer(), new SquigglesBackgroundProducer());
