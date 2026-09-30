@@ -230,6 +230,9 @@ up, including: Javadoc comments, visibility tightening, API pruning.
 - A missing audio resource now throws an `IllegalArgumentException`
   naming it, instead of a `NullPointerException` with no
   message. [#50](https://github.com/logicsquad/nanocaptcha/issues/50)
+- When the fonts can't load because the JVM has no writable temporary
+  directory, the error now says so, instead of blaming missing
+  fontconfig. [#77](https://github.com/logicsquad/nanocaptcha/issues/77)
 
 ### Security
 - Content producers now choose CAPTCHA answers with a `SecureRandom`

@@ -3,10 +3,15 @@ package net.logicsquad.nanocaptcha.image.renderer;
 import static org.junit.jupiter.api.Assertions.*;
 
 import java.awt.Font;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Stream;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 
 import net.logicsquad.nanocaptcha.content.ContentProducer;
 import net.logicsquad.nanocaptcha.content.FiveLetterFirstNameContentProducer;
@@ -33,6 +38,30 @@ public class AbstractWordRendererTest {
 					}
 				}
 			}
+		}
+		return;
+	}
+
+	@Test
+	public void cannotLoadFontBlamesATemporaryDirectoryItCantWriteTo(@TempDir Path directory) {
+		// A missing directory, since a read-only one is still writable for root, as in the container tests
+		Path missing = directory.resolve("missing");
+		IllegalStateException e = AbstractWordRenderer.cannotLoadFont("/fonts/Example.ttf", new IOException("Problem reading font data."),
+				missing);
+		assertTrue(e.getMessage().contains("can't create one in '" + missing + "'"), e.getMessage());
+		assertTrue(e.getMessage().contains("-Djava.io.tmpdir"), e.getMessage());
+		assertEquals(1, e.getSuppressed().length);
+		return;
+	}
+
+	@Test
+	public void cannotLoadFontBlamesFontSupportOtherwise(@TempDir Path directory) throws IOException {
+		IllegalStateException e = AbstractWordRenderer.cannotLoadFont("/fonts/Example.ttf", new IOException("Problem reading font data."),
+				directory);
+		assertTrue(e.getMessage().contains("fontconfig"), e.getMessage());
+		// The check leaves nothing behind
+		try (Stream<Path> files = Files.list(directory)) {
+			assertEquals(0, files.count());
 		}
 		return;
 	}

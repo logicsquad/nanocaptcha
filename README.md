@@ -217,6 +217,14 @@ or start from a JDK image that already includes them, such as
 such as the one in `bellsoft/liberica-openjdk-alpine`, so use its
 `-musl` variant instead. Audio CAPTCHAs don't need fonts.
 
+Java also copies each font to a temporary file while loading it, so
+the first image CAPTCHA needs a writable temporary directory. With a
+read-only root filesystem, as with `docker run --read-only` or
+Kubernetes's `readOnlyRootFilesystem: true`, mount a writable
+directory at `/tmp`, such as a `tmpfs` or an `emptyDir` volume, or
+point `-Djava.io.tmpdir` at one. Otherwise NanoCaptcha fails with an
+error saying it can't create a temporary file.
+
 Contributing
 ------------
 By all means, open issue tickets and pull requests if you have something
