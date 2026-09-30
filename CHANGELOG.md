@@ -125,7 +125,7 @@ up, including: Javadoc comments, visibility tightening, API pruning.
   [#22](https://github.com/logicsquad/nanocaptcha/issues/22)
 
 
-## Release 2.2 (unreleased)
+## Release 2.2 (2026-09-30)
 
 ### Added
 - Added French to the languages for audio
@@ -184,6 +184,8 @@ up, including: Javadoc comments, visibility tightening, API pruning.
   generators. [#49](https://github.com/logicsquad/nanocaptcha/issues/49)
 - Minor code tidy-ups, with no change in
   behaviour. [#52](https://github.com/logicsquad/nanocaptcha/issues/52)
+- Updated `slf4j-api` 2.0.9 →
+  2.0.20. [#74](https://github.com/logicsquad/nanocaptcha/pull/74)
 
 ### Deprecated
 - Deprecated `ChineseContentProducer` and `ArabicContentProducer`,
