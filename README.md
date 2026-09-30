@@ -141,7 +141,7 @@ You can use NanoCaptcha in your projects by including it as a Maven dependency:
     <dependency>
       <groupId>net.logicsquad</groupId>
       <artifactId>nanocaptcha</artifactId>
-      <version>2.1</version>
+      <version>2.2</version>
     </dependency>
 
 NanoCaptcha's audio classes use SLF4J. On the module path NanoCaptcha
