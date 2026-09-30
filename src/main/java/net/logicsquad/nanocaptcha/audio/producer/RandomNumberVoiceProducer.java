@@ -1,5 +1,6 @@
 package net.logicsquad.nanocaptcha.audio.producer;
 
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -7,7 +8,8 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Random;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ThreadLocalRandom;
 
 import net.logicsquad.nanocaptcha.audio.Sample;
 
@@ -21,14 +23,15 @@ import net.logicsquad.nanocaptcha.audio.Sample;
  */
 public class RandomNumberVoiceProducer implements VoiceProducer {
 	/**
-	 * Random number generator
+	 * Vocalizations already read, by file name. A {@link Sample} doesn't change once it's created, so each file only needs
+	 * reading once.
 	 */
-	private static final Random RAND = new Random();
+	private static final Map<String, Sample> SAMPLES = new ConcurrentHashMap<>();
 
 	/**
 	 * List of supported languages
 	 */
-	private static final List<Locale> SUPPORTED_LANGUAGES = Arrays.asList(Locale.ENGLISH, Locale.GERMAN);
+	private static final List<Locale> SUPPORTED_LANGUAGES = Arrays.asList(Locale.ENGLISH, Locale.GERMAN, Locale.FRENCH);
 
 	/**
 	 * Property key for declaring a default language (which will be used in the
@@ -49,7 +52,7 @@ public class RandomNumberVoiceProducer implements VoiceProducer {
 	/**
 	 * English voices
 	 */
-	private static final List<String> VOICES_EN = Arrays.asList("a", "b", "c", "d", "e", "f", "g");
+	private static final List<String> VOICES_EN = Arrays.asList("a", "b", "c");
 
 	/**
 	 * German voices
@@ -57,13 +60,19 @@ public class RandomNumberVoiceProducer implements VoiceProducer {
 	private static final List<String> VOICES_DE = Arrays.asList("a", "b");
 
 	/**
+	 * French voices
+	 */
+	private static final List<String> VOICES_FR = Arrays.asList("a");
+
+	/**
 	 * Map from language to list of voice names
 	 */
-	private static final Map<Locale, List<String>> VOICES = new HashMap<>();
+	static final Map<Locale, List<String>> VOICES = new HashMap<>();
 
 	static {
 		VOICES.put(Locale.ENGLISH, VOICES_EN);
 		VOICES.put(Locale.GERMAN, VOICES_DE);
+		VOICES.put(Locale.FRENCH, VOICES_FR);
 	}
 
 	/**
@@ -88,23 +97,28 @@ public class RandomNumberVoiceProducer implements VoiceProducer {
 	private String pathPrefix;
 
 	/**
-	 * Constructor resulting in object providing built-in voices to vocalize digits.
+	 * Constructor resulting in object providing built-in voices to vocalize digits in the default language: English,
+	 * unless the {@code net.logicsquad.nanocaptcha.audio.producer.RandomNumberVoiceProducer.defaultLanguage} system
+	 * property names another supported language. The JVM's default {@link Locale} isn't used.
 	 */
 	public RandomNumberVoiceProducer() {
 		this(defaultLanguage());
 	}
 
 	/**
-	 * Constructor taking a language {@link Locale}. If {@code language} is not a
-	 * supported language, the default language will be used.
+	 * Constructor taking a language {@link Locale}. Only the language counts, so a regional {@link Locale} such as
+	 * {@link Locale#GERMANY} or {@code fr-CA} gets that language's voices. If {@code language} is not a supported
+	 * language, the default language will be used.
 	 *
 	 * @param language a {@link Locale} representing a language
 	 * @see <a href="https://github.com/logicsquad/nanocaptcha/issues/7">#7</a>
+	 * @see <a href="https://github.com/logicsquad/nanocaptcha/issues/39">#39</a>
 	 * @since 1.4
 	 */
 	public RandomNumberVoiceProducer(Locale language) {
 		Objects.requireNonNull(language);
-		this.language = SUPPORTED_LANGUAGES.contains(language) ? language : defaultLanguage();
+		this.language = SUPPORTED_LANGUAGES.stream().filter(l -> l.getLanguage().equals(language.getLanguage())).findFirst()
+				.orElseGet(RandomNumberVoiceProducer::defaultLanguage);
 		return;
 	}
 
@@ -114,11 +128,28 @@ public class RandomNumberVoiceProducer implements VoiceProducer {
 		try {
 			int idx = Integer.parseInt(stringNumber);
 			List<String> files = vocalizations().get(idx);
-			String filename = files.get(RAND.nextInt(files.size()));
-			return new Sample(filename);
+			String filename = files.get(ThreadLocalRandom.current().nextInt(files.size()));
+			return SAMPLES.computeIfAbsent(filename, RandomNumberVoiceProducer::readBuiltIn);
 		} catch (NumberFormatException e) {
 			throw new IllegalArgumentException("RandomNumberVoiceProducer can only vocalize numbers.", e);
 		}
+	}
+
+	/**
+	 * Reads the built-in vocalization {@code filename} through this class, which can always see NanoCaptcha's own
+	 * resources.
+	 *
+	 * @param filename resource name
+	 * @return vocalization
+	 * @throws IllegalStateException if the vocalization is missing
+	 * @see <a href="https://github.com/logicsquad/nanocaptcha/issues/50">#50</a>
+	 */
+	private static Sample readBuiltIn(String filename) {
+		URL url = RandomNumberVoiceProducer.class.getResource(filename);
+		if (url == null) {
+			throw new IllegalStateException("NanoCaptcha's vocalization '" + filename + "' is missing from the classpath.");
+		}
+		return new Sample(url);
 	}
 
 	/**

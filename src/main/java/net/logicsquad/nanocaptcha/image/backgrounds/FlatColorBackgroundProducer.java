@@ -48,7 +48,6 @@ public final class FlatColorBackgroundProducer implements BackgroundProducer {
 		Graphics2D graphics = img.createGraphics();
 		graphics.setPaint(color);
 		graphics.fill(new Rectangle2D.Double(0, 0, width, height));
-		graphics.drawImage(img, 0, 0, null);
 		graphics.dispose();
 		return img;
 	}

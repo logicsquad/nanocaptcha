@@ -6,7 +6,14 @@ package net.logicsquad.nanocaptcha.content;
  * @author <a href="mailto:james.childers@gmail.com">James Childers</a>
  * @author <a href="mailto:paulh@logicsquad.net">Paul Hoadley</a>
  * @since 1.0
+ * @deprecated Neither of NanoCaptcha's built-in fonts can display these characters, so you have to supply one that
+ *             can with
+ *             {@link net.logicsquad.nanocaptcha.image.renderer.AbstractWordRenderer.Builder#font(java.awt.Font) font()},
+ *             and {@link net.logicsquad.nanocaptcha.image.renderer.FastWordRenderer} can't draw them at all. The range
+ *             also includes many uncommon characters that are hard to type. This class will be removed in 3.0.
+ * @see <a href="https://github.com/logicsquad/nanocaptcha/issues/38">#38</a>
  */
+@Deprecated
 public class ChineseContentProducer extends AbstractContentProducer {
 	/**
 	 * Code point at start of range (inclusive)

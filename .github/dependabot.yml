@@ -1,0 +1,25 @@
+version: 2
+updates:
+  - package-ecosystem: maven
+    directory: /
+    schedule:
+      interval: monthly
+    groups:
+      maven:
+        update-types:
+          - minor
+          - patch
+    ignore:
+      # JUnit 6 needs Java 17, and we still target Java 8 (see #63).
+      - dependency-name: org.junit:junit-bom
+        update-types:
+          - version-update:semver-major
+
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: monthly
+    groups:
+      github-actions:
+        patterns:
+          - "*"

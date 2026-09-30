@@ -4,6 +4,7 @@ import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
+import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Supplier;
 
@@ -52,7 +53,7 @@ public final class FastWordRenderer extends AbstractWordRenderer {
 	/**
 	 * Current index pointer
 	 */
-	private static AtomicInteger idxPointer = new AtomicInteger(0);
+	static final AtomicInteger idxPointer = new AtomicInteger(0);
 
 	/**
 	 * Minimum fudge value
@@ -77,7 +78,7 @@ public final class FastWordRenderer extends AbstractWordRenderer {
 	/**
 	 * Current fudge pointer
 	 */
-	private static AtomicInteger fudgePointer = new AtomicInteger(0);
+	static final AtomicInteger fudgePointer = new AtomicInteger(0);
 
 	/**
 	 * Available {@link Font}s
@@ -89,11 +90,12 @@ public final class FastWordRenderer extends AbstractWordRenderer {
 		FONTS[0] = DEFAULT_FONTS.get(0);
 		FONTS[1] = DEFAULT_FONTS.get(1);
 
+		ThreadLocalRandom random = ThreadLocalRandom.current();
 		for (int i = 0; i < FONT_INDEX_SIZE; i++) {
-			INDEXES[i] = RAND.nextInt(FONTS.length);
+			INDEXES[i] = random.nextInt(FONTS.length);
 		}
 		for (int i = 0; i < FUDGE_INDEX_SIZE; i++) {
-			FUDGES[i] = RAND.nextInt((FUDGE_MAX - FUDGE_MIN) + 1) + FUDGE_MIN;
+			FUDGES[i] = random.nextInt((FUDGE_MAX - FUDGE_MIN) + 1) + FUDGE_MIN;
 		}
 	}
 
@@ -111,20 +113,34 @@ public final class FastWordRenderer extends AbstractWordRenderer {
 		return;
 	}
 
+	/**
+	 * {@inheritDoc}
+	 *
+	 * @throws IllegalArgumentException if a font can't display a character in {@code word}
+	 */
 	@Override
 	public void render(final String word, BufferedImage image) {
 		Graphics2D g = image.createGraphics();
-		int xBaseline = (int) (image.getWidth() * xOffset());
-		int yBaseline = image.getHeight() - (int) (image.getHeight() * yOffset());
-		char[] chars = new char[1];
-		for (char c : word.toCharArray()) {
-			chars[0] = c;
-			g.setColor(colorSupplier().get());
-			g.setFont(nextFont());
-			int xFudge = nextFudge();
-			int yFudge = nextFudge();
-			g.drawChars(chars, 0, 1, xBaseline + xFudge, yBaseline - yFudge);
-			xBaseline = xBaseline + SHIFT;
+		try {
+			int xBaseline = (int) (image.getWidth() * xOffset());
+			int yBaseline = image.getHeight() - (int) (image.getHeight() * yOffset());
+			char[] chars = new char[1];
+			for (char c : word.toCharArray()) {
+				chars[0] = c;
+				g.setColor(colorSupplier().get());
+				Font font = nextFont();
+				if (!font.canDisplay(c)) {
+					throw new IllegalArgumentException(cannotDisplay(font, c)
+							+ " FastWordRenderer only uses its built-in fonts, so use DefaultWordRenderer with a font that can.");
+				}
+				g.setFont(font);
+				int xFudge = nextFudge();
+				int yFudge = nextFudge();
+				g.drawChars(chars, 0, 1, xBaseline + xFudge, yBaseline - yFudge);
+				xBaseline = xBaseline + SHIFT;
+			}
+		} finally {
+			g.dispose();
 		}
 	}
 
@@ -132,12 +148,14 @@ public final class FastWordRenderer extends AbstractWordRenderer {
 	 * Returns the next {@link Font} to use.
 	 *
 	 * @return next {@link Font}
+	 * @see <a href="https://github.com/logicsquad/nanocaptcha/issues/44">#44</a>
 	 */
 	private Font nextFont() {
 		if (FONTS.length == 1) {
 			return FONTS[0];
 		} else {
-			return FONTS[INDEXES[idxPointer.getAndIncrement() % FONT_INDEX_SIZE]];
+			// floorMod, not %: the pointer goes negative once it passes Integer.MAX_VALUE.
+			return FONTS[INDEXES[Math.floorMod(idxPointer.getAndIncrement(), FONT_INDEX_SIZE)]];
 		}
 	}
 
@@ -145,9 +163,11 @@ public final class FastWordRenderer extends AbstractWordRenderer {
 	 * Returns the next fudge value to use.
 	 *
 	 * @return fudge value
+	 * @see <a href="https://github.com/logicsquad/nanocaptcha/issues/44">#44</a>
 	 */
 	private int nextFudge() {
-		return FUDGES[fudgePointer.getAndIncrement() % FUDGE_INDEX_SIZE];
+		// floorMod, not %: the pointer goes negative once it passes Integer.MAX_VALUE.
+		return FUDGES[Math.floorMod(fudgePointer.getAndIncrement(), FUDGE_INDEX_SIZE)];
 	}
 
 	/**

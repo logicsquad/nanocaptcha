@@ -8,7 +8,7 @@ import java.awt.geom.CubicCurve2D;
 import java.awt.geom.PathIterator;
 import java.awt.geom.Point2D;
 import java.awt.image.BufferedImage;
-import java.util.Random;
+import java.util.concurrent.ThreadLocalRandom;
 
 /**
  * Adds a randomly curved line to the image.
@@ -18,11 +18,6 @@ import java.util.Random;
  * @since 1.0
  */
 public class CurvedLineNoiseProducer implements NoiseProducer {
-	/**
-	 * Random number generator
-	 */
-	private static final Random RAND = new Random();
-
 	/**
 	 * Default line {@link Color}
 	 */
@@ -67,11 +62,12 @@ public class CurvedLineNoiseProducer implements NoiseProducer {
 	public void makeNoise(BufferedImage image) {
 		int width = image.getWidth();
 		int height = image.getHeight();
+		ThreadLocalRandom random = ThreadLocalRandom.current();
 
 		// the curve from where the points are taken
-		CubicCurve2D cc = new CubicCurve2D.Float(width * .1f, height * RAND.nextFloat(), width * .1f,
-				height * RAND.nextFloat(), width * .25f, height * RAND.nextFloat(), width * .9f,
-				height * RAND.nextFloat());
+		CubicCurve2D cc = new CubicCurve2D.Float(width * .1f, height * random.nextFloat(), width * .1f,
+				height * random.nextFloat(), width * .25f, height * random.nextFloat(), width * .9f,
+				height * random.nextFloat());
 
 		// creates an iterator to define the boundary of the flattened curve
 		PathIterator pi = cc.getPathIterator(null, 2);

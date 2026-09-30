@@ -7,7 +7,7 @@ import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 import java.awt.image.BufferedImageOp;
 import java.awt.image.ColorModel;
-import java.util.Random;
+import java.util.concurrent.ThreadLocalRandom;
 
 /**
  * Applies a {@link RippleFilter} to the image.
@@ -651,8 +651,6 @@ public class RippleImageFilter implements ImageFilter {
 	 */
 	private static class Noise implements Function1D, Function2D, Function3D {
 
-		private static Random randomGenerator = new Random();
-
 		@Override
 		public float evaluate(float x) {
 			return noise1(x);
@@ -862,7 +860,7 @@ public class RippleImageFilter implements ImageFilter {
 		}
 
 		private static int random() {
-			return randomGenerator.nextInt() & 0x7fffffff;
+			return ThreadLocalRandom.current().nextInt() & 0x7fffffff;
 		}
 
 		private static void init() {

@@ -6,7 +6,15 @@ package net.logicsquad.nanocaptcha.content;
  * @author <a href="mailto:james.childers@gmail.com">James Childers</a>
  * @author <a href="mailto:paulh@logicsquad.net">Paul Hoadley</a>
  * @since 1.0
+ * @deprecated Neither of NanoCaptcha's built-in fonts can display these characters, so you have to supply one that
+ *             can with
+ *             {@link net.logicsquad.nanocaptcha.image.renderer.AbstractWordRenderer.Builder#font(java.awt.Font) font()},
+ *             and {@link net.logicsquad.nanocaptcha.image.renderer.FastWordRenderer} can't draw them at all. Even with
+ *             a suitable font, the letters are drawn unjoined and left to right. This class will be removed in 3.0.
+ * @see <a href="https://github.com/logicsquad/nanocaptcha/issues/38">#38</a>
+ * @see <a href="https://github.com/logicsquad/nanocaptcha/issues/61">#61</a>
  */
+@Deprecated
 public class ArabicContentProducer extends AbstractContentProducer {
 	/**
 	 * Array containing some Arabic characters

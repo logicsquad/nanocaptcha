@@ -3,7 +3,7 @@ package net.logicsquad.nanocaptcha.audio;
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
+import java.util.concurrent.ThreadLocalRandom;
 
 import net.logicsquad.nanocaptcha.audio.noise.NoiseProducer;
 import net.logicsquad.nanocaptcha.audio.noise.RandomNoiseProducer;
@@ -54,11 +54,13 @@ public final class AudioCaptcha {
 	 *
 	 * <ul>
 	 * <li>{@link NumbersContentProducer} with length 5; and</li>
-	 * <li>{@link RandomNumberVoiceProducer} (in the default {@link java.util.Locale Locale}).</li>
+	 * <li>{@link RandomNumberVoiceProducer} in its default language.</li>
 	 * </ul>
 	 *
 	 * <p>
-	 * That is, the audio clip will contain five numbers read out in English (unless the default {@code Locale} has been changed).
+	 * That is, the audio clip will contain five numbers read out in English, unless the
+	 * {@code net.logicsquad.nanocaptcha.audio.producer.RandomNumberVoiceProducer.defaultLanguage} system property names
+	 * another supported language. The JVM's default {@link java.util.Locale Locale} isn't used.
 	 * </p>
 	 *
 	 * @return new {@code AudioCaptcha}
@@ -72,11 +74,6 @@ public final class AudioCaptcha {
 	 * Build for an {@link AudioCaptcha}.
 	 */
 	public static class Builder implements net.logicsquad.nanocaptcha.Builder<AudioCaptcha> {
-		/**
-		 * Random number generator
-		 */
-		private static final Random RAND = new Random();
-
 		/**
 		 * Text content
 		 */
@@ -201,13 +198,13 @@ public final class AudioCaptcha {
 			for (char c : ansAry) {
 				// Create Sample for this character from one of the
 				// VoiceProducers
-				vProd = voiceProducers.get(RAND.nextInt(voiceProducers.size()));
+				vProd = voiceProducers.get(ThreadLocalRandom.current().nextInt(voiceProducers.size()));
 				samples.add(vProd.getVocalization(c));
 			}
 
 			// 3. Add noise, if any, and return the result
 			if (!noiseProducers.isEmpty()) {
-				NoiseProducer nProd = noiseProducers.get(RAND.nextInt(noiseProducers.size()));
+				NoiseProducer nProd = noiseProducers.get(ThreadLocalRandom.current().nextInt(noiseProducers.size()));
 				audio = nProd.addNoise(samples);
 				return new AudioCaptcha(this);
 			}
@@ -218,13 +215,18 @@ public final class AudioCaptcha {
 	}
 
 	/**
-	 * Does CAPTCHA content match supplied {@code answer}?
+	 * Does CAPTCHA content match supplied {@code answer}? If {@code answer} is
+	 * {@code null}, this method returns {@code false}.
 	 *
 	 * @param answer a candidate content match
 	 * @return {@code true} if {@code answer} matches CAPTCHA content, otherwise
 	 *         {@code false}
+	 * @see <a href="https://github.com/logicsquad/nanocaptcha/issues/46">#46</a>
 	 */
 	public boolean isCorrect(String answer) {
+		if (answer == null) {
+			return false;
+		}
 		return answer.equals(content);
 	}
 

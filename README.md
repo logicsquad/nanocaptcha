@@ -14,6 +14,15 @@ CAPTCHAs. NanoCaptcha is intended to be:
 * Minimally-dependent: using NanoCaptcha should not involve pulling in
   a plethora of JARs, and ideally none at all.
 
+It's worth being clear about what a CAPTCHA like this can do. Modern
+OCR and speech recognition can read short text and digit CAPTCHAs
+reliably, so NanoCaptcha is a speed bump for untargeted form spam,
+not a barrier to a determined attacker. Its strengths are that it's
+self-hosted, sends nothing to third parties, doesn't need JavaScript,
+and has an audio alternative. For stronger self-hosted protection,
+combine it with a honeypot field, timing checks, or a proof-of-work
+scheme such as [ALTCHA](https://github.com/altcha-org/altcha-lib-java).
+
 Getting started
 ---------------
 You can build a minimal image CAPTCHA very easily:
@@ -27,7 +36,7 @@ string against the text content of the image. If you need the text
 content itself, call `getContent()`.  Image CAPTCHAs can be further
 customised by:
 
-* Using different `ContentProducer`s (e.g., `ChineseContentProducer`).
+* Using different `ContentProducer`s (e.g., `NumbersContentProducer`).
 * Supplying your own `Color`s and `Font`s.
 * Adding noise using a `NoiseProducer`.
 * Adding various `ImageFilter`s.
@@ -45,28 +54,66 @@ e.g.:
         .addNoise(new CurvedLineNoiseProducer())
         .build();
 
+A `Builder` draws as it goes, so each one makes a single CAPTCHA: use
+a new `Builder` for each.
+
+The built-in fonts can display everything NanoCaptcha's own content
+producers generate, except for `ChineseContentProducer` and
+`ArabicContentProducer`, which are deprecated and will be removed in
+3.0. For those, or for your own content in other scripts, supply a
+font that can display it, such as one installed on the server:
+
+    new DefaultWordRenderer.Builder()
+        .font(new Font("Noto Sans CJK SC", Font.BOLD, 40))
+        .build()
+
+`FastWordRenderer` only uses the built-in fonts. If a renderer's font
+can't display a character, it throws an `IllegalArgumentException`
+rather than drawing an empty box.
+
+To send an image CAPTCHA to a browser, `writePng()` writes it to an
+`OutputStream` as a PNG file, for example in a servlet:
+
+    response.setContentType("image/png");
+    imageCaptcha.writePng(response.getOutputStream());
+
+`toPng()` returns the same PNG file as a `byte[]`, and `toDataUri()`
+returns it as a `data:` URI, which can go straight into the `src` of
+an `<img>` tag, so there's no separate request for the image.
+
+Unless you add an opaque background, the image is transparent where
+nothing is drawn, and JPEG can't store transparency. On JDK 11 and
+later, `ImageIO.write(imageCaptcha.getImage(), "jpg", out)` returns
+`false` and writes nothing, and on JDK 8 it writes a JPEG that most
+viewers show in the wrong colours. Use PNG, or if you need a JPEG, add
+a background such as `FlatColorBackgroundProducer`.
+
 Building a minimal audio CAPTCHA is just as easy:
 
     AudioCaptcha audioCaptcha = AudioCaptcha.create();
 
 This creates a CAPTCHA with an audio clip containing five numbers read
-out in English (unless the default `Locale` has been changed). To
-customise your CAPTCHA, you can use `AudioCaptcha.Builder`.
+out in English. To customise your CAPTCHA, you can use
+`AudioCaptcha.Builder`.
 
-There is support for different languages. (Currently English and
-German are supported.) You can set the system property
+There is support for different languages. (Currently English, German
+and French are supported.) You can set the system property
 `net.logicsquad.nanocaptcha.audio.producer.RandomNumberVoiceProducer.defaultLanguage`
-to a 2-digit code for a supported language, e.g., `de`, and the
-`Builder` above will return German digit vocalizations. Alternatively,
-you can supply a `RandomNumberVoiceProducer` explicitly:
+to a 2-digit code for a supported language, e.g., `de`, and
+`AudioCaptcha.create()` will return German digit vocalizations. The
+JVM's default `Locale` isn't used. Alternatively, you can supply a
+`RandomNumberVoiceProducer` explicitly, for example in the language of
+each visitor to a web application:
 
     AudioCaptcha audioCaptcha = new AudioCaptcha.Builder()
         .addContent()
-        .addVoice(new RandomNumberVoiceProducer(Locale.GERMAN))
+        .addVoice(new RandomNumberVoiceProducer(request.getLocale()))
         .build();
 
-You can even mix languages by calling `addVoice(Locale)` more than
-once.
+Only the language counts, so `de-AT` gets German and `fr-CA` gets
+French, and an unsupported language gets the default. You can even mix
+languages by calling `addVoice()` with more than one
+`RandomNumberVoiceProducer`.
 
 As with image CAPTCHAs, these can be further customised by:
 
@@ -83,6 +130,10 @@ snippet will play the clip locally:
 (The call to `Thread.sleep()` is simply to keep the JVM alive long
 enough to play the clip.)
 
+To send the clip to a browser instead, `getAudio().writeWav()` writes
+it to an `OutputStream` as a WAV file, and `getAudio().toWav()`
+returns the WAV file as a `byte[]`.
+
 Using NanoCaptcha
 -----------------
 You can use NanoCaptcha in your projects by including it as a Maven dependency:
@@ -90,8 +141,89 @@ You can use NanoCaptcha in your projects by including it as a Maven dependency:
     <dependency>
       <groupId>net.logicsquad</groupId>
       <artifactId>nanocaptcha</artifactId>
-      <version>2.0</version>
+      <version>2.2</version>
     </dependency>
+
+NanoCaptcha's audio classes use SLF4J. On the module path NanoCaptcha
+is an automatic module (`net.logicsquad.nanocaptcha`), which can't
+declare that it needs SLF4J, so if your application doesn't use SLF4J
+itself, add `--add-modules org.slf4j` to the `java` command line or
+`requires org.slf4j;` to your `module-info.java`.
+
+Using NanoCaptcha in a web application
+--------------------------------------
+Most of the protection a CAPTCHA gives comes from how it's used:
+
+* Keep only the answer, from `getContent()`, on the server and tied to
+  the visitor's session, along with when it was created, from
+  `getCreated()`. Never send the answer to the browser, in a hidden
+  field, a cookie or anywhere else. There's no need to keep the CAPTCHA
+  itself.
+
+* Allow one attempt per CAPTCHA, right or wrong, and then make a new
+  one. A five-digit answer has 100,000 possibilities, and five
+  characters from `LatinContentProducer` about 6.4 million, so
+  unlimited guesses would get through eventually.
+
+* Expire CAPTCHAs after a few minutes.
+
+* Rate-limit how often each client can get a new CAPTCHA and submit an
+  answer.
+
+* Mobile keyboards often capitalise the first letter, but
+  `LatinContentProducer` uses lowercase letters, and `isCorrect()` is
+  case-sensitive. Add `autocapitalize="none"` to the input field, or
+  compare the answer in lowercase.
+
+* Send images as PNG and audio as WAV, as described above, and offer
+  an audio CAPTCHA as an alternative to the image.
+
+For example, in a servlet:
+
+    // Showing the form
+    ImageCaptcha captcha = ImageCaptcha.create();
+    session.setAttribute("captchaAnswer", captcha.getContent());
+    session.setAttribute("captchaCreated", captcha.getCreated());
+    // ... and put captcha.toDataUri() in the form's <img> tag
+
+    // Checking the form: one attempt, within five minutes
+    String answer = (String) session.getAttribute("captchaAnswer");
+    OffsetDateTime created = (OffsetDateTime) session.getAttribute("captchaCreated");
+    session.removeAttribute("captchaAnswer");
+    session.removeAttribute("captchaCreated");
+    String given = request.getParameter("captcha");
+    boolean passed = answer != null && given != null
+        && created.isAfter(OffsetDateTime.now().minusMinutes(5))
+        && answer.equals(given.trim().toLowerCase(Locale.ROOT));
+
+Running in containers
+---------------------
+NanoCaptcha draws image CAPTCHAs with its own fonts, but the JDK can
+only use fonts when fontconfig and at least one font are installed.
+Some container images leave them out, including Alpine-based JDK
+images and slim images with a JDK copied in. There, NanoCaptcha fails
+the first time it draws an image CAPTCHA, with an error beginning
+"NanoCaptcha can't load its font". To fix it, add the packages to your
+image:
+
+    # Debian and Ubuntu
+    RUN apt-get update && apt-get install -y --no-install-recommends fontconfig fonts-dejavu-core
+
+    # Alpine
+    RUN apk add --no-cache fontconfig ttf-dejavu
+
+or start from a JDK image that already includes them, such as
+`eclipse-temurin`. Alpine's packages don't help a JDK built for glibc,
+such as the one in `bellsoft/liberica-openjdk-alpine`, so use its
+`-musl` variant instead. Audio CAPTCHAs don't need fonts.
+
+Java also copies each font to a temporary file while loading it, so
+the first image CAPTCHA needs a writable temporary directory. With a
+read-only root filesystem, as with `docker run --read-only` or
+Kubernetes's `readOnlyRootFilesystem: true`, mount a writable
+directory at `/tmp`, such as a `tmpfs` or an `emptyDir` volume, or
+point `-Djava.io.tmpdir` at one. Otherwise NanoCaptcha fails with an
+error saying it can't create a temporary file.
 
 Contributing
 ------------

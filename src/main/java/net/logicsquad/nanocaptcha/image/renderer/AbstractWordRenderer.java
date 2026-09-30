@@ -6,15 +6,16 @@ import java.awt.FontFormatException;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Random;
+import java.util.concurrent.ThreadLocalRandom;
 import java.util.function.Supplier;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Superclass for {@link WordRenderer} implementations.
@@ -24,11 +25,6 @@ import org.slf4j.LoggerFactory;
  * @since 1.4
  */
 public abstract class AbstractWordRenderer implements WordRenderer {
-	/**
-	 * Logger
-	 */
-	private static final Logger LOG = LoggerFactory.getLogger(AbstractWordRenderer.class);
-
 	/**
 	 * Resource path to "Courier Prime"
 	 */
@@ -41,7 +37,12 @@ public abstract class AbstractWordRenderer implements WordRenderer {
 
     /**
      * Random number generator
+     *
+     * @deprecated NanoCaptcha's own renderers now use {@link ThreadLocalRandom}, so that threads don't contend for one
+     *             generator, and subclasses should do the same. This field will be removed in 3.0.
+     * @see <a href="https://github.com/logicsquad/nanocaptcha/issues/49">#49</a>
      */
+    @Deprecated
     protected static final Random RAND = new Random();
 
 	/**
@@ -65,12 +66,12 @@ public abstract class AbstractWordRenderer implements WordRenderer {
     /**
      * Default supplier for {@link Color}
      */
-    protected static final Supplier<Color> DEFAULT_COLOR_SUPPLIER = () -> DEFAULT_COLORS.get(RAND.nextInt(DEFAULT_COLORS.size()));
+    protected static final Supplier<Color> DEFAULT_COLOR_SUPPLIER = () -> DEFAULT_COLORS.get(ThreadLocalRandom.current().nextInt(DEFAULT_COLORS.size()));
 
     /**
      * Default supplier for {@link Font}
      */
-    protected static final Supplier<Font> DEFAULT_FONT_SUPPLIER = () -> DEFAULT_FONTS.get(RAND.nextInt(DEFAULT_FONTS.size()));
+    protected static final Supplier<Font> DEFAULT_FONT_SUPPLIER = () -> DEFAULT_FONTS.get(ThreadLocalRandom.current().nextInt(DEFAULT_FONTS.size()));
 
 	/**
 	 * Font size (in points)
@@ -199,7 +200,7 @@ public abstract class AbstractWordRenderer implements WordRenderer {
 		 * @return this
 		 */
 		public Builder randomiseYOffset() {
-			this.yOffset = Y_OFFSET_MIN + (Y_OFFSET_MAX - Y_OFFSET_MIN) * RAND.nextDouble();
+			this.yOffset = Y_OFFSET_MIN + (Y_OFFSET_MAX - Y_OFFSET_MIN) * ThreadLocalRandom.current().nextDouble();
 			return this;
 		}
 
@@ -228,7 +229,7 @@ public abstract class AbstractWordRenderer implements WordRenderer {
 		 */
 		public Builder randomColor(List<Color> colors) {
 			if (!colors.isEmpty()) {
-				colorSupplier = () -> colors.get(RAND.nextInt(colors.size()));
+				colorSupplier = () -> colors.get(ThreadLocalRandom.current().nextInt(colors.size()));
 			}
 			return this;
 		}
@@ -270,7 +271,7 @@ public abstract class AbstractWordRenderer implements WordRenderer {
 		 */
 		public Builder randomFont(List<Font> fonts) {
 			if (!fonts.isEmpty()) {
-				fontSupplier = () -> fonts.get(RAND.nextInt(fonts.size()));
+				fontSupplier = () -> fonts.get(ThreadLocalRandom.current().nextInt(fonts.size()));
 			}
 			return this;
 		}
@@ -327,19 +328,63 @@ public abstract class AbstractWordRenderer implements WordRenderer {
 	}
 
 	/**
-	 * Returns a {@link Font} loaded from supplied {@code resourceName}, or {@code null} if unable to load the
-	 * resource.
+	 * Returns a {@link Font} loaded from supplied {@code resourceName}.
 	 *
 	 * @param resourceName path to resource
 	 * @return loaded {@link Font}
+	 * @throws IllegalStateException if the font can't be loaded
 	 * @since 1.5
+	 * @see <a href="https://github.com/logicsquad/nanocaptcha/issues/37">#37</a>
+	 * @see <a href="https://github.com/logicsquad/nanocaptcha/issues/77">#77</a>
 	 */
 	private static Font fontFromResource(String resourceName) {
 		try (InputStream is = DefaultWordRenderer.class.getResourceAsStream(resourceName)) {
-			return Font.createFont(Font.TRUETYPE_FONT, is).deriveFont((long) FONT_SIZE);
+			if (is == null) {
+				throw new IllegalStateException("NanoCaptcha's font '" + resourceName + "' is missing from the classpath.");
+			}
+			return Font.createFont(Font.TRUETYPE_FONT, is).deriveFont((float) FONT_SIZE);
 		} catch (IOException | FontFormatException e) {
-			LOG.error("Unable to load font '{}'.", resourceName, e);
-			return null;
+			throw cannotLoadFont(resourceName, e, Paths.get(System.getProperty("java.io.tmpdir")));
 		}
+	}
+
+	/**
+	 * Returns an exception explaining why the font {@code resourceName} couldn't be loaded. Java copies a font to a
+	 * temporary file before loading it, so this first checks that a file can be created in {@code temporaryDirectory}.
+	 * If it can, the likeliest cause is that the JDK can't use fonts at all.
+	 *
+	 * @param resourceName       path to resource
+	 * @param cause              what went wrong loading the font
+	 * @param temporaryDirectory the JVM's temporary directory
+	 * @return exception to throw
+	 * @see <a href="https://github.com/logicsquad/nanocaptcha/issues/77">#77</a>
+	 */
+	static IllegalStateException cannotLoadFont(String resourceName, Exception cause, Path temporaryDirectory) {
+		try {
+			Files.delete(Files.createTempFile(temporaryDirectory, "nanocaptcha", ".tmp"));
+		} catch (IOException | SecurityException e) {
+			IllegalStateException exception = new IllegalStateException("NanoCaptcha can't load its font '" + resourceName
+					+ "', because Java copies fonts to a temporary file before loading them, and it can't create one in '"
+					+ temporaryDirectory + "'. Mount a writable directory at /tmp, or set -Djava.io.tmpdir to one. "
+					+ "See https://github.com/logicsquad/nanocaptcha#running-in-containers", cause);
+			exception.addSuppressed(e);
+			return exception;
+		}
+		return new IllegalStateException("NanoCaptcha can't load its font '" + resourceName + "'. This usually means the JDK "
+				+ "can't use fonts at all, as in slim and Alpine container images: install fontconfig and a font package, "
+				+ "or use a JDK image that includes them. "
+				+ "See https://github.com/logicsquad/nanocaptcha#running-in-containers", cause);
+	}
+
+	/**
+	 * Returns a message saying that {@code font} can't display {@code c}.
+	 *
+	 * @param font a {@link Font}
+	 * @param c    a character {@code font} can't display
+	 * @return message
+	 * @see <a href="https://github.com/logicsquad/nanocaptcha/issues/38">#38</a>
+	 */
+	static String cannotDisplay(Font font, char c) {
+		return String.format("Font '%s' can't display '%c' (U+%04X).", font.getFontName(), c, (int) c);
 	}
 }

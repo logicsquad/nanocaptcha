@@ -2,7 +2,7 @@ package net.logicsquad.nanocaptcha.image.noise;
 
 import java.awt.Color;
 import java.awt.image.BufferedImage;
-import java.util.Random;
+import java.util.concurrent.ThreadLocalRandom;
 
 /**
  * Applies salt and pepper noise to an image. This noise type randomly changes some of the pixels to black or white, creating a 'salt and
@@ -13,11 +13,6 @@ import java.util.Random;
  * @since 2.0
  */
 public class SaltAndPepperNoiseProducer implements NoiseProducer {
-    /**
-     * Random number generator.
-     */
-    private static final Random RAND = new Random();
-
     /**
      * Default noise density.
      */
@@ -39,7 +34,7 @@ public class SaltAndPepperNoiseProducer implements NoiseProducer {
     private final double noiseDensity;
 
     /**
-     * Constructor using default standard deviation and mean.
+     * Constructor using the default noise density.
      */
     public SaltAndPepperNoiseProducer() {
         this(DEFAULT_NOISE_DENSITY);
@@ -69,11 +64,12 @@ public class SaltAndPepperNoiseProducer implements NoiseProducer {
     public void makeNoise(BufferedImage image) {
         int width = image.getWidth();
         int height = image.getHeight();
+        ThreadLocalRandom random = ThreadLocalRandom.current();
 
         for (int x = 0; x < width; x++) {
             for (int y = 0; y < height; y++) {
-                if (RAND.nextDouble() < noiseDensity) {
-                    int color = RAND.nextBoolean() ? PEPPER : SALT;
+                if (random.nextDouble() < noiseDensity) {
+                    int color = random.nextBoolean() ? PEPPER : SALT;
                     image.setRGB(x, y, color);
                 }
             }

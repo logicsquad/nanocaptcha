@@ -3,7 +3,7 @@ package net.logicsquad.nanocaptcha.image.filter;
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
-import java.util.Random;
+import java.util.concurrent.ThreadLocalRandom;
 
 /**
  * Applies a shear effect to the image.
@@ -22,11 +22,6 @@ public class ShearImageFilter implements ImageFilter {
 	 * Default {@link Color}
 	 */
 	private static final Color DEFAULT_COLOR = Color.GRAY;
-
-	/**
-	 * Random number generator
-	 */
-	private static final Random RAND = new Random();
 
 	/**
 	 * {@link Color} to use in filter
@@ -60,10 +55,10 @@ public class ShearImageFilter implements ImageFilter {
 	}
 
 	private void shearX(Graphics2D g, int w1, int h1) {
-		int period = RAND.nextInt(10) + 5;
+		int period = ThreadLocalRandom.current().nextInt(10) + 5;
 		boolean borderGap = true;
 		int frames = 15;
-		int phase = RAND.nextInt(5) + 2;
+		int phase = ThreadLocalRandom.current().nextInt(5) + 2;
 		for (int i = 0; i < h1; i++) {
 			double d = (period >> 1) * Math.sin((double) i / (double) period + (TWO_PI * phase) / frames);
 			g.copyArea(0, i, w1, 1, (int) d, 0);
@@ -76,7 +71,7 @@ public class ShearImageFilter implements ImageFilter {
 	}
 
 	private void shearY(Graphics2D g, int w1, int h1) {
-		int period = RAND.nextInt(30) + 10;
+		int period = ThreadLocalRandom.current().nextInt(30) + 10;
 		boolean borderGap = true;
 		int frames = 15;
 		int phase = 7;
