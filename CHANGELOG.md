@@ -264,6 +264,12 @@ up, including: Javadoc comments, visibility tightening, API pruning.
   image with the filtered one, which makes the ripple much more
   visible, and changes how filtered CAPTCHAs
   look. [#56](https://github.com/logicsquad/nanocaptcha/issues/56)
+- `GaussianNoiseProducer` added noise to the alpha channel, which made
+  opaque pixels partly transparent. It now draws each pixel's noise
+  as a white or black speckle over the image, so opaque pixels stay
+  opaque, and the grain is grey rather than faintly coloured. It
+  still shows over any
+  background. [#60](https://github.com/logicsquad/nanocaptcha/issues/60)
 - `StretchImageFilter` no longer smears the top rows of the image
   down the rest of it, which could leave the whole CAPTCHA a single
   colour. [#80](https://github.com/logicsquad/nanocaptcha/issues/80)
