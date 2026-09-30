@@ -3,11 +3,15 @@ package net.logicsquad.nanocaptcha.image.renderer;
 import static org.junit.jupiter.api.Assertions.*;
 
 import java.awt.Font;
+import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Random;
+import java.util.Set;
+import java.util.TreeSet;
 import java.util.stream.Stream;
 
 import org.junit.jupiter.api.Test;
@@ -63,6 +67,61 @@ public class AbstractWordRendererTest {
 		try (Stream<Path> files = Files.list(directory)) {
 			assertEquals(0, files.count());
 		}
+		return;
+	}
+
+	@Test
+	public void randomBaselineKeepsTextClearOfTheEdges() {
+		Random random = new Random(1);
+		Set<Integer> baselines = new TreeSet<>();
+		for (int i = 0; i < 1000; i++) {
+			int baseline = AbstractWordRenderer.randomBaseline(50, 29.6, 9.2, random);
+			assertTrue(baseline - 29.6 >= 1 && baseline + 9.2 <= 49, "baseline " + baseline);
+			baselines.add(baseline);
+		}
+		// Every whole-pixel baseline that fits
+		assertEquals(9, baselines.size(), baselines.toString());
+		// Text too tall to fit is centred
+		assertEquals(35, AbstractWordRenderer.randomBaseline(50, 40, 20, random));
+		return;
+	}
+
+	@Test
+	public void randomisedYOffsetKeepsGlyphsInTheImageAndChangesEachTime() {
+		// FastWordRenderer's fudge moves each glyph up to 5 pixels either way, so it needs a taller image to vary
+		assertRandomYOffsetKeepsGlyphsInTheImage(new DefaultWordRenderer.Builder().randomiseYOffset().build(), 50);
+		assertRandomYOffsetKeepsGlyphsInTheImage(new FastWordRenderer.Builder().randomiseYOffset().build(), 70);
+		return;
+	}
+
+	/**
+	 * Renders 200 CAPTCHAs with {@code renderer} on a 200-pixel-wide image, and checks that no glyph reaches the top or
+	 * bottom row, where it might have been cut off, and that the height of the text varies.
+	 *
+	 * @param renderer a {@link WordRenderer} with a random y-offset
+	 * @param height   image height
+	 */
+	private static void assertRandomYOffsetKeepsGlyphsInTheImage(WordRenderer renderer, int height) {
+		String name = renderer.getClass().getSimpleName();
+		Set<Integer> tops = new TreeSet<>();
+		for (int i = 0; i < 200; i++) {
+			BufferedImage image = new BufferedImage(200, height, BufferedImage.TYPE_INT_ARGB);
+			String word = new LatinContentProducer().getContent();
+			renderer.render(word, image);
+			int top = height;
+			int bottom = -1;
+			for (int y = 0; y < height; y++) {
+				for (int x = 0; x < 200; x++) {
+					if ((image.getRGB(x, y) >>> 24) != 0) {
+						top = Math.min(top, y);
+						bottom = Math.max(bottom, y);
+					}
+				}
+			}
+			assertTrue(top > 0 && bottom < height - 1, name + ": '" + word + "' reaches from row " + top + " to " + bottom);
+			tops.add(top);
+		}
+		assertTrue(tops.size() >= 5, name + ": the text starts on only these rows: " + tops);
 		return;
 	}
 }

@@ -1,12 +1,13 @@
 package net.logicsquad.nanocaptcha.image.renderer;
 
-import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics2D;
+import java.awt.Rectangle;
+import java.awt.font.FontRenderContext;
 import java.awt.image.BufferedImage;
+import java.util.Random;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.function.Supplier;
 
 /**
  * <p>
@@ -100,16 +101,13 @@ public final class FastWordRenderer extends AbstractWordRenderer {
 	}
 
 	/**
-	 * Constructor taking x- and y-axis offsets
+	 * Constructor taking its settings from a {@link Builder}
 	 *
-	 * @param xOffset           x-axis offset
-	 * @param yOffset           y-axis offset
-	 * @param wordColorSupplier {@link Color} supplier
-	 * @param fontSupplier      {@link Font} supplier
-	 * @since 1.4
+	 * @param builder a {@link Builder}
+	 * @since 2.3
 	 */
-	private FastWordRenderer(double xOffset, double yOffset, Supplier<Color> wordColorSupplier, Supplier<Font> fontSupplier) {
-		super(xOffset, yOffset, wordColorSupplier, fontSupplier);
+	private FastWordRenderer(Builder builder) {
+		super(builder);
 		return;
 	}
 
@@ -120,23 +118,51 @@ public final class FastWordRenderer extends AbstractWordRenderer {
 	 */
 	@Override
 	public void render(final String word, BufferedImage image) {
+		render(word, image, ThreadLocalRandom.current());
+	}
+
+	/**
+	 * Renders {@code word} onto {@code image}, using {@code random} for a random y-offset, so that tests can seed it.
+	 *
+	 * @param word   word to render
+	 * @param image  image to render onto
+	 * @param random a {@link Random}
+	 * @throws IllegalArgumentException if a font can't display a character in {@code word}
+	 */
+	void render(String word, BufferedImage image, Random random) {
 		Graphics2D g = image.createGraphics();
 		try {
-			int xBaseline = (int) (image.getWidth() * xOffset());
-			int yBaseline = image.getHeight() - (int) (image.getHeight() * yOffset());
-			char[] chars = new char[1];
-			for (char c : word.toCharArray()) {
-				chars[0] = c;
-				g.setColor(colorSupplier().get());
-				Font font = nextFont();
-				if (!font.canDisplay(c)) {
-					throw new IllegalArgumentException(cannotDisplay(font, c)
+			char[] chars = word.toCharArray();
+			Font[] fonts = new Font[chars.length];
+			for (int i = 0; i < chars.length; i++) {
+				fonts[i] = nextFont();
+				if (!fonts[i].canDisplay(chars[i])) {
+					throw new IllegalArgumentException(cannotDisplay(fonts[i], chars[i])
 							+ " FastWordRenderer only uses its built-in fonts, so use DefaultWordRenderer with a font that can.");
 				}
-				g.setFont(font);
+			}
+			int xBaseline = (int) (image.getWidth() * xOffset());
+			int yBaseline;
+			if (randomYOffset()) {
+				FontRenderContext frc = g.getFontRenderContext();
+				int ascent = 0;
+				int descent = 0;
+				for (int i = 0; i < chars.length; i++) {
+					Rectangle bounds = fonts[i].createGlyphVector(frc, new char[] { chars[i] }).getPixelBounds(frc, 0, 0);
+					ascent = Math.max(ascent, -bounds.y);
+					descent = Math.max(descent, bounds.y + bounds.height);
+				}
+				// Each glyph's fudge can move it up or down
+				yBaseline = randomBaseline(image.getHeight(), ascent + FUDGE_MAX, descent - FUDGE_MIN, random);
+			} else {
+				yBaseline = image.getHeight() - (int) (image.getHeight() * yOffset());
+			}
+			for (int i = 0; i < chars.length; i++) {
+				g.setColor(colorSupplier().get());
+				g.setFont(fonts[i]);
 				int xFudge = nextFudge();
 				int yFudge = nextFudge();
-				g.drawChars(chars, 0, 1, xBaseline + xFudge, yBaseline - yFudge);
+				g.drawChars(chars, i, 1, xBaseline + xFudge, yBaseline - yFudge);
 				xBaseline = xBaseline + SHIFT;
 			}
 		} finally {
@@ -179,7 +205,7 @@ public final class FastWordRenderer extends AbstractWordRenderer {
 	public static class Builder extends AbstractWordRenderer.Builder {
 		@Override
 		public FastWordRenderer build() {
-			return new FastWordRenderer(xOffset, yOffset, colorSupplier, fontSupplier);
+			return new FastWordRenderer(this);
 		}
 	}
 }

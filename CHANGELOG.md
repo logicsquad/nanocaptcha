@@ -270,6 +270,11 @@ up, including: Javadoc comments, visibility tightening, API pruning.
   opaque, and the grain is grey rather than faintly coloured. It
   still shows over any
   background. [#60](https://github.com/logicsquad/nanocaptcha/issues/60)
+- With `randomiseYOffset()`, `DefaultWordRenderer` and
+  `FastWordRenderer` now choose a new height for the text each time
+  they render, anywhere it fits in the image. The height was chosen
+  once per renderer, and could push glyphs off the top of the
+  image. [#58](https://github.com/logicsquad/nanocaptcha/issues/58)
 - `StretchImageFilter` no longer smears the top rows of the image
   down the rest of it, which could leave the whole CAPTCHA a single
   colour. [#80](https://github.com/logicsquad/nanocaptcha/issues/80)
