@@ -27,7 +27,9 @@ jobs:
   # Slim and Alpine images can leave out the fontconfig and fonts the JDK
   # needs to draw text (#37). The tests are built here, then run inside each
   # image: first without fonts, where NanoCaptcha should explain what's
-  # missing, then with the packages the README suggests.
+  # missing, then with fonts on a read-only filesystem, where it should say
+  # it needs a temporary directory (#77), and then with the packages the
+  # README suggests.
   containers:
     name: containers (${{ matrix.system }})
     runs-on: ubuntu-latest
@@ -74,7 +76,23 @@ jobs:
             echo "The image can already draw text, so it doesn't test anything."
             exit 1
           fi
-          grep "NanoCaptcha can't load its font" without-fonts.txt || { cat without-fonts.txt; exit 1; }
+          # /tmp is writable here, so NanoCaptcha should blame the missing fonts rather than the temporary directory
+          grep "install fontconfig" without-fonts.txt || { cat without-fonts.txt; exit 1; }
+      - name: On a read-only filesystem, NanoCaptcha says it needs a temporary directory
+        run: |
+          classpath="target/test-classes:target/classes:$(cat target/classpath.txt)"
+          # The fonts are there, but Java can't write the temporary copy it makes of each one (#77)
+          docker build --tag with-fonts - <<'DOCKERFILE'
+          FROM ${{ matrix.image }}
+          RUN ${{ matrix.fonts }}
+          DOCKERFILE
+          if docker run --rm --read-only -v "$PWD:/work" -v "$HOME/.m2:$HOME/.m2" -w /work with-fonts \
+              java -jar target/junit-platform-console-standalone.jar execute --disable-banner \
+              --class-path "$classpath" --select-class net.logicsquad.nanocaptcha.image.ImageCaptchaTest > read-only.txt 2>&1; then
+            echo "The image could load its fonts, so it doesn't test anything."
+            exit 1
+          fi
+          grep "can't create one in '/tmp'" read-only.txt || { cat read-only.txt; exit 1; }
       - name: With fontconfig and a font, every test passes
         run: |
           classpath="target/test-classes:target/classes:$(cat target/classpath.txt)"
