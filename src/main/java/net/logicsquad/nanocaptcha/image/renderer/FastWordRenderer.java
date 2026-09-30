@@ -14,7 +14,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * <p>
- * Based on the {@link DefaultWordRenderer}, this implementation strips down to the basics to render {@link BufferedImage}s as much as 5X
+ * Based on the {@link DefaultWordRenderer}, this implementation strips down to the basics to render {@link BufferedImage}s many times
  * faster. (This class will render almost 70,000 {@link BufferedImage}s per second on an iMac with a 4GHz Intel Core i7 CPU.) It has the
  * following restrictions compared to {@link DefaultWordRenderer}:
  * </p>
@@ -26,6 +26,8 @@ import java.util.concurrent.atomic.AtomicInteger;
  * spacing, <em>but</em> will "fudge" each glyph's position horizontally and vertically: see below.</li>
  * <li>{@link Font} choice is only random for the first 100 choices: this class pre-computes a list of random indexes into the {@link Font}
  * array, and then <em>re-uses</em> those indexes by cycling through them repeatedly.</li>
+ * <li>Glyphs aren't rotated or scaled, and are drawn at whole pixels, so each character in each font comes out as the same bitmap, which
+ * makes the text easier to read by machine.</li>
  * </ul>
  *
  * <p>

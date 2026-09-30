@@ -131,9 +131,14 @@ public class AbstractWordRendererTest {
 
 	@Test
 	public void otherFontsKeepTheirSize() {
-		WordRenderer renderer = new DefaultWordRenderer.Builder().font(AbstractWordRenderer.DEFAULT_FONTS.get(0).deriveFont(20f))
-				.build();
-		assertEquals(render(renderer, "23456", 200, 50).height, render(renderer, "23456", 400, 100).height);
+		DefaultWordRenderer renderer = (DefaultWordRenderer) new DefaultWordRenderer.Builder()
+				.font(AbstractWordRenderer.DEFAULT_FONTS.get(0).deriveFont(20f)).build();
+		// The same seed varies the glyphs in the same way
+		BufferedImage small = new BufferedImage(200, 50, BufferedImage.TYPE_INT_ARGB);
+		renderer.render("23456", small, new Random(1));
+		BufferedImage large = new BufferedImage(400, 100, BufferedImage.TYPE_INT_ARGB);
+		renderer.render("23456", large, new Random(1));
+		assertEquals(ink(small).height, ink(large).height);
 		return;
 	}
 
@@ -186,16 +191,26 @@ public class AbstractWordRendererTest {
 	private static Rectangle render(WordRenderer renderer, String word, int width, int height) {
 		BufferedImage image = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
 		renderer.render(word, image);
+		return ink(image);
+	}
+
+	/**
+	 * Returns the bounds of the pixels in {@code image} that aren't transparent.
+	 *
+	 * @param image an image
+	 * @return bounds of ink
+	 */
+	static Rectangle ink(BufferedImage image) {
 		Rectangle ink = null;
-		for (int y = 0; y < height; y++) {
-			for (int x = 0; x < width; x++) {
+		for (int y = 0; y < image.getHeight(); y++) {
+			for (int x = 0; x < image.getWidth(); x++) {
 				if ((image.getRGB(x, y) >>> 24) != 0) {
 					Rectangle pixel = new Rectangle(x, y, 1, 1);
 					ink = ink == null ? pixel : ink.union(pixel);
 				}
 			}
 		}
-		assertNotNull(ink, name(renderer) + " drew nothing");
+		assertNotNull(ink, "Nothing was drawn");
 		return ink;
 	}
 }

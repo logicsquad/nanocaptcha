@@ -285,3 +285,13 @@ up, including: Javadoc comments, visibility tightening, API pruning.
 - `StretchImageFilter` no longer smears the top rows of the image
   down the rest of it, which could leave the whole CAPTCHA a single
   colour. [#80](https://github.com/logicsquad/nanocaptcha/issues/80)
+
+### Security
+- `DefaultWordRenderer` now gives each glyph a small random rotation,
+  scale, vertical shift and sub-pixel position, chosen for each
+  CAPTCHA, and lets neighbouring glyphs overlap slightly. It drew
+  each character in each built-in font as the same bitmap, so the
+  default CAPTCHA could be read by matching 46 templates. Drawing
+  each glyph from its outline is slower: in a quick benchmark, about
+  19,000 CAPTCHAs a second, down from
+  160,000. [#75](https://github.com/logicsquad/nanocaptcha/issues/75)
