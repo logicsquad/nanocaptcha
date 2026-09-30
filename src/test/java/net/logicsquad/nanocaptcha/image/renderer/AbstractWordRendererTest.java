@@ -3,6 +3,7 @@ package net.logicsquad.nanocaptcha.image.renderer;
 import static org.junit.jupiter.api.Assertions.*;
 
 import java.awt.Font;
+import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -105,23 +106,96 @@ public class AbstractWordRendererTest {
 		String name = renderer.getClass().getSimpleName();
 		Set<Integer> tops = new TreeSet<>();
 		for (int i = 0; i < 200; i++) {
-			BufferedImage image = new BufferedImage(200, height, BufferedImage.TYPE_INT_ARGB);
 			String word = new LatinContentProducer().getContent();
-			renderer.render(word, image);
-			int top = height;
-			int bottom = -1;
-			for (int y = 0; y < height; y++) {
-				for (int x = 0; x < 200; x++) {
-					if ((image.getRGB(x, y) >>> 24) != 0) {
-						top = Math.min(top, y);
-						bottom = Math.max(bottom, y);
-					}
-				}
-			}
-			assertTrue(top > 0 && bottom < height - 1, name + ": '" + word + "' reaches from row " + top + " to " + bottom);
-			tops.add(top);
+			Rectangle ink = render(renderer, word, 200, height);
+			int bottom = ink.y + ink.height - 1;
+			assertTrue(ink.y > 0 && bottom < height - 1, name + ": '" + word + "' reaches from row " + ink.y + " to " + bottom);
+			tops.add(ink.y);
 		}
 		assertTrue(tops.size() >= 5, name + ": the text starts on only these rows: " + tops);
 		return;
+	}
+
+	@Test
+	public void builtInFontsScaleWithTheImageHeight() {
+		assertEquals(40, AbstractWordRenderer.fontSize(50));
+		assertEquals(80, AbstractWordRenderer.fontSize(100));
+		assertEquals(1, AbstractWordRenderer.fontSize(1));
+		for (WordRenderer renderer : renderers()) {
+			// Digits are at most 44 pixels high at 40 pt, even with FastWordRenderer's fudge
+			Rectangle ink = render(renderer, "23456", 400, 100);
+			assertTrue(ink.height >= 45, name(renderer) + ": the digits are " + ink.height + " pixels high in a 100-pixel image");
+		}
+		return;
+	}
+
+	@Test
+	public void otherFontsKeepTheirSize() {
+		WordRenderer renderer = new DefaultWordRenderer.Builder().font(AbstractWordRenderer.DEFAULT_FONTS.get(0).deriveFont(20f))
+				.build();
+		assertEquals(render(renderer, "23456", 200, 50).height, render(renderer, "23456", 400, 100).height);
+		return;
+	}
+
+	@Test
+	public void longContentShrinksToFitTheWidth() {
+		for (WordRenderer renderer : renderers()) {
+			for (int i = 0; i < 100; i++) {
+				// Ten characters used to run off the right-hand edge of the default image
+				String word = new LatinContentProducer(10).getContent();
+				Rectangle ink = render(renderer, word, 200, 50);
+				// Inside the margin on the right
+				assertTrue(ink.x + ink.width <= 190, name(renderer) + ": '" + word + "' covers " + ink);
+				// A tall image, whose height would make the default text far too wide
+				word = new LatinContentProducer().getContent();
+				ink = render(renderer, word, 60, 200);
+				assertTrue(ink.x + ink.width <= 57, name(renderer) + ": '" + word + "' covers " + ink);
+			}
+		}
+		return;
+	}
+
+	/**
+	 * Returns NanoCaptcha's renderers, with their default settings.
+	 *
+	 * @return renderers
+	 */
+	private static List<WordRenderer> renderers() {
+		return Arrays.asList(new DefaultWordRenderer.Builder().build(), new FastWordRenderer.Builder().build());
+	}
+
+	/**
+	 * Returns the class name of {@code renderer}.
+	 *
+	 * @param renderer a {@link WordRenderer}
+	 * @return name
+	 */
+	private static String name(WordRenderer renderer) {
+		return renderer.getClass().getSimpleName();
+	}
+
+	/**
+	 * Renders {@code word} with {@code renderer} on a transparent image, and returns the bounds of the pixels it inks.
+	 *
+	 * @param renderer a {@link WordRenderer}
+	 * @param word     word to render
+	 * @param width    image width
+	 * @param height   image height
+	 * @return bounds of ink
+	 */
+	private static Rectangle render(WordRenderer renderer, String word, int width, int height) {
+		BufferedImage image = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
+		renderer.render(word, image);
+		Rectangle ink = null;
+		for (int y = 0; y < height; y++) {
+			for (int x = 0; x < width; x++) {
+				if ((image.getRGB(x, y) >>> 24) != 0) {
+					Rectangle pixel = new Rectangle(x, y, 1, 1);
+					ink = ink == null ? pixel : ink.union(pixel);
+				}
+			}
+		}
+		assertNotNull(ink, name(renderer) + " drew nothing");
+		return ink;
 	}
 }

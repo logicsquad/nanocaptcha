@@ -5,7 +5,10 @@ import java.awt.Graphics2D;
 import java.awt.Rectangle;
 import java.awt.font.FontRenderContext;
 import java.awt.image.BufferedImage;
+import java.util.Arrays;
 import java.util.Random;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -31,15 +34,25 @@ import java.util.concurrent.atomic.AtomicInteger;
  * randomness here: again, we pre-compute a list of 100 random fudge values in the range, and cycle through that list repeatedly.
  * </p>
  *
+ * <p>
+ * Those sizes, and the spacing, are for the default image height of 50 pixels, where the fonts are 40 pt. In other images, they're
+ * in proportion to the height, and they shrink if the text wouldn't otherwise fit across the image.
+ * </p>
+ *
  * @author <a href="mailto:paulh@logicsquad.net">Paul Hoadley</a>
  * @author <a href="mailto:botyrbojey@gmail.com">bivashy</a>
  * @since 1.1
  */
 public final class FastWordRenderer extends AbstractWordRenderer {
 	/**
-	 * Horizontal space between glyphs (in pixels)
+	 * Horizontal space between glyphs (in pixels, at {@link AbstractWordRenderer#FONT_SIZE})
 	 */
 	private static final int SHIFT = 20;
+
+	/**
+	 * How far the widest glyph in the built-in fonts, "W" in Public Sans, reaches right, as a proportion of the font size
+	 */
+	private static final double WIDEST = 0.95;
 
 	/**
 	 * Size of list of pre-computed indexes (into {@link Font} list)
@@ -85,6 +98,12 @@ public final class FastWordRenderer extends AbstractWordRenderer {
 	 * Available {@link Font}s
 	 */
 	private static final Font[] FONTS = new Font[2];
+
+	/**
+	 * {@link #FONTS} at the other sizes they've been used at: one size for each image height, and smaller ones for
+	 * text that has to shrink to fit
+	 */
+	private static final ConcurrentMap<Float, Font[]> SIZED_FONTS = new ConcurrentHashMap<>();
 
 	// Set up Font list, pre-computed values
 	static {
@@ -133,15 +152,23 @@ public final class FastWordRenderer extends AbstractWordRenderer {
 		Graphics2D g = image.createGraphics();
 		try {
 			char[] chars = word.toCharArray();
+			int xBaseline = (int) (image.getWidth() * xOffset());
+			// Room for the text at 40 pt, allowing for the widest glyph at the end and its fudge, which has to fit
+			// between the same margin on each side, clear of the edges, where a border would touch it
+			double needed = Math.max(0, chars.length - 1) * SHIFT + FUDGE_MAX + WIDEST * FONT_SIZE;
+			int width = image.getWidth() - xBaseline - Math.max(1, xBaseline);
+			float size = (float) Math.max(1, Math.min(fontSize(image.getHeight()), Math.floor(width * FONT_SIZE / needed)));
+			double scale = size / FONT_SIZE;
+			Font[] sized = fonts(size);
 			Font[] fonts = new Font[chars.length];
 			for (int i = 0; i < chars.length; i++) {
-				fonts[i] = nextFont();
+				fonts[i] = nextFont(sized);
 				if (!fonts[i].canDisplay(chars[i])) {
 					throw new IllegalArgumentException(cannotDisplay(fonts[i], chars[i])
 							+ " FastWordRenderer only uses its built-in fonts, so use DefaultWordRenderer with a font that can.");
 				}
 			}
-			int xBaseline = (int) (image.getWidth() * xOffset());
+			int shift = (int) Math.round(SHIFT * scale);
 			int yBaseline;
 			if (randomYOffset()) {
 				FontRenderContext frc = g.getFontRenderContext();
@@ -153,17 +180,17 @@ public final class FastWordRenderer extends AbstractWordRenderer {
 					descent = Math.max(descent, bounds.y + bounds.height);
 				}
 				// Each glyph's fudge can move it up or down
-				yBaseline = randomBaseline(image.getHeight(), ascent + FUDGE_MAX, descent - FUDGE_MIN, random);
+				yBaseline = randomBaseline(image.getHeight(), ascent + FUDGE_MAX * scale, descent - FUDGE_MIN * scale, random);
 			} else {
 				yBaseline = image.getHeight() - (int) (image.getHeight() * yOffset());
 			}
 			for (int i = 0; i < chars.length; i++) {
 				g.setColor(colorSupplier().get());
 				g.setFont(fonts[i]);
-				int xFudge = nextFudge();
-				int yFudge = nextFudge();
+				int xFudge = (int) Math.round(nextFudge() * scale);
+				int yFudge = (int) Math.round(nextFudge() * scale);
 				g.drawChars(chars, i, 1, xBaseline + xFudge, yBaseline - yFudge);
-				xBaseline = xBaseline + SHIFT;
+				xBaseline = xBaseline + shift;
 			}
 		} finally {
 			g.dispose();
@@ -173,16 +200,30 @@ public final class FastWordRenderer extends AbstractWordRenderer {
 	/**
 	 * Returns the next {@link Font} to use.
 	 *
+	 * @param fonts {@link #FONTS}, at the size to use
 	 * @return next {@link Font}
 	 * @see <a href="https://github.com/logicsquad/nanocaptcha/issues/44">#44</a>
 	 */
-	private Font nextFont() {
-		if (FONTS.length == 1) {
-			return FONTS[0];
+	private Font nextFont(Font[] fonts) {
+		if (fonts.length == 1) {
+			return fonts[0];
 		} else {
 			// floorMod, not %: the pointer goes negative once it passes Integer.MAX_VALUE.
-			return FONTS[INDEXES[Math.floorMod(idxPointer.getAndIncrement(), FONT_INDEX_SIZE)]];
+			return fonts[INDEXES[Math.floorMod(idxPointer.getAndIncrement(), FONT_INDEX_SIZE)]];
 		}
+	}
+
+	/**
+	 * Returns {@link #FONTS} at {@code size}.
+	 *
+	 * @param size font size, in whole points
+	 * @return fonts
+	 */
+	private static Font[] fonts(float size) {
+		if (size == FONT_SIZE) {
+			return FONTS;
+		}
+		return SIZED_FONTS.computeIfAbsent(size, s -> Arrays.stream(FONTS).map(font -> font.deriveFont(s)).toArray(Font[]::new));
 	}
 
 	/**

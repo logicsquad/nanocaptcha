@@ -275,6 +275,13 @@ up, including: Javadoc comments, visibility tightening, API pruning.
   they render, anywhere it fits in the image. The height was chosen
   once per renderer, and could push glyphs off the top of the
   image. [#58](https://github.com/logicsquad/nanocaptcha/issues/58)
+- `DefaultWordRenderer` and `FastWordRenderer` now size the built-in
+  fonts to the image: 40 pt in the default height of 50 pixels, and in
+  proportion otherwise. Text too wide for the image, such as
+  `addContent(10)` at the default size, shrinks to fit instead of
+  running off the right-hand edge, which made the CAPTCHA
+  unsolvable. Fonts you supply keep their size unless they have to
+  shrink. [#59](https://github.com/logicsquad/nanocaptcha/issues/59)
 - `StretchImageFilter` no longer smears the top rows of the image
   down the rest of it, which could leave the whole CAPTCHA a single
   colour. [#80](https://github.com/logicsquad/nanocaptcha/issues/80)

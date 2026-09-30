@@ -74,9 +74,15 @@ public abstract class AbstractWordRenderer implements WordRenderer {
     protected static final Supplier<Font> DEFAULT_FONT_SUPPLIER = () -> DEFAULT_FONTS.get(ThreadLocalRandom.current().nextInt(DEFAULT_FONTS.size()));
 
 	/**
-	 * Font size (in points)
+	 * Font size (in points) of {@link #DEFAULT_FONTS}. {@link DefaultWordRenderer} and {@link FastWordRenderer} size
+	 * them to the image instead: this size in an image of the default height, 50 pixels, and in proportion otherwise.
 	 */
 	protected static final int FONT_SIZE = 40;
+
+	/**
+	 * Height of image (in pixels) that {@link #FONT_SIZE} suits
+	 */
+	private static final int FONT_SIZE_HEIGHT = 50;
 
 	/**
 	 * Default percentage offset along x-axis
@@ -112,6 +118,11 @@ public abstract class AbstractWordRenderer implements WordRenderer {
 	 * Whether to choose the y-offset at random for each render
 	 */
 	private final boolean randomYOffset;
+
+	/**
+	 * Whether {@link #fontSupplier} supplies {@link #DEFAULT_FONTS}, which are sized to the image
+	 */
+	private final boolean defaultFonts;
 
 	/**
 	 * Supplier of {@link Color}
@@ -163,6 +174,7 @@ public abstract class AbstractWordRenderer implements WordRenderer {
 		this.randomYOffset = randomYOffset;
 		this.colorSupplier = colorSupplier;
 		this.fontSupplier = fontSupplier;
+		this.defaultFonts = fontSupplier == DEFAULT_FONT_SUPPLIER;
 		return;
 	}
 
@@ -356,6 +368,28 @@ public abstract class AbstractWordRenderer implements WordRenderer {
 	 */
 	boolean randomYOffset() {
 		return randomYOffset;
+	}
+
+	/**
+	 * Returns whether this renderer uses {@link #DEFAULT_FONTS}, which it sizes to the image.
+	 *
+	 * @return {@code true} if the fonts are the defaults
+	 * @since 2.3
+	 */
+	boolean defaultFonts() {
+		return defaultFonts;
+	}
+
+	/**
+	 * Returns the size of {@link #DEFAULT_FONTS} in an image {@code height} pixels high: {@link #FONT_SIZE} at the
+	 * default height, and in proportion otherwise, in whole points.
+	 *
+	 * @param height image height
+	 * @return font size
+	 * @since 2.3
+	 */
+	static float fontSize(int height) {
+		return (float) Math.max(1, Math.floor((double) height * FONT_SIZE / FONT_SIZE_HEIGHT));
 	}
 
 	/**
