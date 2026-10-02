@@ -44,7 +44,13 @@ import java.util.concurrent.atomic.AtomicInteger;
  * @author <a href="mailto:paulh@logicsquad.net">Paul Hoadley</a>
  * @author <a href="mailto:botyrbojey@gmail.com">bivashy</a>
  * @since 1.1
+ * @deprecated Use {@link DefaultWordRenderer} instead. This class is built for speed, which CAPTCHAs don't need:
+ *             {@link DefaultWordRenderer} renders far more of them a second than an application asks for. Its CAPTCHAs
+ *             are also weaker, since each character in each font is always the same bitmap. This class will be removed
+ *             in 3.0.
+ * @see <a href="https://github.com/logicsquad/nanocaptcha/issues/82">#82</a>
  */
+@Deprecated
 public final class FastWordRenderer extends AbstractWordRenderer {
 	/**
 	 * Horizontal space between glyphs (in pixels, at {@link AbstractWordRenderer#FONT_SIZE})
@@ -244,7 +250,9 @@ public final class FastWordRenderer extends AbstractWordRenderer {
 	 * {@link AbstractWordRenderer.Builder} are effectively ignored: {@code FastWordRenderer} uses a fixed set of two {@link Font}s.
 	 *
 	 * @since 1.4
+	 * @deprecated Use {@link DefaultWordRenderer.Builder} instead. This class will be removed in 3.0.
 	 */
+	@Deprecated
 	public static class Builder extends AbstractWordRenderer.Builder {
 		@Override
 		public FastWordRenderer build() {

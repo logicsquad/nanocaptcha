@@ -12,6 +12,7 @@ import org.junit.jupiter.api.Test;
  * @author <a href="mailto:paulh@logicsquad.net">Paul Hoadley</a>
  * @since 2.2
  */
+@SuppressWarnings("deprecation")
 public class FastWordRendererTest {
 	@Test
 	public void renderKeepsWorkingOnceThePointersWrap() {

@@ -256,6 +256,12 @@ up, including: Javadoc comments, visibility tightening, API pruning.
   place, so it draws a stretched part of the image over the rest. It
   will be removed in
   3.0. [#57](https://github.com/logicsquad/nanocaptcha/issues/57)
+- Deprecated `FastWordRenderer`, which is built for speed that CAPTCHAs
+  don't need: `DefaultWordRenderer` renders far more of them a second
+  than an application asks for. Its CAPTCHAs are also weaker, since
+  each character in each font is always the same bitmap. Use
+  `DefaultWordRenderer` instead. It will be removed in
+  3.0. [#82](https://github.com/logicsquad/nanocaptcha/issues/82)
 
 ### Fixed
 - `RippleImageFilter`, which `addFilter()` adds by default, drew the

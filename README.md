@@ -67,9 +67,8 @@ font that can display it, such as one installed on the server:
         .font(new Font("Noto Sans CJK SC", Font.BOLD, 40))
         .build()
 
-`FastWordRenderer` only uses the built-in fonts. If a renderer's font
-can't display a character, it throws an `IllegalArgumentException`
-rather than drawing an empty box.
+If a renderer's font can't display a character, it throws an
+`IllegalArgumentException` rather than drawing an empty box.
 
 The built-in fonts are sized to the image: 40 pt in the default height
 of 50 pixels, and in proportion otherwise. A font you supply keeps its

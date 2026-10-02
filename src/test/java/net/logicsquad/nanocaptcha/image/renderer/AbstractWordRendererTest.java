@@ -88,6 +88,7 @@ public class AbstractWordRendererTest {
 	}
 
 	@Test
+	@SuppressWarnings("deprecation")
 	public void randomisedYOffsetKeepsGlyphsInTheImageAndChangesEachTime() {
 		// FastWordRenderer's fudge moves each glyph up to 5 pixels either way, so it needs a taller image to vary
 		assertRandomYOffsetKeepsGlyphsInTheImage(new DefaultWordRenderer.Builder().randomiseYOffset().build(), 50);
@@ -165,6 +166,7 @@ public class AbstractWordRendererTest {
 	 *
 	 * @return renderers
 	 */
+	@SuppressWarnings("deprecation")
 	private static List<WordRenderer> renderers() {
 		return Arrays.asList(new DefaultWordRenderer.Builder().build(), new FastWordRenderer.Builder().build());
 	}
