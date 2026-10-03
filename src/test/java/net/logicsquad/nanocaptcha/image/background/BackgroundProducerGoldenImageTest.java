@@ -1,6 +1,7 @@
 package net.logicsquad.nanocaptcha.image.background;
 
 import java.io.IOException;
+import java.util.Random;
 
 import org.junit.jupiter.api.Test;
 
@@ -28,7 +29,8 @@ public class BackgroundProducerGoldenImageTest {
 
 	@Test
 	public void squigglesBackgroundProducerMatchesGoldenImage() throws IOException {
-		assertMatches(new SquigglesBackgroundProducer());
+		GoldenImages.assertMatches("background/SquigglesBackgroundProducer",
+				new SquigglesBackgroundProducer().getBackground(200, 50, new Random(GoldenImages.SEED)));
 		return;
 	}
 

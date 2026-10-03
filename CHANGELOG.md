@@ -486,3 +486,8 @@ them need `image.backgrounds.` changing to
   used, which another thread could see half done, and `randomColor()`
   and `randomFont()` kept the caller's lists, which could change
   afterwards. [#64](https://github.com/logicsquad/nanocaptcha/issues/64)
+- `SquigglesBackgroundProducer` drew the same squiggles on every image
+  of a given size, so an attacker who had seen one background had seen
+  them all, and could subtract it. The ellipses' size, spacing and
+  dashes, and where they start, now vary a little with each
+  background. [#94](https://github.com/logicsquad/nanocaptcha/issues/94)
