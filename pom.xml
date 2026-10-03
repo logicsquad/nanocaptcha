@@ -2,7 +2,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>net.logicsquad</groupId>
   <artifactId>nanocaptcha</artifactId>
-  <version>3.0</version>
+  <version>3.1-SNAPSHOT</version>
   <name>NanoCaptcha</name>
   <description>Image and audio CAPTCHAs for Java, with no dependencies.</description>
   <url>https://github.com/logicsquad/nanocaptcha</url>
