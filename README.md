@@ -41,10 +41,11 @@ content of the image. If you need the text content itself, call
 * Adding various `ImageFilter`s.
 * Adding a background or a border.
 
-To create a custom CAPTCHA, you can use an `ImageCaptcha.Builder`,
-e.g.:
+To create a custom CAPTCHA, build an `ImageCaptcha.Factory` with its
+`Builder`, and ask the factory for each CAPTCHA, e.g.:
 
-    ImageCaptcha imageCaptcha = new ImageCaptcha.Builder(400, 100)
+    // Once, when the application starts
+    ImageCaptcha.Factory captchas = new ImageCaptcha.Factory.Builder(400, 100)
         .addContent(new LatinContentProducer(7),
             new DefaultWordRenderer.Builder()
                 .randomColor(Color.BLACK, Color.BLUE, Color.CYAN, Color.RED)
@@ -53,8 +54,19 @@ e.g.:
         .addNoise(new CurvedLineNoiseProducer())
         .build();
 
-A `Builder` draws as it goes, so each one makes a single CAPTCHA: use
-a new `Builder` for each.
+    // For each CAPTCHA, on any thread
+    ImageCaptcha imageCaptcha = captchas.create();
+
+Each call to `create()` makes a new CAPTCHA, with new content and
+randomness. Content, noise and filters are drawn in the order they
+were added, over the background.
+
+A factory can't be changed, and it's safe to share between threads, so
+a web application can build one when it starts and use it for every
+request. Every CAPTCHA it makes uses the same producers, renderers and
+filters, so any of your own need to be thread-safe, as NanoCaptcha's
+are. A `Builder` isn't thread-safe, but it's only needed to build the
+factory.
 
 The built-in fonts can display everything NanoCaptcha's own content
 producers generate. For your own content in other scripts, supply a
@@ -92,8 +104,8 @@ Building a minimal audio CAPTCHA is just as easy:
     AudioCaptcha audioCaptcha = AudioCaptcha.create();
 
 This creates a CAPTCHA with an audio clip containing five numbers read
-out in English. To customise your CAPTCHA, you can use
-`AudioCaptcha.Builder`.
+out in English. To customise your CAPTCHA, build an
+`AudioCaptcha.Factory` with its `Builder`, as for image CAPTCHAs.
 
 There is support for different languages. (Currently English, German
 and French are supported.) You can set the system property
@@ -104,10 +116,11 @@ JVM's default `Locale` isn't used. Alternatively, you can supply a
 `RandomNumberVoiceProducer` explicitly, for example in the language of
 each visitor to a web application:
 
-    AudioCaptcha audioCaptcha = new AudioCaptcha.Builder()
+    AudioCaptcha audioCaptcha = new AudioCaptcha.Factory.Builder()
         .addContent()
         .addVoice(new RandomNumberVoiceProducer(request.getLocale()))
-        .build();
+        .build()
+        .create();
 
 Only the language counts, so `de-AT` gets German and `fr-CA` gets
 French, and an unsupported language gets the default. You can even mix
@@ -126,12 +139,13 @@ any number of CAPTCHAs, so read the recordings once:
         URL recording = MyApp.class.getResource("/voices/es/" + digit + ".wav");
         spanish.put(digit, new Sample(recording));
     }
-
-    // For each CAPTCHA
-    AudioCaptcha audioCaptcha = new AudioCaptcha.Builder()
+    AudioCaptcha.Factory captchas = new AudioCaptcha.Factory.Builder()
         .addContent()
         .addVoice(spanish::get)
         .build();
+
+    // For each CAPTCHA
+    AudioCaptcha audioCaptcha = captchas.create();
 
 `AudioCaptcha` gives each digit its own volume and gap, whichever
 voice it comes from.

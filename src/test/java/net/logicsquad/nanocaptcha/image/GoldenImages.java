@@ -36,7 +36,7 @@ public final class GoldenImages {
 
 	/**
 	 * Returns a fresh copy of the input for noise producers and filters: the logo in {@code input.png}, on a
-	 * transparent background, in the type of image an {@link ImageCaptcha.Builder} draws on.
+	 * transparent background, in the type of image an {@link ImageCaptcha.Factory} draws on.
 	 *
 	 * @return input image
 	 * @throws IOException if {@code input.png} can't be read

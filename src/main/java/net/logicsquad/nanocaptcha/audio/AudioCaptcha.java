@@ -3,6 +3,7 @@ package net.logicsquad.nanocaptcha.audio;
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.ThreadLocalRandom;
 
 import net.logicsquad.nanocaptcha.audio.noise.NoiseProducer;
@@ -48,11 +49,12 @@ public final class AudioCaptcha {
 	/**
 	 * Constructor
 	 *
-	 * @param builder a {@link Builder} object
+	 * @param content text content
+	 * @param audio   generated audio
 	 */
-	private AudioCaptcha(Builder builder) {
-		audio = builder.audio;
-		content = builder.content;
+	private AudioCaptcha(String content, Sample audio) {
+		this.content = content;
+		this.audio = audio;
 		created = OffsetDateTime.now();
 		return;
 	}
@@ -77,25 +79,37 @@ public final class AudioCaptcha {
 	 * @since 2.0
 	 */
 	public static AudioCaptcha create() {
-		return new AudioCaptcha.Builder().addContent().build();
+		return new Factory.Builder().addContent().build().create();
 	}
 
 	/**
-	 * Build for an {@link AudioCaptcha}.
+	 * <p>
+	 * Makes {@link AudioCaptcha}s, each with new content and randomness. A {@code Factory} can't be changed, and it's safe
+	 * to share between threads, so a web application can build one when it starts, and ask it for a CAPTCHA for each
+	 * request:
+	 * </p>
+	 *
+	 * <pre>
+	 * AudioCaptcha.Factory captchas = new AudioCaptcha.Factory.Builder().addContent().addNoise().build();
+	 * AudioCaptcha captcha = captchas.create();
+	 * </pre>
+	 *
+	 * <p>
+	 * Every CAPTCHA a {@code Factory} makes uses the same producers, so any of your own need to be thread-safe, as
+	 * NanoCaptcha's own are.
+	 * </p>
+	 *
+	 * @since 3.0
+	 * @see <a href="https://github.com/logicsquad/nanocaptcha/issues/64">#64</a>
 	 */
-	public static class Builder implements net.logicsquad.nanocaptcha.Builder<AudioCaptcha> {
+	public static final class Factory {
 		/**
-		 * Text content
+		 * {@link ContentProducer}s, whose content is read out in order
 		 */
-		private String content = "";
+		private final List<ContentProducer> contentProducers;
 
 		/**
-		 * Generated audio sample
-		 */
-		private Sample audio;
-
-		/**
-		 * {@link VoiceProducer}s
+		 * {@link VoiceProducer}s, at least one
 		 */
 		private final List<VoiceProducer> voiceProducers;
 
@@ -106,98 +120,29 @@ public final class AudioCaptcha {
 
 		/**
 		 * Constructor
+		 *
+		 * @param builder a {@link Builder}, whose configuration this copies
 		 */
-		public Builder() {
-			voiceProducers = new ArrayList<>();
-			noiseProducers = new ArrayList<>();
+		private Factory(Builder builder) {
+			contentProducers = List.copyOf(builder.contentProducers);
+			// Make sure we have at least one voiceProducer
+			voiceProducers = builder.voiceProducers.isEmpty() ? List.of(new RandomNumberVoiceProducer())
+					: List.copyOf(builder.voiceProducers);
+			noiseProducers = List.copyOf(builder.noiseProducers);
 			return;
 		}
 
 		/**
-		 * Adds content using the default {@link ContentProducer} ({@link NumbersContentProducer}).
+		 * Returns a new {@link AudioCaptcha}, with new content and randomness.
 		 *
-		 * @return this
+		 * @return new {@link AudioCaptcha}
 		 */
-		public Builder addContent() {
-			return addContent(new NumbersContentProducer());
-		}
-
-		/**
-		 * Adds content (of length {@code length}) using the default {@link ContentProducer} ({@link NumbersContentProducer}).
-		 *
-		 * @param length number of content units to add
-		 * @return this
-		 * @see <a href="https://github.com/logicsquad/nanocaptcha/issues/9">#9</a>
-		 * @since 1.4
-		 */
-		public Builder addContent(int length) {
-			return addContent(new NumbersContentProducer(length));
-		}
-
-		/**
-		 * Adds content using {@code contentProducer}.
-		 *
-		 * @param contentProducer a {@link ContentProducer}
-		 * @return this
-		 */
-		public Builder addContent(ContentProducer contentProducer) {
-			content += contentProducer.getContent();
-			return this;
-		}
-
-		/**
-		 * Adds the default {@link VoiceProducer} ({@link RandomNumberVoiceProducer}).
-		 *
-		 * @return this
-		 */
-		public Builder addVoice() {
-			voiceProducers.add(new RandomNumberVoiceProducer());
-			return this;
-		}
-
-		/**
-		 * Adds {@code voiceProducer}.
-		 *
-		 * @param voiceProducer a {@link VoiceProducer}
-		 * @return this
-		 */
-		public Builder addVoice(VoiceProducer voiceProducer) {
-			voiceProducers.add(voiceProducer);
-			return this;
-		}
-
-		/**
-		 * Adds background noise using default {@link NoiseProducer}
-		 * ({@link RandomNoiseProducer}).
-		 *
-		 * @return this
-		 */
-		public Builder addNoise() {
-			return addNoise(new RandomNoiseProducer());
-		}
-
-		/**
-		 * Adds noise using {@code noiseProducer}.
-		 *
-		 * @param noiseProducer a {@link NoiseProducer}
-		 * @return this
-		 */
-		public Builder addNoise(NoiseProducer noiseProducer) {
-			noiseProducers.add(noiseProducer);
-			return this;
-		}
-
-		/**
-		 * Builds the audio CAPTCHA described by this object.
-		 *
-		 * @return {@link AudioCaptcha} as described by this {@code Builder}
-		 */
-		@Override
-		public AudioCaptcha build() {
-			// Make sure we have at least one voiceProducer
-			if (voiceProducers.isEmpty()) {
-				addVoice();
+		public AudioCaptcha create() {
+			StringBuilder sb = new StringBuilder();
+			for (ContentProducer contentProducer : contentProducers) {
+				sb.append(contentProducer.getContent());
 			}
+			String content = sb.toString();
 
 			// Convert answer to an array
 			char[] ansAry = content.toCharArray();
@@ -216,15 +161,129 @@ public final class AudioCaptcha {
 				samples.add(AudioMixer.adjust(vProd.getVocalization(ansAry[i]), volume, gap));
 			}
 
-			// 3. Add noise, if any, and return the result
+			// Add noise, if any, and return the result
 			if (!noiseProducers.isEmpty()) {
 				NoiseProducer nProd = noiseProducers.get(random.nextInt(noiseProducers.size()));
-				audio = nProd.addNoise(samples);
-				return new AudioCaptcha(this);
+				return new AudioCaptcha(content, nProd.addNoise(samples));
+			}
+			return new AudioCaptcha(content, AudioMixer.concatenate(samples));
+		}
+
+		/**
+		 * Builder for a {@link Factory}. A {@code Builder} isn't thread-safe, but the {@link Factory} it builds is. Changing a
+		 * {@code Builder} after {@link #build()} doesn't change the {@link Factory} it built.
+		 *
+		 * @see <a href="https://github.com/logicsquad/nanocaptcha/issues/64">#64</a>
+		 */
+		public static final class Builder implements net.logicsquad.nanocaptcha.Builder<Factory> {
+			/**
+			 * {@link ContentProducer}s, whose content is read out in the order they were added
+			 */
+			private final List<ContentProducer> contentProducers;
+
+			/**
+			 * {@link VoiceProducer}s
+			 */
+			private final List<VoiceProducer> voiceProducers;
+
+			/**
+			 * {@link NoiseProducer}s
+			 */
+			private final List<NoiseProducer> noiseProducers;
+
+			/**
+			 * Constructor
+			 */
+			public Builder() {
+				contentProducers = new ArrayList<>();
+				voiceProducers = new ArrayList<>();
+				noiseProducers = new ArrayList<>();
+				return;
 			}
 
-			audio = AudioMixer.concatenate(samples);
-			return new AudioCaptcha(this);
+			/**
+			 * Adds content using the default {@link ContentProducer} ({@link NumbersContentProducer}).
+			 *
+			 * @return this
+			 */
+			public Builder addContent() {
+				return addContent(new NumbersContentProducer());
+			}
+
+			/**
+			 * Adds content (of length {@code length}) using the default {@link ContentProducer} ({@link NumbersContentProducer}).
+			 *
+			 * @param length number of content units to add
+			 * @return this
+			 * @see <a href="https://github.com/logicsquad/nanocaptcha/issues/9">#9</a>
+			 * @since 1.4
+			 */
+			public Builder addContent(int length) {
+				return addContent(new NumbersContentProducer(length));
+			}
+
+			/**
+			 * Adds content using {@code contentProducer}.
+			 *
+			 * @param contentProducer a {@link ContentProducer}
+			 * @return this
+			 */
+			public Builder addContent(ContentProducer contentProducer) {
+				contentProducers.add(Objects.requireNonNull(contentProducer));
+				return this;
+			}
+
+			/**
+			 * Adds the default {@link VoiceProducer} ({@link RandomNumberVoiceProducer}).
+			 *
+			 * @return this
+			 */
+			public Builder addVoice() {
+				return addVoice(new RandomNumberVoiceProducer());
+			}
+
+			/**
+			 * Adds {@code voiceProducer}.
+			 *
+			 * @param voiceProducer a {@link VoiceProducer}
+			 * @return this
+			 */
+			public Builder addVoice(VoiceProducer voiceProducer) {
+				voiceProducers.add(Objects.requireNonNull(voiceProducer));
+				return this;
+			}
+
+			/**
+			 * Adds background noise using default {@link NoiseProducer}
+			 * ({@link RandomNoiseProducer}).
+			 *
+			 * @return this
+			 */
+			public Builder addNoise() {
+				return addNoise(new RandomNoiseProducer());
+			}
+
+			/**
+			 * Adds noise using {@code noiseProducer}.
+			 *
+			 * @param noiseProducer a {@link NoiseProducer}
+			 * @return this
+			 */
+			public Builder addNoise(NoiseProducer noiseProducer) {
+				noiseProducers.add(Objects.requireNonNull(noiseProducer));
+				return this;
+			}
+
+			/**
+			 * Builds a {@link Factory} that makes CAPTCHAs as this {@code Builder} is configured now.
+			 *
+			 * @return new {@link Factory}
+			 * @see <a href="https://github.com/logicsquad/nanocaptcha/issues/64">#64</a>
+			 */
+			@Override
+			public Factory build() {
+				return new Factory(this);
+			}
 		}
 	}
 

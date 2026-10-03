@@ -7,10 +7,20 @@ import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Base64;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.IdentityHashMap;
 import java.util.List;
+import java.util.Set;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import javax.imageio.ImageIO;
 
@@ -55,16 +65,16 @@ public class ImageCaptchaTest {
 
 	@Test
 	public void toStringGivesTheLengthOfTheAnswerButNotTheAnswer() {
-		ImageCaptcha captcha = new ImageCaptcha.Builder(200, 50).addContent(() -> "ab3xk").build();
+		ImageCaptcha captcha = new ImageCaptcha.Factory.Builder(200, 50).addContent(() -> "ab3xk").build().create();
 		assertEquals("[ImageCaptcha: created=" + captcha.getCreated() + " content=5 characters]", captcha.toString());
-		captcha = new ImageCaptcha.Builder(200, 50).addContent(() -> "a").build();
+		captcha = new ImageCaptcha.Factory.Builder(200, 50).addContent(() -> "a").build().create();
 		assertEquals("[ImageCaptcha: created=" + captcha.getCreated() + " content=1 character]", captcha.toString());
 		return;
 	}
 
 	@Test
 	public void isCorrectIgnoresCaseAndSurroundingWhitespaceUnlessAskedNotTo() {
-		ImageCaptcha captcha = new ImageCaptcha.Builder(200, 50).addContent(() -> "ab3xk").build();
+		ImageCaptcha captcha = new ImageCaptcha.Factory.Builder(200, 50).addContent(() -> "ab3xk").build().create();
 		// As a mobile keyboard or autofill might send it
 		for (String answer : new String[] { "ab3xk", "Ab3xk", "AB3XK", " ab3xk", "ab3xk \t\n" }) {
 			assertTrue(captcha.isCorrect(answer), "'" + answer + "'");
@@ -81,32 +91,97 @@ public class ImageCaptchaTest {
 
 	@Test
 	public void builderRefusesASecondAddContent() {
-		ImageCaptcha.Builder builder = new ImageCaptcha.Builder(200, 50).addContent();
+		ImageCaptcha.Factory.Builder builder = new ImageCaptcha.Factory.Builder(200, 50).addContent();
 		assertThrows(IllegalStateException.class, () -> builder.addContent());
 		return;
 	}
 
 	@Test
-	public void builderRefusesEverythingAfterBuild() {
-		ImageCaptcha.Builder builder = new ImageCaptcha.Builder(200, 50).addContent();
-		ImageCaptcha captcha = builder.build();
-		byte[] png = captcha.toPng();
-		assertThrows(IllegalStateException.class, () -> builder.build());
-		assertThrows(IllegalStateException.class, () -> builder.addBackground());
-		assertThrows(IllegalStateException.class, () -> builder.addContent());
-		assertThrows(IllegalStateException.class, () -> builder.addNoise());
-		assertThrows(IllegalStateException.class, () -> builder.addFilter());
-		assertThrows(IllegalStateException.class, () -> builder.addBorder());
-		// None of them touched the CAPTCHA already built
-		assertArrayEquals(png, captcha.toPng());
+	public void builderRefusesAnImageWithNoPixels() {
+		assertThrows(IllegalArgumentException.class, () -> new ImageCaptcha.Factory.Builder(0, 50));
+		assertThrows(IllegalArgumentException.class, () -> new ImageCaptcha.Factory.Builder(200, -1));
+		return;
+	}
+
+	@Test
+	public void factoryMakesANewCaptchaEachTime() {
+		AtomicInteger count = new AtomicInteger();
+		ImageCaptcha.Factory factory = new ImageCaptcha.Factory.Builder(200, 50)
+				.addContent(() -> "ab3x" + count.incrementAndGet()).addNoise().build();
+		ImageCaptcha first = factory.create();
+		byte[] png = first.toPng();
+		ImageCaptcha second = factory.create();
+		assertEquals("ab3x1", first.getContent());
+		assertEquals("ab3x2", second.getContent());
+		assertNotSame(first.getImage(), second.getImage());
+		// Making the second CAPTCHA didn't touch the first
+		assertArrayEquals(png, first.toPng());
+		return;
+	}
+
+	@Test
+	public void factoryIsntChangedByItsBuilder() {
+		ImageCaptcha.Factory.Builder builder = new ImageCaptcha.Factory.Builder(200, 50);
+		ImageCaptcha.Factory factory = builder.build();
+		builder.addBackground(new TransparentBackgroundProducer()).addNoise(image -> image.setRGB(100, 25, Color.RED.getRGB()))
+				.addBorder();
+		// The default background, with no noise or border
+		BufferedImage image = factory.create().getImage();
+		assertEquals(Color.LIGHT_GRAY.getRGB(), image.getRGB(0, 0));
+		assertEquals(Color.LIGHT_GRAY.getRGB(), image.getRGB(100, 25));
+		// While the Builder now has all three
+		image = builder.build().create().getImage();
+		assertEquals(Color.BLACK.getRGB(), image.getRGB(0, 0));
+		assertEquals(Color.RED.getRGB(), image.getRGB(100, 25));
+		assertEquals(0, image.getRGB(1, 1) >>> 24);
+		return;
+	}
+
+	@Test
+	public void factoryDrawsInTheOrderTheBuilderWasGiven() {
+		List<String> drawn = new ArrayList<>();
+		ImageCaptcha.Factory factory = new ImageCaptcha.Factory.Builder(200, 50).addNoise(image -> drawn.add("noise"))
+				.addContent(() -> "ab3xk", (word, image) -> drawn.add("content " + word)).addFilter(image -> drawn.add("filter"))
+				.build();
+		assertEquals("ab3xk", factory.create().getContent());
+		assertEquals("ab3xk", factory.create().getContent());
+		assertEquals(List.of("noise", "content ab3xk", "filter", "noise", "content ab3xk", "filter"), drawn);
+		return;
+	}
+
+	@Test
+	public void factoryMakesCaptchasOnManyThreadsAtOnce() throws InterruptedException, ExecutionException {
+		ImageCaptcha.Factory factory = new ImageCaptcha.Factory.Builder(200, 50).addContent().addNoise().addFilter().addBorder()
+				.build();
+		ExecutorService executor = Executors.newFixedThreadPool(8);
+		try {
+			List<Future<ImageCaptcha>> futures = new ArrayList<>();
+			for (int i = 0; i < 200; i++) {
+				futures.add(executor.submit(factory::create));
+			}
+			Set<String> contents = new HashSet<>();
+			Set<BufferedImage> images = Collections.newSetFromMap(new IdentityHashMap<>());
+			for (Future<ImageCaptcha> future : futures) {
+				ImageCaptcha captcha = future.get();
+				assertTrue(captcha.getContent().matches("[a-hkmnprwxy2-8]{5}"), captcha.getContent());
+				assertEquals(Color.BLACK.getRGB(), captcha.getImage().getRGB(0, 0));
+				contents.add(captcha.getContent());
+				images.add(captcha.getImage());
+			}
+			// A new answer, and a new image, each time
+			assertTrue(contents.size() > 190, contents.size() + " different answers from 200");
+			assertEquals(200, images.size());
+		} finally {
+			executor.shutdownNow();
+		}
 		return;
 	}
 
 	@Test
 	public void defaultsToAnOpaqueLightGreyBackground() throws IOException {
 		// create(), and a Builder with no background or the default one
-		List<ImageCaptcha> captchas = Arrays.asList(ImageCaptcha.create(), new ImageCaptcha.Builder(200, 50).build(),
-				new ImageCaptcha.Builder(200, 50).addBackground().addContent().build());
+		List<ImageCaptcha> captchas = Arrays.asList(ImageCaptcha.create(), new ImageCaptcha.Factory.Builder(200, 50).build()
+				.create(), new ImageCaptcha.Factory.Builder(200, 50).addBackground().addContent().build().create());
 		for (ImageCaptcha captcha : captchas) {
 			BufferedImage image = captcha.getImage();
 			assertEquals(Color.LIGHT_GRAY.getRGB(), image.getRGB(0, 0));
@@ -115,8 +190,8 @@ public class ImageCaptchaTest {
 			assertTrue(ImageIO.write(image, "jpg", new ByteArrayOutputStream()), "no JPEG");
 		}
 		// Transparency is a choice
-		BufferedImage image = new ImageCaptcha.Builder(200, 50).addBackground(new TransparentBackgroundProducer()).build()
-				.getImage();
+		BufferedImage image = new ImageCaptcha.Factory.Builder(200, 50).addBackground(new TransparentBackgroundProducer()).build()
+				.create().getImage();
 		assertEquals(0, image.getRGB(0, 0) >>> 24);
 		return;
 	}
@@ -125,7 +200,7 @@ public class ImageCaptchaTest {
 	public void addBorderDrawsEveryEdgePixelAndNothingElse() {
 		// Wide, and tall
 		for (int[] size : new int[][] { { 200, 50 }, { 60, 200 } }) {
-			BufferedImage image = new ImageCaptcha.Builder(size[0], size[1]).addBorder().build().getImage();
+			BufferedImage image = new ImageCaptcha.Factory.Builder(size[0], size[1]).addBorder().build().create().getImage();
 			int width = image.getWidth();
 			int height = image.getHeight();
 			for (int x = 0; x < width; x++) {
@@ -175,9 +250,9 @@ public class ImageCaptchaTest {
 						for (WordRenderer renderer : renderers) {
 							String what = size[0] + " x " + size[1] + ": " + name(background) + ", " + name(noiseProducer) + ", "
 									+ name(filter) + ", " + name(renderer);
-							BufferedImage image = new ImageCaptcha.Builder(size[0], size[1]).addBackground(background)
+							BufferedImage image = new ImageCaptcha.Factory.Builder(size[0], size[1]).addBackground(background)
 									.addContent(new LatinContentProducer(), renderer).addNoise(noiseProducer).addFilter(filter).build()
-									.getImage();
+									.create().getImage();
 							assertEquals(size[0], image.getWidth(), what);
 							assertEquals(size[1], image.getHeight(), what);
 							assertTrue(Arrays.stream(pixels(image)).distinct().count() > 1, what + ": one colour");
@@ -193,9 +268,10 @@ public class ImageCaptchaTest {
 	public void toPngHoldsTheImage() throws IOException {
 		// The default background, a transparent one, and a gradient
 		List<ImageCaptcha> captchas = Arrays.asList(ImageCaptcha.create(),
-				new ImageCaptcha.Builder(200, 50).addBackground(new TransparentBackgroundProducer()).addContent().addNoise()
-						.addFilter().addBorder().build(),
-				new ImageCaptcha.Builder(200, 50).addBackground(new GradiatedBackgroundProducer()).addContent().build());
+				new ImageCaptcha.Factory.Builder(200, 50).addBackground(new TransparentBackgroundProducer()).addContent()
+						.addNoise().addFilter().addBorder().build().create(),
+				new ImageCaptcha.Factory.Builder(200, 50).addBackground(new GradiatedBackgroundProducer()).addContent().build()
+						.create());
 		for (ImageCaptcha captcha : captchas) {
 			assertHoldsImage(captcha.toPng(), captcha.getImage());
 		}
@@ -256,9 +332,9 @@ public class ImageCaptchaTest {
 	 * @param renderer a {@link WordRenderer} using the built-in fonts
 	 */
 	private static void assertRejectsChinese(WordRenderer renderer) {
-		ImageCaptcha.Builder builder = new ImageCaptcha.Builder(200, 50);
-		IllegalArgumentException e = assertThrows(IllegalArgumentException.class,
-				() -> builder.addContent(() -> "\u4E2D\u6587", renderer));
+		ImageCaptcha.Factory factory = new ImageCaptcha.Factory.Builder(200, 50).addContent(() -> "\u4E2D\u6587", renderer)
+				.build();
+		IllegalArgumentException e = assertThrows(IllegalArgumentException.class, factory::create);
 		assertTrue(e.getMessage().contains("(U+4E2D)"), e.getMessage());
 		return;
 	}
@@ -269,8 +345,8 @@ public class ImageCaptchaTest {
 	 * @param renderer a {@link WordRenderer}
 	 */
 	private static void assertDrawsText(WordRenderer renderer) {
-		ImageCaptcha captcha = new ImageCaptcha.Builder(200, 50).addBackground(new TransparentBackgroundProducer())
-				.addContent(new LatinContentProducer(), renderer).build();
+		ImageCaptcha captcha = new ImageCaptcha.Factory.Builder(200, 50).addBackground(new TransparentBackgroundProducer())
+				.addContent(new LatinContentProducer(), renderer).build().create();
 		BufferedImage image = captcha.getImage();
 		assertEquals(200, image.getWidth());
 		assertEquals(50, image.getHeight());

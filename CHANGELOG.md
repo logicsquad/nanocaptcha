@@ -323,10 +323,34 @@ Image CAPTCHAs look different in this release:
 
 ## Release 3.0
 
+Code that builds its own CAPTCHAs needs changing for this release. A
+`Builder` now builds a factory, which makes each CAPTCHA, so where 2.x
+had
+
+    ImageCaptcha captcha = new ImageCaptcha.Builder(200, 50).addContent().build();
+
+3.0 has
+
+    // Once, when the application starts
+    ImageCaptcha.Factory captchas = new ImageCaptcha.Factory.Builder(200, 50).addContent().build();
+
+    // For each CAPTCHA, on any thread
+    ImageCaptcha captcha = captchas.create();
+
+The same goes for
+`AudioCaptcha`. [#64](https://github.com/logicsquad/nanocaptcha/issues/64)
+
 ### Added
 - Added a README example of an audio CAPTCHA in a language NanoCaptcha
   doesn't include, from a `VoiceProducer` of your own and a recording
   of each digit. [#67](https://github.com/logicsquad/nanocaptcha/issues/67)
+- Added `ImageCaptcha.Factory` and `AudioCaptcha.Factory`, whose
+  `create()` makes a new CAPTCHA, with new content and randomness,
+  each time it's called. A factory can't be changed, and it's safe to
+  share between threads, so a web application can build one when it
+  starts and use it for every request. Producers, renderers and
+  filters of your own that it uses need to be thread-safe
+  too. [#64](https://github.com/logicsquad/nanocaptcha/issues/64)
 
 ### Changed
 - NanoCaptcha now needs Java 17 or later: it compiles with
@@ -363,6 +387,17 @@ Image CAPTCHAs look different in this release:
   before. The built-in content producers' answers are lowercase or
   digits, so ignoring case costs nothing with
   them. [#69](https://github.com/logicsquad/nanocaptcha/issues/69)
+- `ImageCaptcha.Builder` is now `ImageCaptcha.Factory.Builder`, and
+  `AudioCaptcha.Builder` is now `AudioCaptcha.Factory.Builder`. A
+  `Builder`'s `build()` returns a factory, rather than a CAPTCHA, and
+  the factory's `create()` makes each CAPTCHA, as shown above. A
+  `Builder` keeps only its configuration, so calling a method after
+  `build()` no longer throws an `IllegalStateException`, and changing
+  a `Builder` doesn't change a factory it has already built. An
+  exception from a producer, renderer or filter, such as a font that
+  can't display the content, now comes from `create()`, rather than
+  from the method that added
+  it. [#64](https://github.com/logicsquad/nanocaptcha/issues/64)
 
 ### Removed
 - Removed `ChineseContentProducer` and `ArabicContentProducer`,

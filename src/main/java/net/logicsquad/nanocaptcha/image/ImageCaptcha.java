@@ -9,8 +9,11 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.UncheckedIOException;
 import java.time.OffsetDateTime;
+import java.util.ArrayList;
 import java.util.Base64;
+import java.util.List;
 import java.util.Objects;
+import java.util.function.BiConsumer;
 
 import javax.imageio.ImageIO;
 import javax.imageio.stream.ImageOutputStream;
@@ -79,11 +82,12 @@ public final class ImageCaptcha {
 	/**
 	 * Constructor
 	 *
-	 * @param builder a {@link Builder} object
+	 * @param content text content
+	 * @param image   generated image
 	 */
-	private ImageCaptcha(Builder builder) {
-		image = builder.image;
-		content = builder.content;
+	private ImageCaptcha(String content, BufferedImage image) {
+		this.content = content;
+		this.image = image;
 		created = OffsetDateTime.now();
 		return;
 	}
@@ -97,7 +101,7 @@ public final class ImageCaptcha {
 	 * <li>x- and y-dimensions 200 x 50, unless overridden by properties;</li>
 	 * <li>{@link LatinContentProducer} with length 5;</li>
 	 * <li>{@link DefaultWordRenderer} with <em>its</em> defaults; and</li>
-	 * <li>a light grey background, the {@link Builder}'s default.</li>
+	 * <li>a light grey background, the {@link Factory.Builder}'s default.</li>
 	 * </ul>
 	 *
 	 * <p>
@@ -113,243 +117,311 @@ public final class ImageCaptcha {
 	 * @since 2.0
 	 */
 	public static ImageCaptcha create() {
-		return new Builder(Integer.getInteger(DEFAULT_X_KEY, DEFAULT_X), Integer.getInteger(DEFAULT_Y_KEY, DEFAULT_Y)).addContent().build();
+		int width = Integer.getInteger(DEFAULT_X_KEY, DEFAULT_X);
+		int height = Integer.getInteger(DEFAULT_Y_KEY, DEFAULT_Y);
+		return new Factory.Builder(width, height).addContent().build().create();
 	}
 
 	/**
 	 * <p>
-	 * Builder for an {@link ImageCaptcha}. Elements are added to the image on the
-	 * fly, so call the methods in an order that makes sense, e.g.:
+	 * Makes {@link ImageCaptcha}s, each with new content and randomness. A {@code Factory} can't be changed, and it's safe
+	 * to share between threads, so a web application can build one when it starts, and ask it for a CAPTCHA for each
+	 * request:
 	 * </p>
 	 *
 	 * <pre>
-	 * ImageCaptcha image = addBackground().addContent().addNoise().addFilter().addBorder().build();
+	 * ImageCaptcha.Factory captchas = new ImageCaptcha.Factory.Builder(200, 50).addContent().addNoise().build();
+	 * ImageCaptcha captcha = captchas.create();
 	 * </pre>
 	 *
 	 * <p>
-	 * For the same reason, a {@code Builder} makes a single {@link ImageCaptcha}, so use a new one for each CAPTCHA.
-	 * Adding content a second time, or calling any method after {@link #build()}, throws an
-	 * {@link IllegalStateException}.
+	 * Every CAPTCHA a {@code Factory} makes uses the same producers, renderers and filters, so any of your own need to be
+	 * thread-safe, as NanoCaptcha's own are.
 	 * </p>
 	 *
-	 * @see <a href="https://github.com/logicsquad/nanocaptcha/issues/48">#48</a>
+	 * @since 3.0
+	 * @see <a href="https://github.com/logicsquad/nanocaptcha/issues/64">#64</a>
 	 */
-	public static class Builder implements net.logicsquad.nanocaptcha.Builder<ImageCaptcha> {
+	public static final class Factory {
 		/**
-		 * Text content
+		 * Image width
 		 */
-		private String content = "";
+		private final int width;
 
 		/**
-		 * Generated image
+		 * Image height
 		 */
-		private BufferedImage image;
+		private final int height;
 
 		/**
-		 * Background for generated image
+		 * Producer of the content, or {@code null} for none
 		 */
-		private BufferedImage background;
+		private final ContentProducer contentProducer;
+
+		/**
+		 * Steps that draw on the image, in order, each given the image and its content
+		 */
+		private final List<BiConsumer<BufferedImage, String>> steps;
+
+		/**
+		 * Producer of the background
+		 */
+		private final BackgroundProducer backgroundProducer;
 
 		/**
 		 * Should we add a border?
 		 */
-		private boolean addBorder;
+		private final boolean addBorder;
 
 		/**
-		 * Has content been added?
-		 */
-		private boolean contentAdded;
-
-		/**
-		 * Has {@link #build()} been called?
-		 */
-		private boolean built;
-
-		/**
-		 * Constructor taking a width and height (in pixels) for the generated image.
+		 * Constructor
 		 *
-		 * @param width  image width
-		 * @param height image height
+		 * @param builder a {@link Builder}, whose configuration this copies
 		 */
-		public Builder(int width, int height) {
-			image = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
+		private Factory(Builder builder) {
+			width = builder.width;
+			height = builder.height;
+			contentProducer = builder.contentProducer;
+			steps = List.copyOf(builder.steps);
+			backgroundProducer = builder.backgroundProducer == null ? new FlatColorBackgroundProducer(DEFAULT_BACKGROUND)
+					: builder.backgroundProducer;
+			addBorder = builder.addBorder;
 			return;
 		}
 
 		/**
-		 * Adds the default background, a flat light grey ({@link Color#LIGHT_GRAY}), which the image also gets if no
-		 * background is added.
+		 * Returns a new {@link ImageCaptcha}, with new content and randomness.
 		 *
-		 * @return this
-		 * @see <a href="https://github.com/logicsquad/nanocaptcha/issues/68">#68</a>
+		 * @return new {@link ImageCaptcha}
 		 */
-		public Builder addBackground() {
-			return addBackground(new FlatColorBackgroundProducer(DEFAULT_BACKGROUND));
-		}
-
-		/**
-		 * Adds a background using the given {@link BackgroundProducer}. Note that
-		 * adding more than one background does not have an additive effect: the last
-		 * background added is the winner. For a transparent image, add a
-		 * {@link TransparentBackgroundProducer}.
-		 *
-		 * @param backgroundProducer a {@link BackgroundProducer}
-		 * @return this
-		 */
-		public Builder addBackground(BackgroundProducer backgroundProducer) {
-			checkNotBuilt();
-			background = backgroundProducer.getBackground(image.getWidth(), image.getHeight());
-			return this;
-		}
-
-		/**
-		 * Adds content to the CAPTCHA using the default {@link ContentProducer}.
-		 *
-		 * @return this
-		 */
-		public Builder addContent() {
-			return addContent(new LatinContentProducer());
-		}
-
-		/**
-		 * Adds content (of length {@code length}) to the CAPTCHA using the default {@link ContentProducer}.
-		 *
-		 * @param length number of content units to add
-		 * @return this
-		 * @see <a href="https://github.com/logicsquad/nanocaptcha/issues/9">#9</a>
-		 * @since 1.4
-		 */
-		public Builder addContent(int length) {
-			return addContent(new LatinContentProducer(length));
-		}
-
-		/**
-		 * Adds content to the CAPTCHA using the given {@link ContentProducer}.
-		 *
-		 * @param contentProducer a {@link ContentProducer}
-		 * @return this
-		 */
-		public Builder addContent(ContentProducer contentProducer) {
-			return addContent(contentProducer, new DefaultWordRenderer.Builder().build());
-		}
-
-		/**
-		 * Adds content to the CAPTCHA using the given {@link ContentProducer}, and
-		 * render it to the image using the given {@link WordRenderer}.
-		 *
-		 * @param contentProducer a {@link ContentProducer}
-		 * @param wordRenderer    a {@link WordRenderer}
-		 * @return this
-		 * @throws IllegalStateException if this {@code Builder} already has content, or has already built its
-		 *                               {@link ImageCaptcha}
-		 * @see <a href="https://github.com/logicsquad/nanocaptcha/issues/48">#48</a>
-		 */
-		public Builder addContent(ContentProducer contentProducer, WordRenderer wordRenderer) {
-			checkNotBuilt();
-			if (contentAdded) {
-				throw new IllegalStateException("This Builder already has content. It draws as it goes, so it can only add content once.");
-			}
-			// Before drawing, which can fail part way through
-			contentAdded = true;
-			content = contentProducer.getContent();
-			wordRenderer.render(content, image);
-			return this;
-		}
-
-		/**
-		 * Adds noise using the default {@link NoiseProducer} (a
-		 * {@link CurvedLineNoiseProducer}).
-		 *
-		 * @return this
-		 */
-		public Builder addNoise() {
-			return addNoise(new CurvedLineNoiseProducer());
-		}
-
-		/**
-		 * Adds noise using the given {@link NoiseProducer}.
-		 *
-		 * @param noiseProducer a {@link NoiseProducer}
-		 * @return this
-		 */
-		public Builder addNoise(NoiseProducer noiseProducer) {
-			checkNotBuilt();
-			noiseProducer.makeNoise(image);
-			return this;
-		}
-
-		/**
-		 * Filters the image using the default {@link ImageFilter} (a
-		 * {@link RippleImageFilter}).
-		 *
-		 * @return this
-		 */
-		public Builder addFilter() {
-			return addFilter(new RippleImageFilter());
-		}
-
-		/**
-		 * Filters the image using the given {@link ImageFilter}.
-		 *
-		 * @param filter an {@link ImageFilter}
-		 * @return this
-		 */
-		public Builder addFilter(ImageFilter filter) {
-			checkNotBuilt();
-			filter.filter(image);
-			return this;
-		}
-
-		/**
-		 * Draws a single-pixel wide black border around the image.
-		 *
-		 * @return this
-		 * @see <a href="https://github.com/logicsquad/nanocaptcha/issues/47">#47</a>
-		 */
-		public Builder addBorder() {
-			checkNotBuilt();
-			addBorder = true;
-			return this;
-		}
-
-		/**
-		 * Builds the image CAPTCHA described by this object.
-		 *
-		 * @return {@link ImageCaptcha} as described by this {@code Builder}
-		 * @throws IllegalStateException if this {@code Builder} has already built its {@link ImageCaptcha}
-		 * @see <a href="https://github.com/logicsquad/nanocaptcha/issues/48">#48</a>
-		 */
-		@Override
-		public ImageCaptcha build() {
-			checkNotBuilt();
-			built = true;
-			if (background == null) {
-				background = new FlatColorBackgroundProducer(DEFAULT_BACKGROUND).getBackground(image.getWidth(), image.getHeight());
+		public ImageCaptcha create() {
+			String content = contentProducer == null ? "" : contentProducer.getContent();
+			BufferedImage image = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
+			for (BiConsumer<BufferedImage, String> step : steps) {
+				step.accept(image, content);
 			}
 			// Paint the main image over the background
+			BufferedImage background = backgroundProducer.getBackground(width, height);
 			Graphics2D g = background.createGraphics();
 			g.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 1.0f));
 			g.drawImage(image, null, null);
 			g.dispose();
-			image = background;
 			if (addBorder) {
-				g = image.createGraphics();
+				g = background.createGraphics();
 				g.setColor(Color.BLACK);
-				g.drawRect(0, 0, image.getWidth() - 1, image.getHeight() - 1);
+				g.drawRect(0, 0, width - 1, height - 1);
 				g.dispose();
 			}
-			return new ImageCaptcha(this);
+			return new ImageCaptcha(content, background);
 		}
 
 		/**
-		 * Throws if {@link #build()} has been called. The {@link ImageCaptcha} it returned has this {@code Builder}'s
-		 * image, so nothing here may change it afterwards.
+		 * <p>
+		 * Builder for a {@link Factory}. The {@link Factory} draws each CAPTCHA's content, noise and filters in the order
+		 * they were added, over its background, with any border on top. So add them in an order that makes sense, e.g.:
+		 * </p>
 		 *
-		 * @throws IllegalStateException if this {@code Builder} has already built its {@link ImageCaptcha}
+		 * <pre>
+		 * ImageCaptcha.Factory captchas = new ImageCaptcha.Factory.Builder(200, 50)
+		 *     .addBackground().addContent().addNoise().addFilter().addBorder().build();
+		 * </pre>
+		 *
+		 * <p>
+		 * A {@code Builder} isn't thread-safe, but the {@link Factory} it builds is. Changing a {@code Builder} after
+		 * {@link #build()} doesn't change the {@link Factory} it built.
+		 * </p>
+		 *
+		 * @see <a href="https://github.com/logicsquad/nanocaptcha/issues/64">#64</a>
 		 */
-		private void checkNotBuilt() {
-			if (built) {
-				throw new IllegalStateException("This Builder has already built its ImageCaptcha. Use a new Builder for each CAPTCHA.");
+		public static final class Builder implements net.logicsquad.nanocaptcha.Builder<Factory> {
+			/**
+			 * Image width
+			 */
+			private final int width;
+
+			/**
+			 * Image height
+			 */
+			private final int height;
+
+			/**
+			 * Producer of the content, or {@code null} for none
+			 */
+			private ContentProducer contentProducer;
+
+			/**
+			 * Steps that draw on the image, in the order they were added, each given the image and its content
+			 */
+			private final List<BiConsumer<BufferedImage, String>> steps = new ArrayList<>();
+
+			/**
+			 * Producer of the background, or {@code null} for the default
+			 */
+			private BackgroundProducer backgroundProducer;
+
+			/**
+			 * Should we add a border?
+			 */
+			private boolean addBorder;
+
+			/**
+			 * Constructor taking a width and height (in pixels) for the generated image.
+			 *
+			 * @param width  image width
+			 * @param height image height
+			 * @throws IllegalArgumentException if {@code width} or {@code height} isn't positive
+			 */
+			public Builder(int width, int height) {
+				if (width <= 0 || height <= 0) {
+					throw new IllegalArgumentException("The width (" + width + ") and height (" + height + ") must be positive.");
+				}
+				this.width = width;
+				this.height = height;
+				return;
+			}
+
+			/**
+			 * Adds the default background, a flat light grey ({@link Color#LIGHT_GRAY}), which the image also gets if no
+			 * background is added.
+			 *
+			 * @return this
+			 * @see <a href="https://github.com/logicsquad/nanocaptcha/issues/68">#68</a>
+			 */
+			public Builder addBackground() {
+				return addBackground(new FlatColorBackgroundProducer(DEFAULT_BACKGROUND));
+			}
+
+			/**
+			 * Adds a background using the given {@link BackgroundProducer}. Note that
+			 * adding more than one background does not have an additive effect: the last
+			 * background added is the winner. For a transparent image, add a
+			 * {@link TransparentBackgroundProducer}.
+			 *
+			 * @param backgroundProducer a {@link BackgroundProducer}
+			 * @return this
+			 */
+			public Builder addBackground(BackgroundProducer backgroundProducer) {
+				this.backgroundProducer = Objects.requireNonNull(backgroundProducer);
+				return this;
+			}
+
+			/**
+			 * Adds content to the CAPTCHA using the default {@link ContentProducer}.
+			 *
+			 * @return this
+			 */
+			public Builder addContent() {
+				return addContent(new LatinContentProducer());
+			}
+
+			/**
+			 * Adds content (of length {@code length}) to the CAPTCHA using the default {@link ContentProducer}.
+			 *
+			 * @param length number of content units to add
+			 * @return this
+			 * @see <a href="https://github.com/logicsquad/nanocaptcha/issues/9">#9</a>
+			 * @since 1.4
+			 */
+			public Builder addContent(int length) {
+				return addContent(new LatinContentProducer(length));
+			}
+
+			/**
+			 * Adds content to the CAPTCHA using the given {@link ContentProducer}.
+			 *
+			 * @param contentProducer a {@link ContentProducer}
+			 * @return this
+			 */
+			public Builder addContent(ContentProducer contentProducer) {
+				return addContent(contentProducer, new DefaultWordRenderer.Builder().build());
+			}
+
+			/**
+			 * Adds content to the CAPTCHA using the given {@link ContentProducer}, and
+			 * render it to the image using the given {@link WordRenderer}.
+			 *
+			 * @param contentProducer a {@link ContentProducer}
+			 * @param wordRenderer    a {@link WordRenderer}
+			 * @return this
+			 * @throws IllegalStateException if this {@code Builder} already has content
+			 * @see <a href="https://github.com/logicsquad/nanocaptcha/issues/48">#48</a>
+			 */
+			public Builder addContent(ContentProducer contentProducer, WordRenderer wordRenderer) {
+				Objects.requireNonNull(contentProducer);
+				Objects.requireNonNull(wordRenderer);
+				if (this.contentProducer != null) {
+					throw new IllegalStateException(
+							"This Builder already has content, and an image CAPTCHA has only one answer.");
+				}
+				this.contentProducer = contentProducer;
+				steps.add((image, content) -> wordRenderer.render(content, image));
+				return this;
+			}
+
+			/**
+			 * Adds noise using the default {@link NoiseProducer} (a
+			 * {@link CurvedLineNoiseProducer}).
+			 *
+			 * @return this
+			 */
+			public Builder addNoise() {
+				return addNoise(new CurvedLineNoiseProducer());
+			}
+
+			/**
+			 * Adds noise using the given {@link NoiseProducer}.
+			 *
+			 * @param noiseProducer a {@link NoiseProducer}
+			 * @return this
+			 */
+			public Builder addNoise(NoiseProducer noiseProducer) {
+				Objects.requireNonNull(noiseProducer);
+				steps.add((image, content) -> noiseProducer.makeNoise(image));
+				return this;
+			}
+
+			/**
+			 * Filters the image using the default {@link ImageFilter} (a
+			 * {@link RippleImageFilter}).
+			 *
+			 * @return this
+			 */
+			public Builder addFilter() {
+				return addFilter(new RippleImageFilter());
+			}
+
+			/**
+			 * Filters the image using the given {@link ImageFilter}.
+			 *
+			 * @param filter an {@link ImageFilter}
+			 * @return this
+			 */
+			public Builder addFilter(ImageFilter filter) {
+				Objects.requireNonNull(filter);
+				steps.add((image, content) -> filter.filter(image));
+				return this;
+			}
+
+			/**
+			 * Draws a single-pixel wide black border around the image.
+			 *
+			 * @return this
+			 * @see <a href="https://github.com/logicsquad/nanocaptcha/issues/47">#47</a>
+			 */
+			public Builder addBorder() {
+				addBorder = true;
+				return this;
+			}
+
+			/**
+			 * Builds a {@link Factory} that makes CAPTCHAs as this {@code Builder} is configured now.
+			 *
+			 * @return new {@link Factory}
+			 * @see <a href="https://github.com/logicsquad/nanocaptcha/issues/64">#64</a>
+			 */
+			@Override
+			public Factory build() {
+				return new Factory(this);
 			}
 		}
 	}
