@@ -439,6 +439,11 @@ them need `image.backgrounds.` changing to
   nothing took, and with it the `net.logicsquad.nanocaptcha` package,
   which held nothing
   else. [#87](https://github.com/logicsquad/nanocaptcha/issues/87)
+- Removed `FiveLetterFirstNameContentProducer`. It chose its answer
+  from 7,235 first names, so a guess was right once in 7,235 tries,
+  against once in about 6.4 million for five characters from
+  `LatinContentProducer`, which replaces
+  it. [#89](https://github.com/logicsquad/nanocaptcha/issues/89)
 
 ### Fixed
 - `ShearImageFilter` no longer crashes the JVM on Alpine when it

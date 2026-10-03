@@ -21,7 +21,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
 import net.logicsquad.nanocaptcha.content.ContentProducer;
-import net.logicsquad.nanocaptcha.content.FiveLetterFirstNameContentProducer;
 import net.logicsquad.nanocaptcha.content.LatinContentProducer;
 import net.logicsquad.nanocaptcha.content.NumbersContentProducer;
 
@@ -34,8 +33,7 @@ import net.logicsquad.nanocaptcha.content.NumbersContentProducer;
 public class AbstractWordRendererTest {
 	@Test
 	public void defaultFontsCanDisplayEveryCharacterFromTheBuiltInProducers() {
-		List<ContentProducer> producers = Arrays.asList(new LatinContentProducer(), new NumbersContentProducer(),
-				new FiveLetterFirstNameContentProducer());
+		List<ContentProducer> producers = Arrays.asList(new LatinContentProducer(), new NumbersContentProducer());
 		for (ContentProducer producer : producers) {
 			// Enough samples to see every character many times over
 			for (int i = 0; i < 1000; i++) {
