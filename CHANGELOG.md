@@ -349,6 +349,8 @@ them need `image.backgrounds.` changing to
 - Added a README example of an audio CAPTCHA in a language NanoCaptcha
   doesn't include, from a `VoiceProducer` of your own and a recording
   of each digit. [#67](https://github.com/logicsquad/nanocaptcha/issues/67)
+- Added sample image CAPTCHAs to the README, which
+  `scripts/GenerateSamples.java` makes. [#97](https://github.com/logicsquad/nanocaptcha/issues/97)
 - Added `ImageCaptcha.Factory` and `AudioCaptcha.Factory`, whose
   `create()` makes a new CAPTCHA, with new content and randomness,
   each time it's called. A factory can't be changed, and it's safe to

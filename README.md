@@ -13,6 +13,12 @@ CAPTCHAs. NanoCaptcha is intended to be:
 
 * Dependency-free: using NanoCaptcha doesn't pull in any other JARs.
 
+Its image CAPTCHAs look like these, from `ImageCaptcha.create()`, and
+with noise, a ripple and a border:
+
+![An image CAPTCHA from ImageCaptcha.create()](docs/samples/create.png)
+![An image CAPTCHA with noise, a ripple and a border](docs/samples/noisy.png)
+
 It's worth being clear about what a CAPTCHA like this can do. Modern
 OCR and speech recognition can read short text and digit CAPTCHAs
 reliably, so NanoCaptcha is a speed bump for untargeted form spam,
@@ -56,6 +62,10 @@ To create a custom CAPTCHA, build an `ImageCaptcha.Factory` with its
 
     // For each CAPTCHA, on any thread
     ImageCaptcha imageCaptcha = captchas.create();
+
+which makes CAPTCHAs like this:
+
+![A custom image CAPTCHA, with seven characters in four colours on a gradient](docs/samples/custom.png)
 
 Each call to `create()` makes a new CAPTCHA, with new content and
 randomness. Content, noise and filters are drawn in the order they
