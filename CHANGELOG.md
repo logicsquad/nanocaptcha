@@ -243,7 +243,19 @@ up, including: Javadoc comments, visibility tightening, API pruning.
   ones. [#49](https://github.com/logicsquad/nanocaptcha/issues/49)
 
 
-## Release 2.3
+## Release 2.3 (2026-10-03)
+
+Image CAPTCHAs look different in this release:
+
+- The ripple that `addFilter()` adds is much stronger, since the
+  undistorted text no longer shows
+  underneath. [#56](https://github.com/logicsquad/nanocaptcha/issues/56)
+- In images other than the default 200 × 50, the text is sized to
+  fit. [#59](https://github.com/logicsquad/nanocaptcha/issues/59)
+- `GaussianNoiseProducer`'s grain is grey, rather than faintly
+  coloured. [#60](https://github.com/logicsquad/nanocaptcha/issues/60)
+- `DefaultWordRenderer` varies the shape and position of every
+  glyph. [#75](https://github.com/logicsquad/nanocaptcha/issues/75)
 
 ### Changed
 - Backgrounds, noise producers and filters are now tested against
@@ -270,12 +282,6 @@ up, including: Javadoc comments, visibility tightening, API pruning.
   image with the filtered one, which makes the ripple much more
   visible, and changes how filtered CAPTCHAs
   look. [#56](https://github.com/logicsquad/nanocaptcha/issues/56)
-- `GaussianNoiseProducer` added noise to the alpha channel, which made
-  opaque pixels partly transparent. It now draws each pixel's noise
-  as a white or black speckle over the image, so opaque pixels stay
-  opaque, and the grain is grey rather than faintly coloured. It
-  still shows over any
-  background. [#60](https://github.com/logicsquad/nanocaptcha/issues/60)
 - With `randomiseYOffset()`, `DefaultWordRenderer` and
   `FastWordRenderer` now choose a new height for the text each time
   they render, anywhere it fits in the image. The height was chosen
@@ -288,6 +294,12 @@ up, including: Javadoc comments, visibility tightening, API pruning.
   running off the right-hand edge, which made the CAPTCHA
   unsolvable. Fonts you supply keep their size unless they have to
   shrink. [#59](https://github.com/logicsquad/nanocaptcha/issues/59)
+- `GaussianNoiseProducer` added noise to the alpha channel, which made
+  opaque pixels partly transparent. It now draws each pixel's noise
+  as a white or black speckle over the image, so opaque pixels stay
+  opaque, and the grain is grey rather than faintly coloured. It
+  still shows over any
+  background. [#60](https://github.com/logicsquad/nanocaptcha/issues/60)
 - `StretchImageFilter` no longer smears the top rows of the image
   down the rest of it, which could leave the whole CAPTCHA a single
   colour. [#80](https://github.com/logicsquad/nanocaptcha/issues/80)
