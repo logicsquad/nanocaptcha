@@ -63,11 +63,19 @@ public class ImageCaptchaTest {
 	}
 
 	@Test
-	public void isCorrectAcceptsOnlyTheContent() {
-		ImageCaptcha captcha = ImageCaptcha.create();
-		assertTrue(captcha.isCorrect(captcha.getContent()));
-		assertFalse(captcha.isCorrect(captcha.getContent() + "a"));
-		assertFalse(captcha.isCorrect(null));
+	public void isCorrectIgnoresCaseAndSurroundingWhitespaceUnlessAskedNotTo() {
+		ImageCaptcha captcha = new ImageCaptcha.Builder(200, 50).addContent(() -> "ab3xk").build();
+		// As a mobile keyboard or autofill might send it
+		for (String answer : new String[] { "ab3xk", "Ab3xk", "AB3XK", " ab3xk", "ab3xk \t\n" }) {
+			assertTrue(captcha.isCorrect(answer), "'" + answer + "'");
+		}
+		for (String answer : new String[] { "ab3x", "ab3xka", "ab 3xk", "", null }) {
+			assertFalse(captcha.isCorrect(answer), "'" + answer + "'");
+		}
+		assertTrue(captcha.isCorrect("ab3xk", false));
+		for (String answer : new String[] { "Ab3xk", " ab3xk", null }) {
+			assertFalse(captcha.isCorrect(answer, false), "'" + answer + "'");
+		}
 		return;
 	}
 

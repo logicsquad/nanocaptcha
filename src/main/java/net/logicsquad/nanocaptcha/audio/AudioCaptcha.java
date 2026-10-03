@@ -229,19 +229,37 @@ public final class AudioCaptcha {
 	}
 
 	/**
-	 * Does CAPTCHA content match supplied {@code answer}? If {@code answer} is
-	 * {@code null}, this method returns {@code false}.
+	 * Does CAPTCHA content match supplied {@code answer}? Case is ignored, so that an answer a mobile keyboard has
+	 * capitalised still matches, and so is whitespace at either end, which autofill can add. For an exact comparison,
+	 * use {@link #isCorrect(String, boolean)}. If {@code answer} is {@code null}, this method returns {@code false}.
 	 *
 	 * @param answer a candidate content match
 	 * @return {@code true} if {@code answer} matches CAPTCHA content, otherwise
 	 *         {@code false}
 	 * @see <a href="https://github.com/logicsquad/nanocaptcha/issues/46">#46</a>
+	 * @see <a href="https://github.com/logicsquad/nanocaptcha/issues/69">#69</a>
 	 */
 	public boolean isCorrect(String answer) {
+		return isCorrect(answer, true);
+	}
+
+	/**
+	 * Does CAPTCHA content match supplied {@code answer}? With {@code normalise}, case and whitespace at either end of
+	 * {@code answer} are ignored, as {@link #isCorrect(String)} ignores them. Without it, {@code answer} has to match
+	 * exactly. If {@code answer} is {@code null}, this method returns {@code false}.
+	 *
+	 * @param answer    a candidate content match
+	 * @param normalise whether to ignore case, and whitespace at either end of {@code answer}
+	 * @return {@code true} if {@code answer} matches CAPTCHA content, otherwise
+	 *         {@code false}
+	 * @since 3.0
+	 * @see <a href="https://github.com/logicsquad/nanocaptcha/issues/69">#69</a>
+	 */
+	public boolean isCorrect(String answer, boolean normalise) {
 		if (answer == null) {
 			return false;
 		}
-		return answer.equals(content);
+		return normalise ? content.equalsIgnoreCase(answer.strip()) : content.equals(answer);
 	}
 
 	/**

@@ -163,10 +163,11 @@ Most of the protection a CAPTCHA gives comes from how it's used:
 * Rate-limit how often each client can get a new CAPTCHA and submit an
   answer.
 
-* Mobile keyboards often capitalise the first letter, but
-  `LatinContentProducer` uses lowercase letters, and `isCorrect()` is
-  case-sensitive. Add `autocapitalize="none"` to the input field, or
-  compare the answer in lowercase.
+* Mobile keyboards often capitalise the first letter, and autofill can
+  add a space. `isCorrect()` ignores case and whitespace at either end
+  of the answer, and `isCorrect(answer, false)` compares exactly. If
+  you keep only the answer, as below, compare it the same way, and add
+  `autocapitalize="none"` to the input field anyway.
 
 * Send images as PNG and audio as WAV, as described above, and offer
   an audio CAPTCHA as an alternative to the image.
@@ -187,7 +188,7 @@ For example, in a servlet:
     String given = request.getParameter("captcha");
     boolean passed = answer != null && given != null
         && created.isAfter(OffsetDateTime.now().minusMinutes(5))
-        && answer.equals(given.trim().toLowerCase(Locale.ROOT));
+        && answer.equalsIgnoreCase(given.strip());
 
 Running in containers
 ---------------------

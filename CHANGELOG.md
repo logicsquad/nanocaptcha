@@ -352,6 +352,12 @@ Image CAPTCHAs look different in this release:
   written as JPEG. `addBackground()` adds that background too. For a
   transparent image, add a
   `TransparentBackgroundProducer`. [#68](https://github.com/logicsquad/nanocaptcha/issues/68)
+- `isCorrect()` now ignores case, which mobile keyboards often change,
+  and whitespace at either end of the answer, which autofill can add.
+  `isCorrect(answer, false)` compares exactly, as `isCorrect()` did
+  before. The built-in content producers' answers are lowercase or
+  digits, so ignoring case costs nothing with
+  them. [#69](https://github.com/logicsquad/nanocaptcha/issues/69)
 
 ### Removed
 - Removed `ChineseContentProducer` and `ArabicContentProducer`,

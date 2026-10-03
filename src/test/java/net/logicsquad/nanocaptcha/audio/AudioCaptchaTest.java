@@ -88,11 +88,17 @@ public class AudioCaptchaTest {
 	}
 
 	@Test
-	public void isCorrectAcceptsOnlyTheContent() {
-		AudioCaptcha captcha = AudioCaptcha.create();
-		assertTrue(captcha.isCorrect(captcha.getContent()));
-		assertFalse(captcha.isCorrect(captcha.getContent() + "0"));
-		assertFalse(captcha.isCorrect(null));
+	public void isCorrectIgnoresSurroundingWhitespaceUnlessAskedNotTo() {
+		AudioCaptcha captcha = new AudioCaptcha.Builder().addContent(() -> "12345").build();
+		for (String answer : new String[] { "12345", " 12345", "12345 \n" }) {
+			assertTrue(captcha.isCorrect(answer), "'" + answer + "'");
+		}
+		for (String answer : new String[] { "1234", "123450", "123 45", "", null }) {
+			assertFalse(captcha.isCorrect(answer), "'" + answer + "'");
+		}
+		assertTrue(captcha.isCorrect("12345", false));
+		assertFalse(captcha.isCorrect(" 12345", false));
+		assertFalse(captcha.isCorrect(null, false));
 		return;
 	}
 
