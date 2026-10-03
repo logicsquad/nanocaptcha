@@ -6,8 +6,10 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
+import java.util.Set;
 
 import javax.sound.sampled.AudioFileFormat;
 import javax.sound.sampled.AudioSystem;
@@ -31,7 +33,7 @@ public class AudioCaptchaTest {
 	}
 
 	@Test
-	public void everyLanguageMakesAudioAsLongAsItsDigits() {
+	public void everyLanguageMakesAudioFromItsDigits() {
 		for (Locale language : Arrays.asList(Locale.ENGLISH, Locale.GERMAN, Locale.FRENCH)) {
 			for (boolean noisy : new boolean[] { false, true }) {
 				String what = language + (noisy ? ", with noise" : "");
@@ -50,12 +52,31 @@ public class AudioCaptchaTest {
 				assertTrue(captcha.getContent().matches("[0-9]{5}"), what + ": " + captcha.getContent());
 				assertEquals(5, digits.size(), what);
 				Sample audio = captcha.getAudio();
-				assertEquals(digits.stream().mapToLong(Sample::getSampleCount).sum(), audio.getSampleCount(), what);
+				// The digits, and up to a quarter of a second after each but the last
+				long length = digits.stream().mapToLong(Sample::getSampleCount).sum();
+				assertTrue(audio.getSampleCount() >= length && audio.getSampleCount() <= length + 4 * 4000,
+						what + ": " + audio.getSampleCount() + " samples from " + length);
 				double peak = Arrays.stream(audio.getInterleavedSamples()).map(Math::abs).max().getAsDouble();
 				assertTrue(peak > 0.1, what + ": peak " + peak);
 				assertArrayEquals(audio.toWav(), audio.toWav(), what);
 			}
 		}
+		return;
+	}
+
+	@Test
+	public void eachDigitGetsARandomGapAndVolume() {
+		// The same clip for every digit, so that only the gaps and volumes can vary
+		Sample one = new RandomNumberVoiceProducer(Locale.ENGLISH).getVocalization('1');
+		Set<Long> lengths = new HashSet<>();
+		Set<Double> peaks = new HashSet<>();
+		for (int i = 0; i < 20; i++) {
+			Sample audio = new AudioCaptcha.Builder().addContent(() -> "11111").addVoice(c -> one).build().getAudio();
+			lengths.add(audio.getSampleCount());
+			peaks.add(Arrays.stream(audio.getInterleavedSamples()).map(Math::abs).max().getAsDouble());
+		}
+		assertTrue(lengths.size() > 15, "lengths: " + lengths);
+		assertTrue(peaks.size() > 15, "peaks: " + peaks);
 		return;
 	}
 

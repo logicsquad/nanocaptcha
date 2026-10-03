@@ -3,6 +3,8 @@ package net.logicsquad.nanocaptcha.image.filter;
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
+import java.util.Random;
+import java.util.concurrent.ThreadLocalRandom;
 
 /**
  * Overlays a warped grid to the image.
@@ -49,6 +51,16 @@ public class FishEyeImageFilter implements ImageFilter {
 
 	@Override
 	public void filter(BufferedImage image) {
+		filter(image, ThreadLocalRandom.current());
+	}
+
+	/**
+	 * Transforms {@code image} in place, using {@code random}, so that tests can seed it.
+	 *
+	 * @param image  a {@link BufferedImage}
+	 * @param random a {@link Random}
+	 */
+	void filter(BufferedImage image, Random random) {
 		int height = image.getHeight();
 		int width = image.getWidth();
 
@@ -84,7 +96,7 @@ public class FishEyeImageFilter implements ImageFilter {
 			}
 		}
 
-		double distance = ranInt(width / 4, width / 3);
+		double distance = ranInt(width / 4, width / 3, random);
 
 		// put the distortion in the (dead) middle
 		int wMid = image.getWidth() / 2;
@@ -110,8 +122,8 @@ public class FishEyeImageFilter implements ImageFilter {
 		graph.dispose();
 	}
 
-	private int ranInt(int i, int j) {
-		double d = Math.random();
+	private int ranInt(int i, int j, Random random) {
+		double d = random.nextDouble();
 		return (int) (i + ((j - i) + 1) * d);
 	}
 

@@ -21,6 +21,16 @@ import net.logicsquad.nanocaptcha.content.NumbersContentProducer;
  */
 public final class AudioCaptcha {
 	/**
+	 * Quietest volume for a digit, as a multiplier
+	 */
+	private static final double MIN_VOLUME = 0.7;
+
+	/**
+	 * Longest gap after a digit (in samples): a quarter of a second
+	 */
+	private static final int MAX_GAP = (int) (Sample.SC_AUDIO_FORMAT.getSampleRate() / 4);
+
+	/**
 	 * Generated audio
 	 */
 	private final Sample audio;
@@ -192,19 +202,23 @@ public final class AudioCaptcha {
 			// Convert answer to an array
 			char[] ansAry = content.toCharArray();
 
-			// Make a List of Samples for each character
+			// Make a List of Samples for each character, each at its own volume and
+			// followed by its own gap, so that the clips can't be matched one by one
+			ThreadLocalRandom random = ThreadLocalRandom.current();
 			VoiceProducer vProd;
 			List<Sample> samples = new ArrayList<>();
-			for (char c : ansAry) {
+			for (int i = 0; i < ansAry.length; i++) {
 				// Create Sample for this character from one of the
 				// VoiceProducers
-				vProd = voiceProducers.get(ThreadLocalRandom.current().nextInt(voiceProducers.size()));
-				samples.add(vProd.getVocalization(c));
+				vProd = voiceProducers.get(random.nextInt(voiceProducers.size()));
+				double volume = MIN_VOLUME + (1 - MIN_VOLUME) * random.nextDouble();
+				int gap = i == ansAry.length - 1 ? 0 : random.nextInt(MAX_GAP + 1);
+				samples.add(Mixer.adjust(vProd.getVocalization(ansAry[i]), volume, gap));
 			}
 
 			// 3. Add noise, if any, and return the result
 			if (!noiseProducers.isEmpty()) {
-				NoiseProducer nProd = noiseProducers.get(ThreadLocalRandom.current().nextInt(noiseProducers.size()));
+				NoiseProducer nProd = noiseProducers.get(random.nextInt(noiseProducers.size()));
 				audio = nProd.addNoise(samples);
 				return new AudioCaptcha(this);
 			}

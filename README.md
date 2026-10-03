@@ -67,9 +67,12 @@ font that can display it, such as one installed on the server:
         .font(new Font("Noto Sans CJK SC", Font.BOLD, 40))
         .build()
 
-`FastWordRenderer` only uses the built-in fonts. If a renderer's font
-can't display a character, it throws an `IllegalArgumentException`
-rather than drawing an empty box.
+If a renderer's font can't display a character, it throws an
+`IllegalArgumentException` rather than drawing an empty box.
+
+The built-in fonts are sized to the image: 40 pt in the default height
+of 50 pixels, and in proportion otherwise. A font you supply keeps its
+size. Either way, text too wide for the image shrinks to fit.
 
 To send an image CAPTCHA to a browser, `writePng()` writes it to an
 `OutputStream` as a PNG file, for example in a servlet:
@@ -141,7 +144,7 @@ You can use NanoCaptcha in your projects by including it as a Maven dependency:
     <dependency>
       <groupId>net.logicsquad</groupId>
       <artifactId>nanocaptcha</artifactId>
-      <version>2.2</version>
+      <version>2.3</version>
     </dependency>
 
 NanoCaptcha's audio classes use SLF4J. On the module path NanoCaptcha

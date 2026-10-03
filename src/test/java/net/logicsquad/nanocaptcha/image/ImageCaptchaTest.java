@@ -50,6 +50,7 @@ public class ImageCaptchaTest {
 	}
 
 	@Test
+	@SuppressWarnings("deprecation")
 	public void fastWordRendererDrawsText() {
 		assertDrawsText(new FastWordRenderer.Builder().build());
 		return;
@@ -62,6 +63,7 @@ public class ImageCaptchaTest {
 	}
 
 	@Test
+	@SuppressWarnings("deprecation")
 	public void fastWordRendererRejectsCharactersItsFontsCantDisplay() {
 		assertRejectsChinese(new FastWordRenderer.Builder().build());
 		return;
@@ -137,6 +139,7 @@ public class ImageCaptchaTest {
 	}
 
 	@Test
+	@SuppressWarnings("deprecation")
 	public void everyBackgroundNoiseProducerFilterAndRendererWorkTogether() {
 		List<BackgroundProducer> backgrounds = Arrays.asList(new TransparentBackgroundProducer(), new FlatColorBackgroundProducer(),
 				new GradiatedBackgroundProducer(), new SquigglesBackgroundProducer());

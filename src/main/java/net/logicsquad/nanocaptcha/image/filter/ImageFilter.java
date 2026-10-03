@@ -1,12 +1,9 @@
 package net.logicsquad.nanocaptcha.image.filter;
 
+import java.awt.AlphaComposite;
 import java.awt.Graphics2D;
-import java.awt.Image;
-import java.awt.Toolkit;
 import java.awt.image.BufferedImage;
-import java.awt.image.BufferedImageFilter;
 import java.awt.image.BufferedImageOp;
-import java.awt.image.FilteredImageSource;
 
 /**
  * A filter that can distort an image CAPTCHA in some way.
@@ -24,16 +21,17 @@ public interface ImageFilter {
 	void filter(BufferedImage image);
 
 	/**
-	 * Applies {@code filter} to {@code img}.
+	 * Applies {@code filter} to {@code img}, replacing its pixels with the filtered ones.
 	 *
 	 * @param img    a {@link BufferedImage}
 	 * @param filter a {@link BufferedImageOp}
 	 */
 	static void applyFilter(BufferedImage img, BufferedImageOp filter) {
-		FilteredImageSource src = new FilteredImageSource(img.getSource(), new BufferedImageFilter(filter));
-		Image fImg = Toolkit.getDefaultToolkit().createImage(src);
+		BufferedImage filtered = filter.filter(img, null);
 		Graphics2D g = img.createGraphics();
-		g.drawImage(fImg, 0, 0, null, null);
+		// Drawn over the original, the filtered image would leave the original showing wherever it's transparent
+		g.setComposite(AlphaComposite.Src);
+		g.drawImage(filtered, 0, 0, null);
 		g.dispose();
 	}
 }

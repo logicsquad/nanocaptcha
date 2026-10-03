@@ -8,6 +8,7 @@ import java.awt.geom.CubicCurve2D;
 import java.awt.geom.PathIterator;
 import java.awt.geom.Point2D;
 import java.awt.image.BufferedImage;
+import java.util.Random;
 import java.util.concurrent.ThreadLocalRandom;
 
 /**
@@ -60,9 +61,18 @@ public class CurvedLineNoiseProducer implements NoiseProducer {
 
 	@Override
 	public void makeNoise(BufferedImage image) {
+		makeNoise(image, ThreadLocalRandom.current());
+	}
+
+	/**
+	 * Adds noise to {@code image}, using {@code random}, so that tests can seed it.
+	 *
+	 * @param image  a {@link BufferedImage}
+	 * @param random a {@link Random}
+	 */
+	void makeNoise(BufferedImage image, Random random) {
 		int width = image.getWidth();
 		int height = image.getHeight();
-		ThreadLocalRandom random = ThreadLocalRandom.current();
 
 		// the curve from where the points are taken
 		CubicCurve2D cc = new CubicCurve2D.Float(width * .1f, height * random.nextFloat(), width * .1f,

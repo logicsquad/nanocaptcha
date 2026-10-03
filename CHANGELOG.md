@@ -241,3 +241,81 @@ up, including: Javadoc comments, visibility tightening, API pruning.
   instead of a `java.util.Random`, whose next values can be worked out
   from enough earlier
   ones. [#49](https://github.com/logicsquad/nanocaptcha/issues/49)
+
+
+## Release 2.3 (2026-10-03)
+
+Image CAPTCHAs look different in this release:
+
+- The ripple that `addFilter()` adds is much stronger, since the
+  undistorted text no longer shows
+  underneath. [#56](https://github.com/logicsquad/nanocaptcha/issues/56)
+- In images other than the default 200 × 50, the text is sized to
+  fit. [#59](https://github.com/logicsquad/nanocaptcha/issues/59)
+- `GaussianNoiseProducer`'s grain is grey, rather than faintly
+  coloured. [#60](https://github.com/logicsquad/nanocaptcha/issues/60)
+- `DefaultWordRenderer` varies the shape and position of every
+  glyph. [#75](https://github.com/logicsquad/nanocaptcha/issues/75)
+
+### Changed
+- Backgrounds, noise producers and filters are now tested against
+  golden images, and `FishEyeImageFilter` uses `ThreadLocalRandom`
+  like the other filters, instead of
+  `Math.random()`. [#62](https://github.com/logicsquad/nanocaptcha/issues/62)
+
+### Deprecated
+- Deprecated `StretchImageFilter`, which can't stretch an image in
+  place, so it draws a stretched part of the image over the rest. It
+  will be removed in
+  3.0. [#57](https://github.com/logicsquad/nanocaptcha/issues/57)
+- Deprecated `FastWordRenderer`, which is built for speed that CAPTCHAs
+  don't need: `DefaultWordRenderer` renders far more of them a second
+  than an application asks for. Its CAPTCHAs are also weaker, since
+  each character in each font is always the same bitmap. Use
+  `DefaultWordRenderer` instead. It will be removed in
+  3.0. [#82](https://github.com/logicsquad/nanocaptcha/issues/82)
+
+### Fixed
+- `RippleImageFilter`, which `addFilter()` adds by default, drew the
+  rippled image over the original, so the undistorted text still
+  showed underneath. `ImageFilter.applyFilter()` now replaces the
+  image with the filtered one, which makes the ripple much more
+  visible, and changes how filtered CAPTCHAs
+  look. [#56](https://github.com/logicsquad/nanocaptcha/issues/56)
+- With `randomiseYOffset()`, `DefaultWordRenderer` and
+  `FastWordRenderer` now choose a new height for the text each time
+  they render, anywhere it fits in the image. The height was chosen
+  once per renderer, and could push glyphs off the top of the
+  image. [#58](https://github.com/logicsquad/nanocaptcha/issues/58)
+- `DefaultWordRenderer` and `FastWordRenderer` now size the built-in
+  fonts to the image: 40 pt in the default height of 50 pixels, and in
+  proportion otherwise. Text too wide for the image, such as
+  `addContent(10)` at the default size, shrinks to fit instead of
+  running off the right-hand edge, which made the CAPTCHA
+  unsolvable. Fonts you supply keep their size unless they have to
+  shrink. [#59](https://github.com/logicsquad/nanocaptcha/issues/59)
+- `GaussianNoiseProducer` added noise to the alpha channel, which made
+  opaque pixels partly transparent. It now draws each pixel's noise
+  as a white or black speckle over the image, so opaque pixels stay
+  opaque, and the grain is grey rather than faintly coloured. It
+  still shows over any
+  background. [#60](https://github.com/logicsquad/nanocaptcha/issues/60)
+- `StretchImageFilter` no longer smears the top rows of the image
+  down the rest of it, which could leave the whole CAPTCHA a single
+  colour. [#80](https://github.com/logicsquad/nanocaptcha/issues/80)
+
+### Security
+- `DefaultWordRenderer` now gives each glyph a small random rotation,
+  scale, vertical shift and sub-pixel position, chosen for each
+  CAPTCHA, and lets neighbouring glyphs overlap slightly. It drew
+  each character in each built-in font as the same bitmap, so the
+  default CAPTCHA could be read by matching 46 templates. Drawing
+  each glyph from its outline is slower: in a quick benchmark, about
+  19,000 CAPTCHAs a second, down from
+  160,000. [#75](https://github.com/logicsquad/nanocaptcha/issues/75)
+- Audio CAPTCHAs now play each digit at a random volume, with a
+  random gap of up to a quarter of a second after it, and
+  `RandomNoiseProducer` starts its noise at a random point. The audio
+  was the bundled clips end to end, with the noise from its start at
+  a fixed volume, so the noise could be subtracted and the clips
+  matched. [#75](https://github.com/logicsquad/nanocaptcha/issues/75)

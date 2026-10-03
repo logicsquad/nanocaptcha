@@ -2,6 +2,7 @@ package net.logicsquad.nanocaptcha.image.noise;
 
 import java.awt.Color;
 import java.awt.image.BufferedImage;
+import java.util.Random;
 import java.util.concurrent.ThreadLocalRandom;
 
 /**
@@ -62,9 +63,18 @@ public class SaltAndPepperNoiseProducer implements NoiseProducer {
      */
     @Override
     public void makeNoise(BufferedImage image) {
+        makeNoise(image, ThreadLocalRandom.current());
+    }
+
+    /**
+     * Adds noise to {@code image}, using {@code random}, so that tests can seed it.
+     *
+     * @param image  a {@link BufferedImage}
+     * @param random a {@link Random}
+     */
+    void makeNoise(BufferedImage image, Random random) {
         int width = image.getWidth();
         int height = image.getHeight();
-        ThreadLocalRandom random = ThreadLocalRandom.current();
 
         for (int x = 0; x < width; x++) {
             for (int y = 0; y < height; y++) {

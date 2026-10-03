@@ -1,13 +1,18 @@
 package net.logicsquad.nanocaptcha.audio.noise;
 
+import java.io.IOException;
+import java.io.UncheckedIOException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Random;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ThreadLocalRandom;
+
+import javax.sound.sampled.AudioInputStream;
 
 import net.logicsquad.nanocaptcha.audio.Mixer;
 import net.logicsquad.nanocaptcha.audio.Sample;
@@ -146,7 +151,8 @@ public class RandomNoiseProducer implements NoiseProducer {
 
 	/**
 	 * Concatenates {@code samples}, then adds a random background noise sample
-	 * (from this object's list of samples), returning the resulting {@link Sample}.
+	 * (from this object's list of samples), from a random point in it, returning
+	 * the resulting {@link Sample}.
 	 *
 	 * @param samples a list of {@link Sample}s
 	 * @return concatenated {@link Sample}s with added noise
@@ -154,9 +160,44 @@ public class RandomNoiseProducer implements NoiseProducer {
 	@Override
 	public Sample addNoise(List<Sample> samples) {
 		Sample appended = Mixer.concatenate(samples);
-		Sample noise = noises.get(ThreadLocalRandom.current().nextInt(noises.size()));
+		ThreadLocalRandom random = ThreadLocalRandom.current();
+		Sample noise = noises.get(random.nextInt(noises.size()));
+		// Start the noise anywhere, so that it can't be lined up and subtracted again
+		noise = from(noise, appended.getAudioInputStream().getFrameLength(), random);
 		// Decrease the volume of the noise to make sure the voices can be heard
 		return Mixer.mix(appended, 1.0, noise, NOISE_VOLUME);
+	}
+
+	/**
+	 * Returns {@code noise} from a random point, leaving at least {@code length}
+	 * samples of it, so that it only has to repeat if it's shorter than that
+	 * anyway.
+	 *
+	 * @param noise  a noise {@link Sample}
+	 * @param length number of samples of noise needed
+	 * @param random a {@link Random}
+	 * @return noise from a random point
+	 */
+	static Sample from(Sample noise, long length, Random random) {
+		AudioInputStream stream = noise.getAudioInputStream();
+		long spare = stream.getFrameLength() - length;
+		if (spare <= 0) {
+			return noise;
+		}
+		long skip = (long) (random.nextDouble() * (spare + 1)) * stream.getFormat().getFrameSize();
+		try {
+			while (skip > 0) {
+				long skipped = stream.skip(skip);
+				if (skipped <= 0) {
+					break;
+				}
+				skip -= skipped;
+			}
+		} catch (IOException e) {
+			// The stream reads from memory, so this shouldn't happen
+			throw new UncheckedIOException(e);
+		}
+		return new Sample(stream);
 	}
 
 	@Override

@@ -85,6 +85,25 @@ public final class Mixer {
 	}
 
 	/**
+	 * Returns {@code sample} with its volume multiplied by {@code volume}, followed
+	 * by {@code silence} samples of silence, as a new {@link Sample}.
+	 *
+	 * @param sample  a {@link Sample}
+	 * @param volume  multiplier
+	 * @param silence number of samples of silence to add
+	 * @return adjusted {@link Sample}
+	 * @since 2.3
+	 */
+	static Sample adjust(Sample sample, double volume, int silence) {
+		double[] samples = sample.getInterleavedSamples();
+		double[] adjusted = Arrays.copyOf(samples, samples.length + silence);
+		for (int i = 0; i < samples.length; i++) {
+			adjusted[i] *= volume;
+		}
+		return buildSample(adjusted.length, adjusted);
+	}
+
+	/**
 	 * Concatenates the supplied arrays of {@code double}s and returns the resulting
 	 * array.
 	 *

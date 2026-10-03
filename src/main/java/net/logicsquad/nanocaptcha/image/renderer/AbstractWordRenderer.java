@@ -74,9 +74,15 @@ public abstract class AbstractWordRenderer implements WordRenderer {
     protected static final Supplier<Font> DEFAULT_FONT_SUPPLIER = () -> DEFAULT_FONTS.get(ThreadLocalRandom.current().nextInt(DEFAULT_FONTS.size()));
 
 	/**
-	 * Font size (in points)
+	 * Font size (in points) of {@link #DEFAULT_FONTS}. {@link DefaultWordRenderer} and {@link FastWordRenderer} size
+	 * them to the image instead: this size in an image of the default height, 50 pixels, and in proportion otherwise.
 	 */
 	protected static final int FONT_SIZE = 40;
+
+	/**
+	 * Height of image (in pixels) that {@link #FONT_SIZE} suits
+	 */
+	private static final int FONT_SIZE_HEIGHT = 50;
 
 	/**
 	 * Default percentage offset along x-axis
@@ -109,6 +115,16 @@ public abstract class AbstractWordRenderer implements WordRenderer {
 	private final double yOffset;
 
 	/**
+	 * Whether to choose the y-offset at random for each render
+	 */
+	private final boolean randomYOffset;
+
+	/**
+	 * Whether {@link #fontSupplier} supplies {@link #DEFAULT_FONTS}, which are sized to the image
+	 */
+	private final boolean defaultFonts;
+
+	/**
 	 * Supplier of {@link Color}
 	 */
 	private final Supplier<Color> colorSupplier;
@@ -127,10 +143,38 @@ public abstract class AbstractWordRenderer implements WordRenderer {
 	 * @param fontSupplier  {@link Font} supplier
 	 */
 	protected AbstractWordRenderer(double xOffset, double yOffset, Supplier<Color> colorSupplier, Supplier<Font> fontSupplier) {
+		this(xOffset, yOffset, false, colorSupplier, fontSupplier);
+		return;
+	}
+
+	/**
+	 * Constructor taking its settings from a {@link Builder}
+	 *
+	 * @param builder a {@link Builder}
+	 * @since 2.3
+	 */
+	AbstractWordRenderer(Builder builder) {
+		this(builder.xOffset, builder.yOffset, builder.randomYOffset, builder.colorSupplier, builder.fontSupplier);
+		return;
+	}
+
+	/**
+	 * Constructor taking every setting
+	 *
+	 * @param xOffset       x-axis offset
+	 * @param yOffset       y-axis offset
+	 * @param randomYOffset whether to choose the y-offset at random for each render
+	 * @param colorSupplier {@link Color} supplier
+	 * @param fontSupplier  {@link Font} supplier
+	 */
+	private AbstractWordRenderer(double xOffset, double yOffset, boolean randomYOffset, Supplier<Color> colorSupplier,
+			Supplier<Font> fontSupplier) {
 		this.xOffset = xOffset;
 		this.yOffset = yOffset;
+		this.randomYOffset = randomYOffset;
 		this.colorSupplier = colorSupplier;
 		this.fontSupplier = fontSupplier;
+		this.defaultFonts = fontSupplier == DEFAULT_FONT_SUPPLIER;
 		return;
 	}
 
@@ -150,6 +194,11 @@ public abstract class AbstractWordRenderer implements WordRenderer {
 		 * Y-axis offset
 		 */
 		protected double yOffset;
+
+		/**
+		 * Whether to choose the y-offset at random for each render
+		 */
+		boolean randomYOffset;
 
         /**
          * Supplier for {@link Color}
@@ -180,6 +229,7 @@ public abstract class AbstractWordRenderer implements WordRenderer {
 		 */
 		public Builder yOffset(double yOffset) {
 			this.yOffset = yOffset;
+			randomYOffset = false;
 			return this;
 		}
 
@@ -195,12 +245,15 @@ public abstract class AbstractWordRenderer implements WordRenderer {
 		}
 
 		/**
-		 * Selects a random value for y-offset.
+		 * Selects a random value for y-offset. {@link DefaultWordRenderer} and {@link FastWordRenderer} choose a new one
+		 * each time they render, anywhere the text fits in the image. For other subclasses,
+		 * {@link AbstractWordRenderer#yOffset()} returns a value chosen here, between 0 and 0.75.
 		 *
 		 * @return this
 		 */
 		public Builder randomiseYOffset() {
 			this.yOffset = Y_OFFSET_MIN + (Y_OFFSET_MAX - Y_OFFSET_MIN) * ThreadLocalRandom.current().nextDouble();
+			randomYOffset = true;
 			return this;
 		}
 
@@ -305,6 +358,59 @@ public abstract class AbstractWordRenderer implements WordRenderer {
 	 */
 	protected double yOffset() {
 		return yOffset;
+	}
+
+	/**
+	 * Returns whether to choose the y-offset at random for each render.
+	 *
+	 * @return {@code true} if the y-offset is random
+	 * @since 2.3
+	 */
+	boolean randomYOffset() {
+		return randomYOffset;
+	}
+
+	/**
+	 * Returns whether this renderer uses {@link #DEFAULT_FONTS}, which it sizes to the image.
+	 *
+	 * @return {@code true} if the fonts are the defaults
+	 * @since 2.3
+	 */
+	boolean defaultFonts() {
+		return defaultFonts;
+	}
+
+	/**
+	 * Returns the size of {@link #DEFAULT_FONTS} in an image {@code height} pixels high: {@link #FONT_SIZE} at the
+	 * default height, and in proportion otherwise, in whole points.
+	 *
+	 * @param height image height
+	 * @return font size
+	 * @since 2.3
+	 */
+	static float fontSize(int height) {
+		return (float) Math.max(1, Math.floor((double) height * FONT_SIZE / FONT_SIZE_HEIGHT));
+	}
+
+	/**
+	 * Returns a random y-coordinate for the baseline of text that reaches {@code ascent} above it and {@code descent}
+	 * below it, anywhere the text fits in an image {@code height} pixels high. It keeps the text off the top and
+	 * bottom rows, where a border would touch it. Text too tall to fit is centred.
+	 *
+	 * @param height  image height
+	 * @param ascent  how far the text reaches above the baseline, such as the height of the pixels it inks
+	 * @param descent how far the text reaches below the baseline
+	 * @param random  a {@link Random}
+	 * @return y-coordinate of baseline
+	 * @since 2.3
+	 */
+	static int randomBaseline(int height, double ascent, double descent, Random random) {
+		int highest = (int) Math.ceil(ascent) + 1;
+		int lowest = height - 1 - (int) Math.ceil(descent);
+		if (lowest < highest) {
+			return (highest + lowest) / 2;
+		}
+		return highest + random.nextInt(lowest - highest + 1);
 	}
 
 	/**
