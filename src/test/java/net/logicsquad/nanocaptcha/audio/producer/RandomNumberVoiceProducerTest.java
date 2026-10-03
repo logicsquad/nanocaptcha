@@ -104,7 +104,7 @@ public class RandomNumberVoiceProducerTest {
 		for (Map.Entry<Locale, List<String>> entry : RandomNumberVoiceProducer.VOICES.entrySet()) {
 			for (String voice : entry.getValue()) {
 				for (int i = 0; i < 10; i++) {
-					String filename = String.format("/sounds/%s/numbers/%d_%s.wav", entry.getKey().getLanguage(), i, voice);
+					String filename = String.format("/net/logicsquad/nanocaptcha/sounds/%s/numbers/%d_%s.wav", entry.getKey().getLanguage(), i, voice);
 					assertDoesNotThrow(() -> new Sample(RandomNumberVoiceProducer.class.getResource(filename)), filename);
 				}
 			}

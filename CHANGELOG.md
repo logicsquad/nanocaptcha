@@ -327,6 +327,10 @@ Image CAPTCHAs look different in this release:
 - NanoCaptcha now needs Java 17 or later: it compiles with
   `--release 17`, and CI tests on Java 17, 21 and 25. On Java 8 to
   16, use 2.3. [#63](https://github.com/logicsquad/nanocaptcha/issues/63)
+- NanoCaptcha's fonts and sounds are now under
+  `/net/logicsquad/nanocaptcha/` in the JAR, rather than at `/fonts/`
+  and `/sounds/`, where another JAR's files at the same paths could
+  take their place. [#79](https://github.com/logicsquad/nanocaptcha/issues/79)
 
 ### Removed
 - Removed `ChineseContentProducer` and `ArabicContentProducer`,

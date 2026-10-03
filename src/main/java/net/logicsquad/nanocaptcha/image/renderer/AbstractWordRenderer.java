@@ -28,12 +28,12 @@ public abstract class AbstractWordRenderer implements WordRenderer {
 	/**
 	 * Resource path to "Courier Prime"
 	 */
-	private static final String COURIER_PRIME_FONT = "/fonts/CourierPrime-Bold.ttf";
+	private static final String COURIER_PRIME_FONT = "/net/logicsquad/nanocaptcha/fonts/CourierPrime-Bold.ttf";
 
 	/**
 	 * Resource path to "Public Sans"
 	 */
-	private static final String PUBLIC_SANS_FONT = "/fonts/PublicSans-Bold.ttf";
+	private static final String PUBLIC_SANS_FONT = "/net/logicsquad/nanocaptcha/fonts/PublicSans-Bold.ttf";
 
 	/**
 	 * Default {@link Color}s

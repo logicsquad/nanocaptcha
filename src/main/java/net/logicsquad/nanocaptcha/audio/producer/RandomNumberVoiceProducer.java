@@ -47,7 +47,7 @@ public class RandomNumberVoiceProducer implements VoiceProducer {
 	/**
 	 * Prefix for locating voices
 	 */
-	private static final String PATH_PREFIX_TEMPLATE = "/sounds/%s/numbers/";
+	private static final String PATH_PREFIX_TEMPLATE = "/net/logicsquad/nanocaptcha/sounds/%s/numbers/";
 
 	/**
 	 * English voices

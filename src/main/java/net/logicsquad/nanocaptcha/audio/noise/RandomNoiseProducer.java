@@ -43,9 +43,9 @@ public class RandomNoiseProducer implements NoiseProducer {
 	 * Built-in noise samples
 	 */
 	static final String[] BUILT_IN_NOISES = {
-			"/sounds/noises/babble.wav",
-			"/sounds/noises/radio_static.wav",
-			"/sounds/noises/rain.wav", };
+			"/net/logicsquad/nanocaptcha/sounds/noises/babble.wav",
+			"/net/logicsquad/nanocaptcha/sounds/noises/radio_static.wav",
+			"/net/logicsquad/nanocaptcha/sounds/noises/rain.wav", };
 
 	/**
 	 * Noises already read, by file name. A {@link Sample} doesn't change once it's created, so each file only needs
