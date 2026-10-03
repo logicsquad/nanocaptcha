@@ -88,7 +88,8 @@ public class SampleTest {
 
 	@Test
 	public void inputStreamConstructorThrowsOnWrongAudioParameters() throws UnsupportedAudioFileException, IOException {
-		AudioInputStream audioInputStream = AudioSystem.getAudioInputStream(SampleTest.class.getResourceAsStream(WAV_BAD_FILENAME));
+		// From a URL, which Java Sound buffers itself: on the module path, a resource's stream can't mark and reset
+		AudioInputStream audioInputStream = AudioSystem.getAudioInputStream(resource(WAV_BAD_FILENAME));
 		assertNotNull(audioInputStream);
 		assertThrows(IllegalArgumentException.class, () -> new Sample(audioInputStream));
 		return;

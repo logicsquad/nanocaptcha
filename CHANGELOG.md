@@ -351,6 +351,12 @@ The same goes for
   starts and use it for every request. Producers, renderers and
   filters of your own that it uses need to be thread-safe
   too. [#64](https://github.com/logicsquad/nanocaptcha/issues/64)
+- NanoCaptcha is now a named module, `net.logicsquad.nanocaptcha`,
+  with a `module-info.java`, rather than an automatic module named in
+  the JAR manifest. It exports every package, and requires only
+  `java.desktop`, which modules that require NanoCaptcha get too,
+  since its API uses types such as
+  `BufferedImage`. [#66](https://github.com/logicsquad/nanocaptcha/issues/66)
 
 ### Changed
 - NanoCaptcha now needs Java 17 or later: it compiles with

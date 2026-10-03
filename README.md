@@ -179,6 +179,11 @@ You can use NanoCaptcha in your projects by including it as a Maven dependency:
       <version>2.3</version>
     </dependency>
 
+NanoCaptcha is a module, `net.logicsquad.nanocaptcha`, so on the
+module path, add `requires net.logicsquad.nanocaptcha;` to your
+`module-info.java`. That gives your module `java.desktop` too, whose
+types, such as `BufferedImage`, NanoCaptcha's API uses.
+
 Using NanoCaptcha in a web application
 --------------------------------------
 Most of the protection a CAPTCHA gives comes from how it's used:
