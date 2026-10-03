@@ -15,7 +15,7 @@ import java.util.concurrent.ThreadLocalRandom;
  * @author <a href="mailto:paulh@logicsquad.net">Paul Hoadley</a>
  * @since 1.0
  */
-public class ShearImageFilter implements ImageFilter {
+public final class ShearImageFilter implements ImageFilter {
 	/**
 	 * 2 * pi
 	 */

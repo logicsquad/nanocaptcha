@@ -11,7 +11,7 @@ import java.awt.image.BufferedImage;
  * @author <a href="mailto:paulh@logicsquad.net">Paul Hoadley</a>
  * @since 1.0
  */
-public class TransparentBackgroundProducer implements BackgroundProducer {
+public final class TransparentBackgroundProducer implements BackgroundProducer {
 	@Override
 	public BufferedImage getBackground(int width, int height) {
 		BufferedImage bg = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB_PRE);

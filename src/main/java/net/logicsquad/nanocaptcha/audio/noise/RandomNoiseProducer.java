@@ -33,7 +33,7 @@ import net.logicsquad.nanocaptcha.audio.Sample;
  * @author <a href="mailto:paulh@logicsquad.net">Paul Hoadley</a>
  * @since 1.0
  */
-public class RandomNoiseProducer implements NoiseProducer {
+public final class RandomNoiseProducer implements NoiseProducer {
 	/**
 	 * Relative volume of background noise
 	 */

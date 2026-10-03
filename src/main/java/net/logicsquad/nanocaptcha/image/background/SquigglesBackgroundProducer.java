@@ -17,7 +17,7 @@ import java.util.concurrent.ThreadLocalRandom;
  * @since 1.0
  * @see <a href="https://github.com/logicsquad/nanocaptcha/issues/94">#94</a>
  */
-public class SquigglesBackgroundProducer implements BackgroundProducer {
+public final class SquigglesBackgroundProducer implements BackgroundProducer {
 	/**
 	 * Alpha value of background
 	 */

@@ -416,6 +416,17 @@ them need `image.backgrounds.` changing to
 - Renamed `Sample.SC_AUDIO_FORMAT` to `Sample.FORMAT`. The `SC_` was
   from SimpleCaptcha, and `AUDIO_` repeated
   `AudioFormat`. [#91](https://github.com/logicsquad/nanocaptcha/issues/91)
+- NanoCaptcha's concrete classes are now final: `Sample`,
+  `RandomNoiseProducer`, `RandomNumberVoiceProducer`,
+  `LatinContentProducer`, `NumbersContentProducer`,
+  `GradiatedBackgroundProducer`, `SquigglesBackgroundProducer`,
+  `TransparentBackgroundProducer`, `FishEyeImageFilter`,
+  `RippleImageFilter`, `ShearImageFilter`, `CurvedLineNoiseProducer`,
+  `GaussianNoiseProducer`, `SaltAndPepperNoiseProducer`,
+  `StraightLineNoiseProducer` and `DefaultWordRenderer.Builder`. None
+  was designed to be extended. To extend NanoCaptcha, implement its
+  interfaces, or extend `AbstractContentProducer`, which is there for
+  that. [#93](https://github.com/logicsquad/nanocaptcha/issues/93)
 - Renamed the `net.logicsquad.nanocaptcha.image.backgrounds` package to
   `net.logicsquad.nanocaptcha.image.background`, to match `filter`,
   `noise` and `renderer`. [#92](https://github.com/logicsquad/nanocaptcha/issues/92)

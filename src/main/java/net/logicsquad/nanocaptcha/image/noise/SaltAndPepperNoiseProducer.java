@@ -13,7 +13,7 @@ import java.util.concurrent.ThreadLocalRandom;
  * @see <a href="https://en.wikipedia.org/wiki/Salt-and-pepper_noise">Salt and pepper on Wikipedia</a>
  * @since 2.0
  */
-public class SaltAndPepperNoiseProducer implements NoiseProducer {
+public final class SaltAndPepperNoiseProducer implements NoiseProducer {
     /**
      * Default noise density.
      */

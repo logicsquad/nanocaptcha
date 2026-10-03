@@ -17,7 +17,7 @@ import java.util.concurrent.ThreadLocalRandom;
  * @author <a href="http://www.jhlabs.com/ip/filters/">Jerry Huxtable</a>
  * @since 1.0
  */
-public class RippleImageFilter implements ImageFilter {
+public final class RippleImageFilter implements ImageFilter {
 	@Override
 	public void filter(BufferedImage image) {
 		RippleFilter filter = new RippleFilter();

@@ -45,7 +45,7 @@ import javax.sound.sampled.UnsupportedAudioFileException;
  * @author <a href="mailto:paulh@logicsquad.net">Paul Hoadley</a>
  * @since 1.0
  */
-public class Sample {
+public final class Sample {
 	/**
 	 * The {@link AudioFormat} of every {@code Sample}: 16 kHz, 16-bit, signed, little-endian and mono
 	 *

@@ -18,7 +18,7 @@ import java.util.concurrent.ThreadLocalRandom;
  * @author <a href="mailto:paulh@logicsquad.net">Paul Hoadley</a>
  * @since 1.0
  */
-public class CurvedLineNoiseProducer implements NoiseProducer {
+public final class CurvedLineNoiseProducer implements NoiseProducer {
 	/**
 	 * Default line {@link Color}
 	 */

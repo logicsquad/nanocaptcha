@@ -20,7 +20,7 @@ import net.logicsquad.nanocaptcha.audio.Sample;
  * @author <a href="mailto:paulh@logicsquad.net">Paul Hoadley</a>
  * @since 1.0
  */
-public class RandomNumberVoiceProducer implements VoiceProducer {
+public final class RandomNumberVoiceProducer implements VoiceProducer {
 	/**
 	 * Vocalizations already read, by file name. A {@link Sample} doesn't change once it's created, so each file only needs
 	 * reading once.
@@ -91,7 +91,7 @@ public class RandomNumberVoiceProducer implements VoiceProducer {
 	}
 
 	@Override
-	public final Sample getVocalization(char number) {
+	public Sample getVocalization(char number) {
 		String stringNumber = Character.toString(number);
 		try {
 			int idx = Integer.parseInt(stringNumber);

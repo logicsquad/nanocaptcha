@@ -19,7 +19,7 @@ import java.util.concurrent.ThreadLocalRandom;
  * @see <a href="https://en.wikipedia.org/wiki/Gaussian_noise">Gaussian noise on Wikipedia</a>
  * @since 2.0
  */
-public class GaussianNoiseProducer implements NoiseProducer {
+public final class GaussianNoiseProducer implements NoiseProducer {
     /**
      * Default standard deviation.
      */

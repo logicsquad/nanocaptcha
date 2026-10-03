@@ -15,7 +15,7 @@ import java.awt.image.BufferedImage;
  * @author <a href="mailto:paulh@logicsquad.net">Paul Hoadley</a>
  * @since 1.0
  */
-public class GradiatedBackgroundProducer implements BackgroundProducer {
+public final class GradiatedBackgroundProducer implements BackgroundProducer {
 	/**
 	 * Default from {@link Color}
 	 */
