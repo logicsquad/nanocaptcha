@@ -183,8 +183,10 @@ You can use NanoCaptcha in your projects by including it as a Maven dependency:
     <dependency>
       <groupId>net.logicsquad</groupId>
       <artifactId>nanocaptcha</artifactId>
-      <version>2.3</version>
+      <version>3.0</version>
     </dependency>
+
+NanoCaptcha needs Java 17 or later. On Java 8 to 16, use 2.3.
 
 NanoCaptcha is a module, `net.logicsquad.nanocaptcha`, so on the
 module path, add `requires net.logicsquad.nanocaptcha;` to your
