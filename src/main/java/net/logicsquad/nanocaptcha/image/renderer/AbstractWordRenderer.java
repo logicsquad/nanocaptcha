@@ -74,8 +74,8 @@ public abstract class AbstractWordRenderer implements WordRenderer {
     protected static final Supplier<Font> DEFAULT_FONT_SUPPLIER = () -> DEFAULT_FONTS.get(ThreadLocalRandom.current().nextInt(DEFAULT_FONTS.size()));
 
 	/**
-	 * Font size (in points) of {@link #DEFAULT_FONTS}. {@link DefaultWordRenderer} and {@link FastWordRenderer} size
-	 * them to the image instead: this size in an image of the default height, 50 pixels, and in proportion otherwise.
+	 * Font size (in points) of {@link #DEFAULT_FONTS}. {@link DefaultWordRenderer} sizes them to the image instead: this
+	 * size in an image of the default height, 50 pixels, and in proportion otherwise.
 	 */
 	protected static final int FONT_SIZE = 40;
 
@@ -245,9 +245,9 @@ public abstract class AbstractWordRenderer implements WordRenderer {
 		}
 
 		/**
-		 * Selects a random value for y-offset. {@link DefaultWordRenderer} and {@link FastWordRenderer} choose a new one
-		 * each time they render, anywhere the text fits in the image. For other subclasses,
-		 * {@link AbstractWordRenderer#yOffset()} returns a value chosen here, between 0 and 0.75.
+		 * Selects a random value for y-offset. {@link DefaultWordRenderer} chooses a new one each time it renders,
+		 * anywhere the text fits in the image. For other subclasses, {@link AbstractWordRenderer#yOffset()} returns a value
+		 * chosen here, between 0 and 0.75.
 		 *
 		 * @return this
 		 */

@@ -26,14 +26,12 @@ import net.logicsquad.nanocaptcha.image.filter.FishEyeImageFilter;
 import net.logicsquad.nanocaptcha.image.filter.ImageFilter;
 import net.logicsquad.nanocaptcha.image.filter.RippleImageFilter;
 import net.logicsquad.nanocaptcha.image.filter.ShearImageFilter;
-import net.logicsquad.nanocaptcha.image.filter.StretchImageFilter;
 import net.logicsquad.nanocaptcha.image.noise.CurvedLineNoiseProducer;
 import net.logicsquad.nanocaptcha.image.noise.GaussianNoiseProducer;
 import net.logicsquad.nanocaptcha.image.noise.NoiseProducer;
 import net.logicsquad.nanocaptcha.image.noise.SaltAndPepperNoiseProducer;
 import net.logicsquad.nanocaptcha.image.noise.StraightLineNoiseProducer;
 import net.logicsquad.nanocaptcha.image.renderer.DefaultWordRenderer;
-import net.logicsquad.nanocaptcha.image.renderer.FastWordRenderer;
 import net.logicsquad.nanocaptcha.image.renderer.WordRenderer;
 
 /**
@@ -50,22 +48,8 @@ public class ImageCaptchaTest {
 	}
 
 	@Test
-	@SuppressWarnings("deprecation")
-	public void fastWordRendererDrawsText() {
-		assertDrawsText(new FastWordRenderer.Builder().build());
-		return;
-	}
-
-	@Test
 	public void defaultWordRendererRejectsCharactersItsFontCantDisplay() {
 		assertRejectsChinese(new DefaultWordRenderer.Builder().build());
-		return;
-	}
-
-	@Test
-	@SuppressWarnings("deprecation")
-	public void fastWordRendererRejectsCharactersItsFontsCantDisplay() {
-		assertRejectsChinese(new FastWordRenderer.Builder().build());
 		return;
 	}
 
@@ -139,15 +123,13 @@ public class ImageCaptchaTest {
 	}
 
 	@Test
-	@SuppressWarnings("deprecation")
 	public void everyBackgroundNoiseProducerFilterAndRendererWorkTogether() {
 		List<BackgroundProducer> backgrounds = Arrays.asList(new TransparentBackgroundProducer(), new FlatColorBackgroundProducer(),
 				new GradiatedBackgroundProducer(), new SquigglesBackgroundProducer());
 		List<NoiseProducer> noiseProducers = Arrays.asList(new CurvedLineNoiseProducer(), new StraightLineNoiseProducer(),
 				new GaussianNoiseProducer(), new SaltAndPepperNoiseProducer());
-		List<ImageFilter> filters = Arrays.asList(new RippleImageFilter(), new ShearImageFilter(), new FishEyeImageFilter(),
-				new StretchImageFilter());
-		List<WordRenderer> renderers = Arrays.asList(new DefaultWordRenderer.Builder().build(), new FastWordRenderer.Builder().build());
+		List<ImageFilter> filters = Arrays.asList(new RippleImageFilter(), new ShearImageFilter(), new FishEyeImageFilter());
+		List<WordRenderer> renderers = Arrays.asList(new DefaultWordRenderer.Builder().build());
 		// Wide, and tall
 		for (int[] size : new int[][] { { 200, 50 }, { 60, 200 } }) {
 			for (BackgroundProducer background : backgrounds) {

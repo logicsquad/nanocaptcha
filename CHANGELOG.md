@@ -327,3 +327,15 @@ Image CAPTCHAs look different in this release:
 - NanoCaptcha now needs Java 17 or later: it compiles with
   `--release 17`, and CI tests on Java 17, 21 and 25. On Java 8 to
   16, use 2.3. [#63](https://github.com/logicsquad/nanocaptcha/issues/63)
+
+### Removed
+- Removed `ChineseContentProducer` and `ArabicContentProducer`,
+  deprecated in 2.2. For content in another script, write a
+  `ContentProducer` of your own, and give `DefaultWordRenderer` a font
+  that can display it. [#81](https://github.com/logicsquad/nanocaptcha/issues/81)
+- Removed `StretchImageFilter`, deprecated in 2.3. Use
+  `RippleImageFilter` or `ShearImageFilter`
+  instead. [#81](https://github.com/logicsquad/nanocaptcha/issues/81)
+- Removed `FastWordRenderer`, deprecated in 2.3. Use
+  `DefaultWordRenderer`
+  instead. [#81](https://github.com/logicsquad/nanocaptcha/issues/81)

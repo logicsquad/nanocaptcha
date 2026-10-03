@@ -58,9 +58,7 @@ A `Builder` draws as it goes, so each one makes a single CAPTCHA: use
 a new `Builder` for each.
 
 The built-in fonts can display everything NanoCaptcha's own content
-producers generate, except for `ChineseContentProducer` and
-`ArabicContentProducer`, which are deprecated and will be removed in
-3.0. For those, or for your own content in other scripts, supply a
+producers generate. For your own content in other scripts, supply a
 font that can display it, such as one installed on the server:
 
     new DefaultWordRenderer.Builder()

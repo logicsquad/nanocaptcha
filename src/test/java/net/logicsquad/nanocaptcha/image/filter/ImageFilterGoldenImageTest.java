@@ -39,13 +39,4 @@ public class ImageFilterGoldenImageTest {
 		GoldenImages.assertMatches("filter/ShearImageFilter", image);
 		return;
 	}
-
-	@Test
-	@SuppressWarnings("deprecation")
-	public void stretchImageFilterMatchesGoldenImage() throws IOException {
-		BufferedImage image = GoldenImages.input();
-		new StretchImageFilter().filter(image);
-		GoldenImages.assertMatches("filter/StretchImageFilter", image);
-		return;
-	}
 }

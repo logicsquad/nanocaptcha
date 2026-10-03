@@ -88,32 +88,18 @@ public class AbstractWordRendererTest {
 	}
 
 	@Test
-	@SuppressWarnings("deprecation")
 	public void randomisedYOffsetKeepsGlyphsInTheImageAndChangesEachTime() {
-		// FastWordRenderer's fudge moves each glyph up to 5 pixels either way, so it needs a taller image to vary
-		assertRandomYOffsetKeepsGlyphsInTheImage(new DefaultWordRenderer.Builder().randomiseYOffset().build(), 50);
-		assertRandomYOffsetKeepsGlyphsInTheImage(new FastWordRenderer.Builder().randomiseYOffset().build(), 70);
-		return;
-	}
-
-	/**
-	 * Renders 200 CAPTCHAs with {@code renderer} on a 200-pixel-wide image, and checks that no glyph reaches the top or
-	 * bottom row, where it might have been cut off, and that the height of the text varies.
-	 *
-	 * @param renderer a {@link WordRenderer} with a random y-offset
-	 * @param height   image height
-	 */
-	private static void assertRandomYOffsetKeepsGlyphsInTheImage(WordRenderer renderer, int height) {
-		String name = renderer.getClass().getSimpleName();
+		WordRenderer renderer = new DefaultWordRenderer.Builder().randomiseYOffset().build();
 		Set<Integer> tops = new TreeSet<>();
 		for (int i = 0; i < 200; i++) {
 			String word = new LatinContentProducer().getContent();
-			Rectangle ink = render(renderer, word, 200, height);
+			Rectangle ink = render(renderer, word, 200, 50);
 			int bottom = ink.y + ink.height - 1;
-			assertTrue(ink.y > 0 && bottom < height - 1, name + ": '" + word + "' reaches from row " + ink.y + " to " + bottom);
+			// Clear of the top and bottom rows, where a glyph might have been cut off
+			assertTrue(ink.y > 0 && bottom < 49, "'" + word + "' reaches from row " + ink.y + " to " + bottom);
 			tops.add(ink.y);
 		}
-		assertTrue(tops.size() >= 5, name + ": the text starts on only these rows: " + tops);
+		assertTrue(tops.size() >= 5, "The text starts on only these rows: " + tops);
 		return;
 	}
 
@@ -122,11 +108,9 @@ public class AbstractWordRendererTest {
 		assertEquals(40, AbstractWordRenderer.fontSize(50));
 		assertEquals(80, AbstractWordRenderer.fontSize(100));
 		assertEquals(1, AbstractWordRenderer.fontSize(1));
-		for (WordRenderer renderer : renderers()) {
-			// Digits are at most 44 pixels high at 40 pt, even with FastWordRenderer's fudge
-			Rectangle ink = render(renderer, "23456", 400, 100);
-			assertTrue(ink.height >= 45, name(renderer) + ": the digits are " + ink.height + " pixels high in a 100-pixel image");
-		}
+		// At 40 pt, digits are under 45 pixels high
+		Rectangle ink = render(new DefaultWordRenderer.Builder().build(), "23456", 400, 100);
+		assertTrue(ink.height >= 45, "The digits are " + ink.height + " pixels high in a 100-pixel image");
 		return;
 	}
 
@@ -145,40 +129,19 @@ public class AbstractWordRendererTest {
 
 	@Test
 	public void longContentShrinksToFitTheWidth() {
-		for (WordRenderer renderer : renderers()) {
-			for (int i = 0; i < 100; i++) {
-				// Ten characters used to run off the right-hand edge of the default image
-				String word = new LatinContentProducer(10).getContent();
-				Rectangle ink = render(renderer, word, 200, 50);
-				// Inside the margin on the right
-				assertTrue(ink.x + ink.width <= 190, name(renderer) + ": '" + word + "' covers " + ink);
-				// A tall image, whose height would make the default text far too wide
-				word = new LatinContentProducer().getContent();
-				ink = render(renderer, word, 60, 200);
-				assertTrue(ink.x + ink.width <= 57, name(renderer) + ": '" + word + "' covers " + ink);
-			}
+		WordRenderer renderer = new DefaultWordRenderer.Builder().build();
+		for (int i = 0; i < 100; i++) {
+			// Ten characters used to run off the right-hand edge of the default image
+			String word = new LatinContentProducer(10).getContent();
+			Rectangle ink = render(renderer, word, 200, 50);
+			// Inside the margin on the right
+			assertTrue(ink.x + ink.width <= 190, "'" + word + "' covers " + ink);
+			// A tall image, whose height would make the default text far too wide
+			word = new LatinContentProducer().getContent();
+			ink = render(renderer, word, 60, 200);
+			assertTrue(ink.x + ink.width <= 57, "'" + word + "' covers " + ink);
 		}
 		return;
-	}
-
-	/**
-	 * Returns NanoCaptcha's renderers, with their default settings.
-	 *
-	 * @return renderers
-	 */
-	@SuppressWarnings("deprecation")
-	private static List<WordRenderer> renderers() {
-		return Arrays.asList(new DefaultWordRenderer.Builder().build(), new FastWordRenderer.Builder().build());
-	}
-
-	/**
-	 * Returns the class name of {@code renderer}.
-	 *
-	 * @param renderer a {@link WordRenderer}
-	 * @return name
-	 */
-	private static String name(WordRenderer renderer) {
-		return renderer.getClass().getSimpleName();
 	}
 
 	/**
