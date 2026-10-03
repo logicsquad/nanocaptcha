@@ -10,16 +10,16 @@ import java.util.concurrent.ThreadLocalRandom;
  * also known as the Gaussian distribution.
  * <p>
  * The noise is drawn over each pixel as a speckle: white for positive noise and black for negative, as opaque as the
- * noise is large. Until {@link net.logicsquad.nanocaptcha.image.ImageCaptcha.Builder#build() build()}, an
- * {@link net.logicsquad.nanocaptcha.image.ImageCaptcha.Builder ImageCaptcha.Builder} draws on a transparent layer, so
- * the speckles make a grain that shows over any background, and opaque pixels stay opaque.
+ * noise is large. An {@link net.logicsquad.nanocaptcha.image.ImageCaptcha.Factory ImageCaptcha.Factory} draws on a
+ * transparent layer, and puts the background behind it last, so the speckles make a grain that shows over any
+ * background, and opaque pixels stay opaque.
  * </p>
  *
  * @author <a href="mailto:botyrbojey@gmail.com">bivashy</a>
  * @see <a href="https://en.wikipedia.org/wiki/Gaussian_noise">Gaussian noise on Wikipedia</a>
  * @since 2.0
  */
-public class GaussianNoiseProducer implements NoiseProducer {
+public final class GaussianNoiseProducer implements NoiseProducer {
     /**
      * Default standard deviation.
      */

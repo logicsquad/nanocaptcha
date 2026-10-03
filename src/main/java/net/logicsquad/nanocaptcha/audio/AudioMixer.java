@@ -9,22 +9,23 @@ import java.util.Objects;
 import javax.sound.sampled.AudioInputStream;
 
 /**
- * Helper class for operating on audio {@link Sample}s.
+ * Helper class for operating on audio {@link Sample}s. Before 3.0 it was called {@code Mixer}, the same simple name as
+ * {@link javax.sound.sampled.Mixer}.
  *
  * @author <a href="mailto:james.childers@gmail.com">James Childers</a>
  * @author <a href="mailto:paulh@logicsquad.net">Paul Hoadley</a>
  * @since 1.0
  */
-public final class Mixer {
+public final class AudioMixer {
 	/**
 	 * Length of the crossfade at each join when a {@link Sample} is repeated: 50 ms
 	 */
-	private static final int CROSSFADE_SAMPLES = (int) (Sample.SC_AUDIO_FORMAT.getSampleRate() * 0.05);
+	private static final int CROSSFADE_SAMPLES = (int) (Sample.FORMAT.getSampleRate() * 0.05);
 
 	/**
 	 * Private constructor for non-instantiability.
 	 */
-	private Mixer() {
+	private AudioMixer() {
 		throw new AssertionError();
 	}
 
@@ -192,7 +193,7 @@ public final class Mixer {
 		// going to match sample.length, isn't it?
 		byte[] buffer = asByteArray(sampleCount, sample);
 		InputStream bais = new ByteArrayInputStream(buffer);
-		AudioInputStream ais = new AudioInputStream(bais, Sample.SC_AUDIO_FORMAT, sampleCount);
+		AudioInputStream ais = new AudioInputStream(bais, Sample.FORMAT, sampleCount);
 		return new Sample(ais);
 	}
 
@@ -204,7 +205,7 @@ public final class Mixer {
 	 * @return sample encoded as {@code byte[]}
 	 */
 	private static byte[] asByteArray(long sampleCount, double[] sample) {
-		int bufferLength = (int) sampleCount * (Sample.SC_AUDIO_FORMAT.getSampleSizeInBits() / 8);
+		int bufferLength = (int) sampleCount * (Sample.FORMAT.getSampleSizeInBits() / 8);
 		byte[] buffer = new byte[bufferLength];
 		int in;
 		for (int i = 0; i < sample.length; i++) {

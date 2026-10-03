@@ -9,7 +9,6 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import net.logicsquad.nanocaptcha.audio.Sample;
@@ -21,13 +20,6 @@ import net.logicsquad.nanocaptcha.audio.Sample;
  * @since 1.0
  */
 public class RandomNumberVoiceProducerTest {
-	@BeforeEach
-	public void setup() {
-		RandomNumberVoiceProducer.defaultLanguage = null;
-		System.clearProperty(RandomNumberVoiceProducer.DEFAULT_LANGUAGE_KEY);
-		return;
-	}
-
 	@Test
 	public void constructorThrowsOnNull() {
 		assertThrows(NullPointerException.class, () -> new RandomNumberVoiceProducer((Locale) null));
@@ -35,22 +27,14 @@ public class RandomNumberVoiceProducerTest {
 	}
 
 	@Test
-	public void defaultLocaleReturnsEnglishIfPropertyNotSet() {
-		assertEquals(Locale.ENGLISH, RandomNumberVoiceProducer.defaultLanguage());
-		return;
-	}
-
-	@Test
-	public void defaultLocaleReturnsRequestedLocaleForLanguageIfPropertySetAndSupported() {
-		System.setProperty(RandomNumberVoiceProducer.DEFAULT_LANGUAGE_KEY, "de");
-		assertEquals(Locale.GERMAN, RandomNumberVoiceProducer.defaultLanguage());
-		return;
-	}
-
-	@Test
-	public void defaultLocaleReturnsEnglishIfRequestedLanguageIsUnsupported() {
-		System.setProperty(RandomNumberVoiceProducer.DEFAULT_LANGUAGE_KEY, "xx");
-		assertEquals(Locale.ENGLISH, RandomNumberVoiceProducer.defaultLanguage());
+	public void noArgumentConstructorUsesEnglishWhateverTheOldPropertySays() {
+		String key = "net.logicsquad.nanocaptcha.audio.producer.RandomNumberVoiceProducer.defaultLanguage";
+		System.setProperty(key, "de");
+		try {
+			assertEquals(Locale.ENGLISH, new RandomNumberVoiceProducer().language);
+		} finally {
+			System.clearProperty(key);
+		}
 		return;
 	}
 
@@ -104,7 +88,7 @@ public class RandomNumberVoiceProducerTest {
 		for (Map.Entry<Locale, List<String>> entry : RandomNumberVoiceProducer.VOICES.entrySet()) {
 			for (String voice : entry.getValue()) {
 				for (int i = 0; i < 10; i++) {
-					String filename = String.format("/sounds/%s/numbers/%d_%s.wav", entry.getKey().getLanguage(), i, voice);
+					String filename = String.format("/net/logicsquad/nanocaptcha/sounds/%s/numbers/%d_%s.wav", entry.getKey().getLanguage(), i, voice);
 					assertDoesNotThrow(() -> new Sample(RandomNumberVoiceProducer.class.getResource(filename)), filename);
 				}
 			}

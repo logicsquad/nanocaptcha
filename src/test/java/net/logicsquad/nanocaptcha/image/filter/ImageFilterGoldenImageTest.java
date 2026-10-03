@@ -27,7 +27,7 @@ public class ImageFilterGoldenImageTest {
 	@Test
 	public void rippleImageFilterMatchesGoldenImage() throws IOException {
 		BufferedImage image = GoldenImages.input();
-		new RippleImageFilter().filter(image);
+		new RippleImageFilter().filter(image, new Random(GoldenImages.SEED));
 		GoldenImages.assertMatches("filter/RippleImageFilter", image);
 		return;
 	}
@@ -37,15 +37,6 @@ public class ImageFilterGoldenImageTest {
 		BufferedImage image = GoldenImages.input();
 		new ShearImageFilter().filter(image, new Random(GoldenImages.SEED));
 		GoldenImages.assertMatches("filter/ShearImageFilter", image);
-		return;
-	}
-
-	@Test
-	@SuppressWarnings("deprecation")
-	public void stretchImageFilterMatchesGoldenImage() throws IOException {
-		BufferedImage image = GoldenImages.input();
-		new StretchImageFilter().filter(image);
-		GoldenImages.assertMatches("filter/StretchImageFilter", image);
 		return;
 	}
 }

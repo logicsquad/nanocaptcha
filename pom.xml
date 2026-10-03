@@ -2,9 +2,9 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>net.logicsquad</groupId>
   <artifactId>nanocaptcha</artifactId>
-  <version>2.3</version>
+  <version>3.0</version>
   <name>NanoCaptcha</name>
-  <description>A Java-based CAPTCHA implementation with a minimum of dependencies.</description>
+  <description>Image and audio CAPTCHAs for Java, with no dependencies.</description>
   <url>https://github.com/logicsquad/nanocaptcha</url>
   <inceptionYear>2019</inceptionYear>
 
@@ -40,21 +40,13 @@
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <maven.compiler.source>1.8</maven.compiler.source>
-    <maven.compiler.target>1.8</maven.compiler.target>
+    <maven.compiler.release>17</maven.compiler.release>
+    <!-- JDK 8 ignores release, so these make it fail rather than build for Java 8 -->
+    <maven.compiler.source>17</maven.compiler.source>
+    <maven.compiler.target>17</maven.compiler.target>
   </properties>
 
   <profiles>
-    <profile>
-      <id>jdk9+</id>
-      <activation>
-        <jdk>[9,)</jdk>
-      </activation>
-      <properties>
-        <maven.compiler.release>8</maven.compiler.release>
-      </properties>
-    </profile>
-
     <profile>
       <id>release</id>
       <activation>
@@ -126,13 +118,6 @@
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-jar-plugin</artifactId>
           <version>3.5.1</version>
-          <configuration>
-            <archive>
-              <manifestEntries>
-                <Automatic-Module-Name>net.logicsquad.nanocaptcha</Automatic-Module-Name>
-              </manifestEntries>
-            </archive>
-          </configuration>
         </plugin>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
@@ -211,7 +196,7 @@
       <dependency>
         <groupId>org.junit</groupId>
         <artifactId>junit-bom</artifactId>
-        <version>5.14.4</version>
+        <version>6.1.3</version>
         <type>pom</type>
         <scope>import</scope>
       </dependency>
@@ -219,17 +204,6 @@
   </dependencyManagement>
 
   <dependencies>
-    <dependency>
-      <groupId>org.slf4j</groupId>
-      <artifactId>slf4j-api</artifactId>
-      <version>2.0.20</version>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.logging.log4j</groupId>
-      <artifactId>log4j-slf4j2-impl</artifactId>
-      <version>2.26.1</version>
-      <scope>test</scope>
-    </dependency>
     <dependency>
       <groupId>org.junit.jupiter</groupId>
       <artifactId>junit-jupiter</artifactId>

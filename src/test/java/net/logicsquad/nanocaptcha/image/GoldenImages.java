@@ -13,8 +13,8 @@ import javax.imageio.ImageIO;
 
 /**
  * Compares images from tests with golden images stored under {@code src/test/resources/golden}. When a change to how
- * something looks is intended, regenerate them on Java 17 or later with {@code mvn test -Dgolden.update=true}, which
- * rewrites only the images that have changed, and look at those before committing them.
+ * something looks is intended, regenerate them with {@code mvn test -Dgolden.update=true}, which rewrites only the
+ * images that have changed, and look at those before committing them.
  *
  * @author <a href="mailto:paulh@logicsquad.net">Paul Hoadley</a>
  * @since 2.3
@@ -36,7 +36,7 @@ public final class GoldenImages {
 
 	/**
 	 * Returns a fresh copy of the input for noise producers and filters: the logo in {@code input.png}, on a
-	 * transparent background, in the type of image an {@link ImageCaptcha.Builder} draws on.
+	 * transparent background, in the type of image an {@link ImageCaptcha.Factory} draws on.
 	 *
 	 * @return input image
 	 * @throws IOException if {@code input.png} can't be read

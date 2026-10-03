@@ -38,28 +38,6 @@ public class SampleTest {
 	private static final int WAV_GOOD_SAMPLES = 15221;
 
 	@Test
-	@SuppressWarnings("deprecation")
-	public void stringConstructorThrowsOnNull() {
-		assertThrows(NullPointerException.class, () -> new Sample((String) null));
-		return;
-	}
-
-	@Test
-	@SuppressWarnings("deprecation")
-	public void stringConstructorStillReadsResources() {
-		assertEquals(WAV_GOOD_SAMPLES, new Sample(WAV_GOOD_FILENAME).getSampleCount());
-		return;
-	}
-
-	@Test
-	@SuppressWarnings("deprecation")
-	public void stringConstructorNamesAMissingResource() {
-		IllegalArgumentException e = assertThrows(IllegalArgumentException.class, () -> new Sample("/no/such/sample.wav"));
-		assertTrue(e.getMessage().contains("'/no/such/sample.wav'"), e.getMessage());
-		return;
-	}
-
-	@Test
 	public void urlConstructorThrowsOnNull() {
 		NullPointerException e = assertThrows(NullPointerException.class, () -> new Sample((URL) null));
 		assertTrue(e.getMessage().contains("getResource()"), e.getMessage());
@@ -74,19 +52,44 @@ public class SampleTest {
 
 	@Test
 	public void constructorThrowsOnWrongFormat() {
-		assertThrows(RuntimeException.class, () -> new Sample(resource(MP3_FILENAME)));
+		IllegalArgumentException e = assertThrows(IllegalArgumentException.class, () -> new Sample(resource(MP3_FILENAME)));
+		assertTrue(e.getMessage().contains("WAV"), e.getMessage());
 		return;
 	}
 
 	@Test
 	public void urlConstructorThrowsOnWrongAudioParameters() {
-		assertThrows(IllegalArgumentException.class, () -> new Sample(resource(WAV_BAD_FILENAME)));
+		IllegalArgumentException e = assertThrows(IllegalArgumentException.class, () -> new Sample(resource(WAV_BAD_FILENAME)));
+		// It says what the audio needs to be
+		assertTrue(e.getMessage().contains(Sample.FORMAT.toString()), e.getMessage());
+		return;
+	}
+
+	@Test
+	public void constructorThrowsUncheckedIOExceptionIfTheAudioCantBeRead() {
+		// A WAV file whose stream fails part of the way through, after its header
+		InputStream failing = new FilterInputStream(new ByteArrayInputStream(wav(new short[8000]))) {
+			private int count;
+
+			@Override
+			public int read(byte[] b, int off, int len) throws IOException {
+				if (count > 4000) {
+					throw new IOException("Connection reset");
+				}
+				int read = super.read(b, off, Math.min(len, 1000));
+				count += read;
+				return read;
+			}
+		};
+		UncheckedIOException e = assertThrows(UncheckedIOException.class, () -> new Sample(failing));
+		assertEquals("Connection reset", e.getCause().getMessage());
 		return;
 	}
 
 	@Test
 	public void inputStreamConstructorThrowsOnWrongAudioParameters() throws UnsupportedAudioFileException, IOException {
-		AudioInputStream audioInputStream = AudioSystem.getAudioInputStream(SampleTest.class.getResourceAsStream(WAV_BAD_FILENAME));
+		// From a URL, which Java Sound buffers itself: on the module path, a resource's stream can't mark and reset
+		AudioInputStream audioInputStream = AudioSystem.getAudioInputStream(resource(WAV_BAD_FILENAME));
 		assertNotNull(audioInputStream);
 		assertThrows(IllegalArgumentException.class, () -> new Sample(audioInputStream));
 		return;
@@ -180,7 +183,7 @@ public class SampleTest {
 	}
 
 	/**
-	 * Returns a WAV file in {@link Sample#SC_AUDIO_FORMAT} containing {@code values}.
+	 * Returns a WAV file in {@link Sample#FORMAT} containing {@code values}.
 	 *
 	 * @param values 16-bit samples
 	 * @return WAV file contents
@@ -193,7 +196,7 @@ public class SampleTest {
 		}
 		ByteArrayOutputStream out = new ByteArrayOutputStream();
 		try {
-			AudioSystem.write(new AudioInputStream(new ByteArrayInputStream(data), Sample.SC_AUDIO_FORMAT, values.length),
+			AudioSystem.write(new AudioInputStream(new ByteArrayInputStream(data), Sample.FORMAT, values.length),
 					AudioFileFormat.Type.WAVE, out);
 		} catch (IOException e) {
 			throw new UncheckedIOException(e);

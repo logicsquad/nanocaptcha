@@ -11,7 +11,7 @@ import java.util.Random;
 import org.junit.jupiter.api.Test;
 
 import net.logicsquad.nanocaptcha.image.ImageCaptcha;
-import net.logicsquad.nanocaptcha.image.backgrounds.FlatColorBackgroundProducer;
+import net.logicsquad.nanocaptcha.image.background.FlatColorBackgroundProducer;
 
 /**
  * Unit tests on {@link GaussianNoiseProducer} class.
@@ -60,8 +60,9 @@ public class GaussianNoiseProducerTest {
 
 	@Test
 	public void grainShowsOverABackground() {
-		BufferedImage image = new ImageCaptcha.Builder(200, 50).addBackground(new FlatColorBackgroundProducer(Color.WHITE))
-				.addNoise(new GaussianNoiseProducer()).build().getImage();
+		ImageCaptcha.Factory factory = new ImageCaptcha.Factory.Builder(200, 50)
+				.addBackground(new FlatColorBackgroundProducer(Color.WHITE)).addNoise(new GaussianNoiseProducer()).build();
+		BufferedImage image = factory.create().getImage();
 		long grey = Arrays.stream(pixels(image)).filter(p -> (p & WHITE) != WHITE).count();
 		// The black speckles, about half of them
 		assertTrue(grey > 200 * 50 / 3, grey + " pixels aren't white");

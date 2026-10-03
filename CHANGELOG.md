@@ -319,3 +319,206 @@ Image CAPTCHAs look different in this release:
   was the bundled clips end to end, with the noise from its start at
   a fixed volume, so the noise could be subtracted and the clips
   matched. [#75](https://github.com/logicsquad/nanocaptcha/issues/75)
+
+
+## Release 3.0 (2026-10-03)
+
+Code that builds its own CAPTCHAs needs changing for this release. A
+`Builder` now builds a factory, which makes each CAPTCHA, so where 2.x
+had
+
+    ImageCaptcha captcha = new ImageCaptcha.Builder(200, 50).addContent().build();
+
+3.0 has
+
+    // Once, when the application starts
+    ImageCaptcha.Factory captchas = new ImageCaptcha.Factory.Builder(200, 50).addContent().build();
+
+    // For each CAPTCHA, on any thread
+    ImageCaptcha captcha = captchas.create();
+
+The same goes for
+`AudioCaptcha`. [#64](https://github.com/logicsquad/nanocaptcha/issues/64)
+
+The background producers have moved to the
+`net.logicsquad.nanocaptcha.image.background` package, so imports of
+them need `image.backgrounds.` changing to
+`image.background.`. [#92](https://github.com/logicsquad/nanocaptcha/issues/92)
+
+Image CAPTCHAs look different in this release:
+
+- An image has an opaque light grey background unless another is
+  added. [#68](https://github.com/logicsquad/nanocaptcha/issues/68)
+- `ShearImageFilter` shears each glyph, rather than drawing it twice,
+  a few pixels apart. [#84](https://github.com/logicsquad/nanocaptcha/issues/84)
+- `SquigglesBackgroundProducer`'s squiggles vary a little with each
+  background. [#94](https://github.com/logicsquad/nanocaptcha/issues/94)
+- The ripple from `addFilter()` varies a little with each
+  image. [#96](https://github.com/logicsquad/nanocaptcha/issues/96)
+
+### Added
+- Added `ImageCaptcha.Factory` and `AudioCaptcha.Factory`, whose
+  `create()` makes a new CAPTCHA, with new content and randomness,
+  each time it's called. A factory can't be changed, and it's safe to
+  share between threads, so a web application can build one when it
+  starts and use it for every request. Producers, renderers and
+  filters of your own that it uses need to be thread-safe
+  too. [#64](https://github.com/logicsquad/nanocaptcha/issues/64)
+- NanoCaptcha is now a named module, `net.logicsquad.nanocaptcha`,
+  with a `module-info.java`, rather than an automatic module named in
+  the JAR manifest. It exports every package, and requires only
+  `java.desktop`, which modules that require NanoCaptcha get too,
+  since its API uses types such as
+  `BufferedImage`. [#66](https://github.com/logicsquad/nanocaptcha/issues/66)
+- Added a README example of an audio CAPTCHA in a language NanoCaptcha
+  doesn't include, from a `VoiceProducer` of your own and a recording
+  of each digit. [#67](https://github.com/logicsquad/nanocaptcha/issues/67)
+- Added sample image CAPTCHAs to the README, which
+  `scripts/GenerateSamples.java` makes. [#97](https://github.com/logicsquad/nanocaptcha/issues/97)
+
+### Changed
+- NanoCaptcha now needs Java 17 or later: it compiles with
+  `--release 17`, and CI tests on Java 17, 21 and 25. On Java 8 to
+  16, use 2.3. [#63](https://github.com/logicsquad/nanocaptcha/issues/63)
+- `ImageCaptcha.Builder` is now `ImageCaptcha.Factory.Builder`, and
+  `AudioCaptcha.Builder` is now `AudioCaptcha.Factory.Builder`. A
+  `Builder`'s `build()` returns a factory, rather than a CAPTCHA, and
+  the factory's `create()` makes each CAPTCHA, as shown above. A
+  `Builder` keeps only its configuration, so calling a method after
+  `build()` no longer throws an `IllegalStateException`, and changing
+  a `Builder` doesn't change a factory it has already built. An
+  exception from a producer, renderer or filter, such as a font that
+  can't display the content, now comes from `create()`, rather than
+  from the method that added
+  it. [#64](https://github.com/logicsquad/nanocaptcha/issues/64)
+- `Sample` no longer logs before it throws. Audio that Java Sound
+  can't read, such as an MP3 file, now throws an
+  `IllegalArgumentException`, as audio in the wrong format does, and a
+  stream that fails throws an `UncheckedIOException`, rather than a
+  `RuntimeException`. The messages say what the audio needs to
+  be. [#65](https://github.com/logicsquad/nanocaptcha/issues/65)
+- Image CAPTCHAs now have an opaque light grey background
+  (`Color.LIGHT_GRAY`) unless another is added, including those from
+  `ImageCaptcha.create()`, so they show on dark pages and can be
+  written as JPEG. For a transparent image, add a
+  `TransparentBackgroundProducer`. [#68](https://github.com/logicsquad/nanocaptcha/issues/68)
+- `isCorrect()` now ignores case, which mobile keyboards often change,
+  and whitespace at either end of the answer, which autofill can add.
+  `isCorrect(answer, false)` compares exactly, as `isCorrect()` did
+  before. The built-in content producers' answers are lowercase or
+  digits, so ignoring case costs nothing with
+  them. [#69](https://github.com/logicsquad/nanocaptcha/issues/69)
+- `ImageCaptcha.toString()` and `AudioCaptcha.toString()` now give the
+  length of the answer, as in `content=5 characters`, rather than the
+  answer itself, which went wherever the description did: into logs,
+  error pages and templates. Use `getContent()` for the
+  answer. [#70](https://github.com/logicsquad/nanocaptcha/issues/70)
+- Renamed `Mixer` to `AudioMixer`, which doesn't clash with
+  `javax.sound.sampled.Mixer`. A `NoiseProducer` of your own that uses
+  it needs the new
+  name. [#70](https://github.com/logicsquad/nanocaptcha/issues/70)
+- NanoCaptcha's fonts and sounds are now under
+  `/net/logicsquad/nanocaptcha/` in the JAR, rather than at `/fonts/`
+  and `/sounds/`, where another JAR's files at the same paths could
+  take their place. [#79](https://github.com/logicsquad/nanocaptcha/issues/79)
+- The audio `NoiseProducer`'s `addNoise()` now takes the spoken
+  digits as one `Sample`, already joined, rather than a list of them
+  to join first. A `NoiseProducer` of your own can drop its
+  `AudioMixer.concatenate()`
+  call. [#86](https://github.com/logicsquad/nanocaptcha/issues/86)
+- Renamed `Sample.SC_AUDIO_FORMAT` to `Sample.FORMAT`. The `SC_` was
+  from SimpleCaptcha, and `AUDIO_` repeated
+  `AudioFormat`. [#91](https://github.com/logicsquad/nanocaptcha/issues/91)
+- Renamed the `net.logicsquad.nanocaptcha.image.backgrounds` package to
+  `net.logicsquad.nanocaptcha.image.background`, to match `filter`,
+  `noise` and `renderer`. [#92](https://github.com/logicsquad/nanocaptcha/issues/92)
+- NanoCaptcha's concrete classes are now final: `Sample`,
+  `RandomNoiseProducer`, `RandomNumberVoiceProducer`,
+  `LatinContentProducer`, `NumbersContentProducer`,
+  `GradiatedBackgroundProducer`, `SquigglesBackgroundProducer`,
+  `TransparentBackgroundProducer`, `FishEyeImageFilter`,
+  `RippleImageFilter`, `ShearImageFilter`, `CurvedLineNoiseProducer`,
+  `GaussianNoiseProducer`, `SaltAndPepperNoiseProducer`,
+  `StraightLineNoiseProducer` and `DefaultWordRenderer.Builder`. None
+  was designed to be extended. To extend NanoCaptcha, implement its
+  interfaces, or extend `AbstractContentProducer`, which is there for
+  that. [#93](https://github.com/logicsquad/nanocaptcha/issues/93)
+
+### Removed
+- Removed the dependency on `slf4j-api`, so NanoCaptcha has no runtime
+  dependencies at all, and on the module path it no longer needs
+  `--add-modules org.slf4j`. [#65](https://github.com/logicsquad/nanocaptcha/issues/65)
+- Removed `AbstractWordRenderer`, whose only subclass was
+  `DefaultWordRenderer`, and with it `AbstractWordRenderer.RAND`,
+  deprecated in 2.2. `DefaultWordRenderer.Builder`'s methods now
+  return `DefaultWordRenderer.Builder`, so `build()` gives a
+  `DefaultWordRenderer` after any of them. For a renderer of your
+  own, implement `WordRenderer`, which has one method, and take any
+  randomness from
+  `ThreadLocalRandom.current()`. [#78](https://github.com/logicsquad/nanocaptcha/issues/78)
+  [#85](https://github.com/logicsquad/nanocaptcha/issues/85)
+- Removed `Sample(String)` and `RandomNoiseProducer(String[])`,
+  deprecated in 2.2, which only found resources that NanoCaptcha's
+  own class loader and module could see. Use `Sample(URL)`, with a URL
+  from your own class's `getResource()`, and
+  `RandomNoiseProducer(List<Sample>)`. [#79](https://github.com/logicsquad/nanocaptcha/issues/79)
+- Removed `ChineseContentProducer` and `ArabicContentProducer`,
+  deprecated in 2.2. For content in another script, write a
+  `ContentProducer` of your own, and give `DefaultWordRenderer` a font
+  that can display it. [#81](https://github.com/logicsquad/nanocaptcha/issues/81)
+- Removed `StretchImageFilter`, deprecated in 2.3. Use
+  `RippleImageFilter` or `ShearImageFilter`
+  instead. [#81](https://github.com/logicsquad/nanocaptcha/issues/81)
+- Removed `FastWordRenderer`, deprecated in 2.3. Use
+  `DefaultWordRenderer`
+  instead. [#81](https://github.com/logicsquad/nanocaptcha/issues/81)
+- Removed the `net.logicsquad.nanocaptcha.Builder` interface, which
+  nothing took, and with it the `net.logicsquad.nanocaptcha` package,
+  which held nothing
+  else. [#87](https://github.com/logicsquad/nanocaptcha/issues/87)
+- Removed the system properties that changed NanoCaptcha's defaults:
+  `net.logicsquad.nanocaptcha.image.ImageCaptcha.defaultX` and
+  `defaultY`, for the size of `ImageCaptcha.create()`'s image, and
+  `net.logicsquad.nanocaptcha.audio.producer.RandomNumberVoiceProducer.defaultLanguage`,
+  for the language of `AudioCaptcha.create()` and
+  `new RandomNumberVoiceProducer()`. Those now always make a
+  200 × 50 image and use English, as does an unsupported language.
+  For anything else, build a factory, with
+  `new RandomNumberVoiceProducer(locale)` for another
+  language. [#88](https://github.com/logicsquad/nanocaptcha/issues/88)
+- Removed `FiveLetterFirstNameContentProducer`. It chose its answer
+  from 7,235 first names, so a guess was right once in 7,235 tries,
+  against once in about 6.4 million for five characters from
+  `LatinContentProducer`, which replaces
+  it. [#89](https://github.com/logicsquad/nanocaptcha/issues/89)
+- Removed `addBackground()` without an argument. It added the light
+  grey background that an image gets anyway, so it only undid an
+  earlier `addBackground(BackgroundProducer)`: leave the background
+  out instead. [#90](https://github.com/logicsquad/nanocaptcha/issues/90)
+
+### Fixed
+- `RandomNumberVoiceProducer`, and renderers from
+  `DefaultWordRenderer.Builder`, are now safe to share between
+  threads. The producer worked out its clips the first time it was
+  used, which another thread could see half done, and `randomColor()`
+  and `randomFont()` kept the caller's lists, which could change
+  afterwards. [#64](https://github.com/logicsquad/nanocaptcha/issues/64)
+- `ShearImageFilter` no longer crashes the JVM on Alpine when it
+  shears an opaque image, and no longer leaves a ghost of the original
+  on a transparent one, such as the layer a factory draws on. It moves
+  the pixels itself, rather than with `Graphics.copyArea()`, which
+  copied in place and drew over the pixels underneath. Each glyph is
+  now sheared rather than drawn twice, which changes how sheared
+  CAPTCHAs look. [#84](https://github.com/logicsquad/nanocaptcha/issues/84)
+- `SquigglesBackgroundProducer` drew the same squiggles on every image
+  of a given size, so an attacker who had seen one background had seen
+  them all, and could subtract it. The ellipses' size, spacing and
+  dashes, and where they start, now vary a little with each
+  background. [#94](https://github.com/logicsquad/nanocaptcha/issues/94)
+- `RippleImageFilter` rippled every image the same way, so an attacker
+  who knew the distortion could largely undo it. Its waves' phase,
+  height and length now vary a little with each image. The filter is
+  also NanoCaptcha's own code now, in place of about 940 lines from JH
+  Labs Java Image Filters, most of them unused, so `NOTICE` no longer
+  carries their
+  licence. [#96](https://github.com/logicsquad/nanocaptcha/issues/96)

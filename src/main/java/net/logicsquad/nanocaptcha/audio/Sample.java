@@ -16,9 +16,6 @@ import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.UnsupportedAudioFileException;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 /**
  * <p>
  * Class representing a sound sample, typically read in from a file. Note that
@@ -48,54 +45,32 @@ import org.slf4j.LoggerFactory;
  * @author <a href="mailto:paulh@logicsquad.net">Paul Hoadley</a>
  * @since 1.0
  */
-public class Sample {
+public final class Sample {
 	/**
-	 * Logger
+	 * The {@link AudioFormat} of every {@code Sample}: 16 kHz, 16-bit, signed, little-endian and mono
+	 *
+	 * @since 3.0
+	 * @see <a href="https://github.com/logicsquad/nanocaptcha/issues/91">#91</a>
 	 */
-	private static final Logger LOG = LoggerFactory.getLogger(Sample.class);
-
-	/**
-	 * {@link AudioFormat} for all {@code Sample}s
-	 */
-	public static final AudioFormat SC_AUDIO_FORMAT = new AudioFormat(16_000, // sample rate
+	public static final AudioFormat FORMAT = new AudioFormat(16_000, // sample rate
 			16, // sample size in bits
 			1, // channels
 			true, // signed?
 			false); // big endian?;
 
 	/**
-	 * Audio data, in {@link #SC_AUDIO_FORMAT}
+	 * Audio data, in {@link #FORMAT}
 	 */
 	private final byte[] data;
-
-	/**
-	 * Constructor taking the name of a resource, which it reads and then closes. The name is looked up with
-	 * {@link Class#getResourceAsStream(String)} on this class, so only resources that NanoCaptcha's own class loader and
-	 * module can see are found, and a name without a leading {@code /} is relative to the
-	 * {@code net.logicsquad.nanocaptcha.audio} package.
-	 *
-	 * @param filename name of a resource
-	 * @throws NullPointerException     if {@code filename} is {@code null}
-	 * @throws IllegalArgumentException if there's no resource called {@code filename}, or its audio format is
-	 *                                  unsupported
-	 * @deprecated Use {@link #Sample(URL)} with a {@link URL} from your own class's {@link Class#getResource(String)},
-	 *             which finds your resources wherever they are. This constructor will be removed in 3.0.
-	 * @see <a href="https://github.com/logicsquad/nanocaptcha/issues/50">#50</a>
-	 */
-	@Deprecated
-	public Sample(String filename) {
-		this(read(Objects.requireNonNull(filename)));
-	}
 
 	/**
 	 * Constructor taking an {@link InputStream}, which it reads to the end but doesn't close.
 	 *
 	 * @param is an {@link InputStream}
 	 * @throws NullPointerException     if {@code is} is {@code null}
-	 * @throws IllegalArgumentException if the audio format is unsupported
-	 * @throws RuntimeException         if
-	 *                                  {@link AudioSystem#getAudioInputStream(InputStream)}
-	 *                                  is unable to read the audio stream
+	 * @throws IllegalArgumentException if the audio isn't in a file format that Java Sound can read, such as WAV, or
+	 *                                  isn't in {@link #FORMAT}
+	 * @throws UncheckedIOException     if {@code is} can't be read
 	 */
 	public Sample(InputStream is) {
 		this(read(is));
@@ -108,11 +83,9 @@ public class Sample {
 	 * @param url a {@link URL}
 	 * @throws NullPointerException     if {@code url} is {@code null}, as it is when {@link Class#getResource(String)}
 	 *                                  can't find a resource
-	 * @throws IllegalArgumentException if the audio format is unsupported
-	 * @throws UncheckedIOException     if {@code url} can't be opened
-	 * @throws RuntimeException         if
-	 *                                  {@link AudioSystem#getAudioInputStream(InputStream)}
-	 *                                  is unable to read the audio stream
+	 * @throws IllegalArgumentException if the audio isn't in a file format that Java Sound can read, such as WAV, or
+	 *                                  isn't in {@link #FORMAT}
+	 * @throws UncheckedIOException     if {@code url} can't be opened or read
 	 * @since 2.2
 	 * @see <a href="https://github.com/logicsquad/nanocaptcha/issues/50">#50</a>
 	 */
@@ -121,32 +94,13 @@ public class Sample {
 	}
 
 	/**
-	 * Constructor taking audio data in {@link #SC_AUDIO_FORMAT}.
+	 * Constructor taking audio data in {@link #FORMAT}.
 	 *
 	 * @param data audio data
 	 */
 	private Sample(byte[] data) {
 		this.data = data;
 		return;
-	}
-
-	/**
-	 * Returns the audio data from the resource {@code filename}, closing the stream once it's read.
-	 *
-	 * @param filename filename
-	 * @return audio data
-	 */
-	private static byte[] read(String filename) {
-		try (InputStream is = Sample.class.getResourceAsStream(filename)) {
-			if (is == null) {
-				throw new IllegalArgumentException("Can't find the audio resource '" + filename + "'. Sample(String) only finds "
-						+ "resources that NanoCaptcha itself can see, and a name without a leading '/' is relative to "
-						+ "net.logicsquad.nanocaptcha.audio. Use Sample(URL) with your own class's getResource() instead.");
-			}
-			return read(is);
-		} catch (IOException e) {
-			throw new UncheckedIOException(e);
-		}
 	}
 
 	/**
@@ -175,8 +129,9 @@ public class Sample {
 		try {
 			AudioInputStream audio = is instanceof AudioInputStream ? (AudioInputStream) is
 					: AudioSystem.getAudioInputStream(new BufferedInputStream(is));
-			if (!audio.getFormat().matches(SC_AUDIO_FORMAT)) {
-				throw new IllegalArgumentException("Unsupported audio format.");
+			if (!audio.getFormat().matches(FORMAT)) {
+				throw new IllegalArgumentException("The audio is " + audio.getFormat() + ", but a Sample needs " + FORMAT
+						+ ".");
 			}
 			// A single read() can return less than the whole clip, so keep going until the end.
 			ByteArrayOutputStream data = new ByteArrayOutputStream();
@@ -186,9 +141,11 @@ public class Sample {
 				data.write(buffer, 0, count);
 			}
 			return data.toByteArray();
-		} catch (UnsupportedAudioFileException | IOException e) {
-			LOG.error("Unable to get audio input stream.", e);
-			throw new RuntimeException(e);
+		} catch (UnsupportedAudioFileException e) {
+			throw new IllegalArgumentException("Java Sound can't read the audio, which isn't in a file format it supports, "
+					+ "such as WAV. A Sample needs " + FORMAT + ".", e);
+		} catch (IOException e) {
+			throw new UncheckedIOException("Can't read the audio.", e);
 		}
 	}
 
@@ -200,7 +157,7 @@ public class Sample {
 	 * @see <a href="https://github.com/logicsquad/nanocaptcha/issues/40">#40</a>
 	 */
 	public AudioInputStream getAudioInputStream() {
-		return new AudioInputStream(new ByteArrayInputStream(data), SC_AUDIO_FORMAT, getSampleCount());
+		return new AudioInputStream(new ByteArrayInputStream(data), FORMAT, getSampleCount());
 	}
 
 	/**
@@ -239,7 +196,7 @@ public class Sample {
 	 * @return number of samples for all channels
 	 */
 	long getSampleCount() {
-		return data.length / SC_AUDIO_FORMAT.getFrameSize();
+		return data.length / FORMAT.getFrameSize();
 	}
 
 	/**
@@ -260,7 +217,7 @@ public class Sample {
 	@Override
 	public String toString() {
 		StringBuilder sb = new StringBuilder(26);
-		sb.append("[Sample: samples=").append(getSampleCount()).append(" format=").append(SC_AUDIO_FORMAT).append(']');
+		sb.append("[Sample: samples=").append(getSampleCount()).append(" format=").append(FORMAT).append(']');
 		return sb.toString();
 	}
 }

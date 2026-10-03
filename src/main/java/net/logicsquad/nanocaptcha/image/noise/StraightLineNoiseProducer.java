@@ -14,7 +14,7 @@ import java.util.concurrent.ThreadLocalRandom;
  * @author <a href="mailto:paulh@logicsquad.net">Paul Hoadley</a>
  * @since 1.0
  */
-public class StraightLineNoiseProducer implements NoiseProducer {
+public final class StraightLineNoiseProducer implements NoiseProducer {
 	/**
 	 * Default line {@link Color}
 	 */

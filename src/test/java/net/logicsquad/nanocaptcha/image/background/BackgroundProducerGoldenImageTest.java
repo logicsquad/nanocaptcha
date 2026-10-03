@@ -1,10 +1,9 @@
-package net.logicsquad.nanocaptcha.image.backgrounds;
+package net.logicsquad.nanocaptcha.image.background;
 
 import java.io.IOException;
+import java.util.Random;
 
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.condition.EnabledForJreRange;
-import org.junit.jupiter.api.condition.JRE;
 
 import net.logicsquad.nanocaptcha.image.GoldenImages;
 
@@ -28,14 +27,10 @@ public class BackgroundProducerGoldenImageTest {
 		return;
 	}
 
-	/**
-	 * Only on Java 17 and later. Earlier JDKs stroke shapes differently: Java 9 replaced the rasteriser with Marlin,
-	 * which has changed since.
-	 */
 	@Test
-	@EnabledForJreRange(min = JRE.JAVA_17)
 	public void squigglesBackgroundProducerMatchesGoldenImage() throws IOException {
-		assertMatches(new SquigglesBackgroundProducer());
+		GoldenImages.assertMatches("background/SquigglesBackgroundProducer",
+				new SquigglesBackgroundProducer().getBackground(200, 50, new Random(GoldenImages.SEED)));
 		return;
 	}
 
@@ -52,7 +47,7 @@ public class BackgroundProducerGoldenImageTest {
 	 * @throws IOException if the golden image can't be read or written
 	 */
 	private static void assertMatches(BackgroundProducer backgroundProducer) throws IOException {
-		GoldenImages.assertMatches("backgrounds/" + backgroundProducer.getClass().getSimpleName(),
+		GoldenImages.assertMatches("background/" + backgroundProducer.getClass().getSimpleName(),
 				backgroundProducer.getBackground(200, 50));
 		return;
 	}

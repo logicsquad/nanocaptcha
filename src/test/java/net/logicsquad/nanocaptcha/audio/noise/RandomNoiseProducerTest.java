@@ -34,7 +34,7 @@ public class RandomNoiseProducerTest {
 	@Test
 	public void addNoiseUsesTheNoisesItsGiven() throws IOException {
 		RandomNoiseProducer producer = new RandomNoiseProducer(Collections.singletonList(constant(1600, 0.5)));
-		short[] mixed = pcm(producer.addNoise(Collections.singletonList(constant(1600, 0.0))));
+		short[] mixed = pcm(producer.addNoise(constant(1600, 0.0)));
 		assertEquals(1600, mixed.length);
 		for (short value : mixed) {
 			// Noise is mixed in at 0.6 of its level
@@ -51,7 +51,7 @@ public class RandomNoiseProducerTest {
 			data[2 * i] = (byte) i;
 			data[2 * i + 1] = (byte) (i >> 8);
 		}
-		Sample ramp = new Sample(new AudioInputStream(new ByteArrayInputStream(data), Sample.SC_AUDIO_FORMAT, 16_000));
+		Sample ramp = new Sample(new AudioInputStream(new ByteArrayInputStream(data), Sample.FORMAT, 16_000));
 		Set<Short> starts = new HashSet<>();
 		for (int seed = 0; seed < 20; seed++) {
 			short[] noise = pcm(RandomNoiseProducer.from(ramp, 1600, new Random(seed)));
@@ -72,16 +72,6 @@ public class RandomNoiseProducerTest {
 		return;
 	}
 
-	@Test
-	@SuppressWarnings("deprecation")
-	public void namesConstructorStillReadsResources() {
-		assertDoesNotThrow(() -> new RandomNoiseProducer(RandomNoiseProducer.BUILT_IN_NOISES));
-		IllegalArgumentException e = assertThrows(IllegalArgumentException.class,
-				() -> new RandomNoiseProducer(new String[] { "/no/such/noise.wav" }));
-		assertTrue(e.getMessage().contains("'/no/such/noise.wav'"), e.getMessage());
-		return;
-	}
-
 	/**
 	 * Returns a {@link Sample} of {@code length} samples, all with {@code value}.
 	 *
@@ -96,7 +86,7 @@ public class RandomNoiseProducerTest {
 			data[2 * i] = (byte) pcm;
 			data[2 * i + 1] = (byte) (pcm >> 8);
 		}
-		return new Sample(new AudioInputStream(new ByteArrayInputStream(data), Sample.SC_AUDIO_FORMAT, length));
+		return new Sample(new AudioInputStream(new ByteArrayInputStream(data), Sample.FORMAT, length));
 	}
 
 	/**

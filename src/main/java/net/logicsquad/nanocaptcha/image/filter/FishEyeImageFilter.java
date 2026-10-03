@@ -13,7 +13,7 @@ import java.util.concurrent.ThreadLocalRandom;
  * @author <a href="mailto:paulh@logicsquad.net">Paul Hoadley</a>
  * @since 1.0
  */
-public class FishEyeImageFilter implements ImageFilter {
+public final class FishEyeImageFilter implements ImageFilter {
 	/**
 	 * Default {@link Color} for lines
 	 */

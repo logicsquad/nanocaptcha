@@ -11,8 +11,13 @@ CAPTCHAs. NanoCaptcha is intended to be:
 
 * Self-contained: no network API hits to any external services.
 
-* Minimally-dependent: using NanoCaptcha should not involve pulling in
-  a plethora of JARs, and ideally none at all.
+* Dependency-free: using NanoCaptcha doesn't pull in any other JARs.
+
+Its image CAPTCHAs look like these, from `ImageCaptcha.create()`, and
+with noise, a ripple and a border:
+
+![An image CAPTCHA from ImageCaptcha.create()](docs/samples/create.png)
+![An image CAPTCHA with noise, a ripple and a border](docs/samples/noisy.png)
 
 It's worth being clear about what a CAPTCHA like this can do. Modern
 OCR and speech recognition can read short text and digit CAPTCHAs
@@ -29,12 +34,12 @@ You can build a minimal image CAPTCHA very easily:
 
     ImageCaptcha imageCaptcha = ImageCaptcha.create();
 
-This creates a 200 x 50 pixel image and adds five random characters
-from the Latin alphabet.  The `getImage()` method returns the image as
-a `BufferedImage` object. `isCorrect(String)` will verify the supplied
-string against the text content of the image. If you need the text
-content itself, call `getContent()`.  Image CAPTCHAs can be further
-customised by:
+This creates a 200 x 50 pixel image with a light grey background,
+and adds five random characters from the Latin alphabet. The
+`getImage()` method returns the image as a `BufferedImage` object.
+`isCorrect(String)` will verify the supplied string against the text
+content of the image. If you need the text content itself, call
+`getContent()`.  Image CAPTCHAs can be further customised by:
 
 * Using different `ContentProducer`s (e.g., `NumbersContentProducer`).
 * Supplying your own `Color`s and `Font`s.
@@ -42,10 +47,11 @@ customised by:
 * Adding various `ImageFilter`s.
 * Adding a background or a border.
 
-To create a custom CAPTCHA, you can use an `ImageCaptcha.Builder`,
-e.g.:
+To create a custom CAPTCHA, build an `ImageCaptcha.Factory` with its
+`Builder`, and ask the factory for each CAPTCHA, e.g.:
 
-    ImageCaptcha imageCaptcha = new ImageCaptcha.Builder(400, 100)
+    // Once, when the application starts
+    ImageCaptcha.Factory captchas = new ImageCaptcha.Factory.Builder(400, 100)
         .addContent(new LatinContentProducer(7),
             new DefaultWordRenderer.Builder()
                 .randomColor(Color.BLACK, Color.BLUE, Color.CYAN, Color.RED)
@@ -54,13 +60,26 @@ e.g.:
         .addNoise(new CurvedLineNoiseProducer())
         .build();
 
-A `Builder` draws as it goes, so each one makes a single CAPTCHA: use
-a new `Builder` for each.
+    // For each CAPTCHA, on any thread
+    ImageCaptcha imageCaptcha = captchas.create();
+
+which makes CAPTCHAs like this:
+
+![A custom image CAPTCHA, with seven characters in four colours on a gradient](docs/samples/custom.png)
+
+Each call to `create()` makes a new CAPTCHA, with new content and
+randomness. Content, noise and filters are drawn in the order they
+were added, over the background.
+
+A factory can't be changed, and it's safe to share between threads, so
+a web application can build one when it starts and use it for every
+request. Every CAPTCHA it makes uses the same producers, renderers and
+filters, so any of your own need to be thread-safe, as NanoCaptcha's
+are. A `Builder` isn't thread-safe, but it's only needed to build the
+factory.
 
 The built-in fonts can display everything NanoCaptcha's own content
-producers generate, except for `ChineseContentProducer` and
-`ArabicContentProducer`, which are deprecated and will be removed in
-3.0. For those, or for your own content in other scripts, supply a
+producers generate. For your own content in other scripts, supply a
 font that can display it, such as one installed on the server:
 
     new DefaultWordRenderer.Builder()
@@ -84,39 +103,59 @@ To send an image CAPTCHA to a browser, `writePng()` writes it to an
 returns it as a `data:` URI, which can go straight into the `src` of
 an `<img>` tag, so there's no separate request for the image.
 
-Unless you add an opaque background, the image is transparent where
-nothing is drawn, and JPEG can't store transparency. On JDK 11 and
-later, `ImageIO.write(imageCaptcha.getImage(), "jpg", out)` returns
-`false` and writes nothing, and on JDK 8 it writes a JPEG that most
-viewers show in the wrong colours. Use PNG, or if you need a JPEG, add
-a background such as `FlatColorBackgroundProducer`.
+An image with a `TransparentBackgroundProducer` is transparent where
+nothing is drawn, and JPEG can't store transparency, so
+`ImageIO.write(imageCaptcha.getImage(), "jpg", out)` returns `false`
+and writes nothing. Use PNG, or keep an opaque background, such as the
+default light grey.
 
 Building a minimal audio CAPTCHA is just as easy:
 
     AudioCaptcha audioCaptcha = AudioCaptcha.create();
 
 This creates a CAPTCHA with an audio clip containing five numbers read
-out in English. To customise your CAPTCHA, you can use
-`AudioCaptcha.Builder`.
+out in English. To customise your CAPTCHA, build an
+`AudioCaptcha.Factory` with its `Builder`, as for image CAPTCHAs.
 
 There is support for different languages. (Currently English, German
-and French are supported.) You can set the system property
-`net.logicsquad.nanocaptcha.audio.producer.RandomNumberVoiceProducer.defaultLanguage`
-to a 2-digit code for a supported language, e.g., `de`, and
-`AudioCaptcha.create()` will return German digit vocalizations. The
-JVM's default `Locale` isn't used. Alternatively, you can supply a
-`RandomNumberVoiceProducer` explicitly, for example in the language of
-each visitor to a web application:
+and French are supported.) `AudioCaptcha.create()` reads the digits
+in English, and the JVM's default `Locale` isn't used. For another
+language, supply a `RandomNumberVoiceProducer` explicitly, for example
+in the language of each visitor to a web application:
 
-    AudioCaptcha audioCaptcha = new AudioCaptcha.Builder()
+    AudioCaptcha audioCaptcha = new AudioCaptcha.Factory.Builder()
         .addContent()
         .addVoice(new RandomNumberVoiceProducer(request.getLocale()))
-        .build();
+        .build()
+        .create();
 
 Only the language counts, so `de-AT` gets German and `fr-CA` gets
-French, and an unsupported language gets the default. You can even mix
+French, and an unsupported language gets English. You can even mix
 languages by calling `addVoice()` with more than one
 `RandomNumberVoiceProducer`.
+
+For a language NanoCaptcha doesn't include, add a `VoiceProducer` of
+your own. It has one method, which returns the `Sample` for a digit,
+so all you need is a recording of each digit, as a WAV file in
+`Sample.FORMAT`: 16 kHz, 16-bit, mono. A `Sample` can go into any
+number of CAPTCHAs, so read the recordings once:
+
+    // Once, when the application starts
+    Map<Character, Sample> spanish = new HashMap<>();
+    for (char digit = '0'; digit <= '9'; digit++) {
+        URL recording = MyApp.class.getResource("/voices/es/" + digit + ".wav");
+        spanish.put(digit, new Sample(recording));
+    }
+    AudioCaptcha.Factory captchas = new AudioCaptcha.Factory.Builder()
+        .addContent()
+        .addVoice(spanish::get)
+        .build();
+
+    // For each CAPTCHA
+    AudioCaptcha audioCaptcha = captchas.create();
+
+`AudioCaptcha` gives each digit its own volume and gap, whichever
+voice it comes from.
 
 As with image CAPTCHAs, these can be further customised by:
 
@@ -144,14 +183,15 @@ You can use NanoCaptcha in your projects by including it as a Maven dependency:
     <dependency>
       <groupId>net.logicsquad</groupId>
       <artifactId>nanocaptcha</artifactId>
-      <version>2.3</version>
+      <version>3.0</version>
     </dependency>
 
-NanoCaptcha's audio classes use SLF4J. On the module path NanoCaptcha
-is an automatic module (`net.logicsquad.nanocaptcha`), which can't
-declare that it needs SLF4J, so if your application doesn't use SLF4J
-itself, add `--add-modules org.slf4j` to the `java` command line or
-`requires org.slf4j;` to your `module-info.java`.
+NanoCaptcha needs Java 17 or later. On Java 8 to 16, use 2.3.
+
+NanoCaptcha is a module, `net.logicsquad.nanocaptcha`, so on the
+module path, add `requires net.logicsquad.nanocaptcha;` to your
+`module-info.java`. That gives your module `java.desktop` too, whose
+types, such as `BufferedImage`, NanoCaptcha's API uses.
 
 Using NanoCaptcha in a web application
 --------------------------------------
@@ -173,10 +213,11 @@ Most of the protection a CAPTCHA gives comes from how it's used:
 * Rate-limit how often each client can get a new CAPTCHA and submit an
   answer.
 
-* Mobile keyboards often capitalise the first letter, but
-  `LatinContentProducer` uses lowercase letters, and `isCorrect()` is
-  case-sensitive. Add `autocapitalize="none"` to the input field, or
-  compare the answer in lowercase.
+* Mobile keyboards often capitalise the first letter, and autofill can
+  add a space. `isCorrect()` ignores case and whitespace at either end
+  of the answer, and `isCorrect(answer, false)` compares exactly. If
+  you keep only the answer, as below, compare it the same way, and add
+  `autocapitalize="none"` to the input field anyway.
 
 * Send images as PNG and audio as WAV, as described above, and offer
   an audio CAPTCHA as an alternative to the image.
@@ -197,7 +238,7 @@ For example, in a servlet:
     String given = request.getParameter("captcha");
     boolean passed = answer != null && given != null
         && created.isAfter(OffsetDateTime.now().minusMinutes(5))
-        && answer.equals(given.trim().toLowerCase(Locale.ROOT));
+        && answer.equalsIgnoreCase(given.strip());
 
 Running in containers
 ---------------------
@@ -236,6 +277,4 @@ to contribute.
 References
 ----------
 NanoCaptcha is based on
-[SimpleCaptcha](https://sourceforge.net/p/simplecaptcha/),
-and incorporates code from
-[JH Labs Java Image Filters](http://huxtable.com/ip/filters/).
+[SimpleCaptcha](https://sourceforge.net/p/simplecaptcha/).

@@ -1,11 +1,11 @@
 #!/usr/bin/env python3
 """Generates NanoCaptcha's spoken digits, background noises and audio fixtures.
 
-Every file under src/main/resources/sounds comes from this script, as do the
-audio fixtures in src/test/resources. It uses only Piper voices trained
-entirely on public-domain or CC BY recordings; NOTICE credits them. The
-Whisper speech recogniser checks every digit, and any take it doesn't hear as
-the right digit is replaced.
+Every file under src/main/resources/net/logicsquad/nanocaptcha/sounds comes
+from this script, as do the audio fixtures in src/test/resources. It uses only
+Piper voices trained entirely on public-domain or CC BY recordings; NOTICE
+credits them. The Whisper speech recogniser checks every digit, and any take
+it doesn't hear as the right digit is replaced.
 
 Run it from the project root, in a virtual environment:
 
@@ -38,7 +38,7 @@ from pywhispercpp.model import Model
 from pywhispercpp.utils import download_model
 
 ROOT = Path(__file__).resolve().parent.parent
-SOUNDS = ROOT / "src" / "main" / "resources" / "sounds"
+SOUNDS = ROOT / "src/main/resources/net/logicsquad/nanocaptcha/sounds"
 FIXTURES = ROOT / "src" / "test" / "resources"
 
 # The format Sample requires: 16 kHz, 16-bit, mono, little-endian.

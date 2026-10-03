@@ -10,11 +10,11 @@ jobs:
 
     steps:
       - uses: actions/checkout@v7
-      - name: Set up JDK 8
+      - name: Set up JDK 17
         uses: actions/setup-java@v6
         with:
           distribution: corretto
-          java-version: 8
+          java-version: 17
 
       - name: Import GPG Owner Trust
         run: echo ${{secrets.GPG_OWNERTRUST}} | base64 --decode | gpg --import-ownertrust
