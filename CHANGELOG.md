@@ -389,8 +389,7 @@ them need `image.backgrounds.` changing to
 - Image CAPTCHAs now have an opaque light grey background
   (`Color.LIGHT_GRAY`) unless another is added, including those from
   `ImageCaptcha.create()`, so they show on dark pages and can be
-  written as JPEG. `addBackground()` adds that background too. For a
-  transparent image, add a
+  written as JPEG. For a transparent image, add a
   `TransparentBackgroundProducer`. [#68](https://github.com/logicsquad/nanocaptcha/issues/68)
 - `isCorrect()` now ignores case, which mobile keyboards often change,
   and whitespace at either end of the answer, which autofill can add.
@@ -444,6 +443,10 @@ them need `image.backgrounds.` changing to
   against once in about 6.4 million for five characters from
   `LatinContentProducer`, which replaces
   it. [#89](https://github.com/logicsquad/nanocaptcha/issues/89)
+- Removed `addBackground()` without an argument. It added the light
+  grey background that an image gets anyway, so it only undid an
+  earlier `addBackground(BackgroundProducer)`: leave the background
+  out instead. [#90](https://github.com/logicsquad/nanocaptcha/issues/90)
 
 ### Fixed
 - `ShearImageFilter` no longer crashes the JVM on Alpine when it

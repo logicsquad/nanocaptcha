@@ -223,7 +223,7 @@ public final class ImageCaptcha {
 		 *
 		 * <pre>
 		 * ImageCaptcha.Factory captchas = new ImageCaptcha.Factory.Builder(200, 50)
-		 *     .addBackground().addContent().addNoise().addFilter().addBorder().build();
+		 *     .addBackground(new GradiatedBackgroundProducer()).addContent().addNoise().addFilter().addBorder().build();
 		 * </pre>
 		 *
 		 * <p>
@@ -281,24 +281,15 @@ public final class ImageCaptcha {
 			}
 
 			/**
-			 * Adds the default background, a flat light grey ({@link Color#LIGHT_GRAY}), which the image also gets if no
-			 * background is added.
-			 *
-			 * @return this
-			 * @see <a href="https://github.com/logicsquad/nanocaptcha/issues/68">#68</a>
-			 */
-			public Builder addBackground() {
-				return addBackground(new FlatColorBackgroundProducer(DEFAULT_BACKGROUND));
-			}
-
-			/**
-			 * Adds a background using the given {@link BackgroundProducer}. Note that
-			 * adding more than one background does not have an additive effect: the last
-			 * background added is the winner. For a transparent image, add a
+			 * Adds a background using the given {@link BackgroundProducer}. Without one, the image has a flat light grey
+			 * background ({@link Color#LIGHT_GRAY}). Note that adding more than one background does not have an additive
+			 * effect: the last background added is the winner. For a transparent image, add a
 			 * {@link TransparentBackgroundProducer}.
 			 *
 			 * @param backgroundProducer a {@link BackgroundProducer}
 			 * @return this
+			 * @see <a href="https://github.com/logicsquad/nanocaptcha/issues/68">#68</a>
+			 * @see <a href="https://github.com/logicsquad/nanocaptcha/issues/90">#90</a>
 			 */
 			public Builder addBackground(BackgroundProducer backgroundProducer) {
 				this.backgroundProducer = Objects.requireNonNull(backgroundProducer);

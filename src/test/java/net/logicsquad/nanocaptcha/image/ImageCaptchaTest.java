@@ -179,9 +179,9 @@ public class ImageCaptchaTest {
 
 	@Test
 	public void defaultsToAnOpaqueLightGreyBackground() throws IOException {
-		// create(), and a Builder with no background or the default one
+		// create(), and Builders with no background
 		List<ImageCaptcha> captchas = Arrays.asList(ImageCaptcha.create(), new ImageCaptcha.Factory.Builder(200, 50).build()
-				.create(), new ImageCaptcha.Factory.Builder(200, 50).addBackground().addContent().build().create());
+				.create(), new ImageCaptcha.Factory.Builder(200, 50).addContent().build().create());
 		for (ImageCaptcha captcha : captchas) {
 			BufferedImage image = captcha.getImage();
 			assertEquals(Color.LIGHT_GRAY.getRGB(), image.getRGB(0, 0));
