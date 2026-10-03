@@ -381,3 +381,12 @@ Image CAPTCHAs look different in this release:
 - Removed the dependency on `slf4j-api`, so NanoCaptcha has no runtime
   dependencies at all, and on the module path it no longer needs
   `--add-modules org.slf4j`. [#65](https://github.com/logicsquad/nanocaptcha/issues/65)
+
+### Fixed
+- `ShearImageFilter` no longer crashes the JVM on Alpine when it
+  shears an opaque image, and no longer leaves a ghost of the original
+  on a transparent one, such as the Builder's. It moves the pixels
+  itself, rather than with `Graphics.copyArea()`, which copied in
+  place and drew over the pixels underneath. Each glyph is now
+  sheared rather than drawn twice, which changes how sheared CAPTCHAs
+  look. [#84](https://github.com/logicsquad/nanocaptcha/issues/84)
