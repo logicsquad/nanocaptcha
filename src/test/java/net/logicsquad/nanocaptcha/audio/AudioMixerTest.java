@@ -9,16 +9,16 @@ import javax.sound.sampled.AudioInputStream;
 import org.junit.jupiter.api.Test;
 
 /**
- * Unit tests on {@link Mixer} class.
+ * Unit tests on {@link AudioMixer} class.
  *
  * @author <a href="mailto:paulh@logicsquad.net">Paul Hoadley</a>
  * @since 2.2
  */
-public class MixerTest {
+public class AudioMixerTest {
 	@Test
 	public void mixClipsInsteadOfWrapping() {
 		Sample loud = constant(1000, 0.8);
-		for (double value : Mixer.mix(loud, 1.0, loud, 1.0).getInterleavedSamples()) {
+		for (double value : AudioMixer.mix(loud, 1.0, loud, 1.0).getInterleavedSamples()) {
 			assertTrue(value > 0.99, "sample wrapped to " + value);
 		}
 		return;
@@ -26,7 +26,7 @@ public class MixerTest {
 
 	@Test
 	public void mixRepeatsAShorterSecondSample() {
-		double[] mixed = Mixer.mix(constant(16000, 0.0), 1.0, constant(4000, 0.5), 1.0).getInterleavedSamples();
+		double[] mixed = AudioMixer.mix(constant(16000, 0.0), 1.0, constant(4000, 0.5), 1.0).getInterleavedSamples();
 		assertEquals(16000, mixed.length);
 		// A constant crossfaded into itself stays constant, so every sample should hold it.
 		for (int i = 0; i < mixed.length; i++) {
@@ -37,7 +37,7 @@ public class MixerTest {
 
 	@Test
 	public void mixScalesAllOfTheFirstSample() {
-		double[] mixed = Mixer.mix(constant(16000, 0.5), 0.5, constant(4000, 0.0), 1.0).getInterleavedSamples();
+		double[] mixed = AudioMixer.mix(constant(16000, 0.5), 0.5, constant(4000, 0.0), 1.0).getInterleavedSamples();
 		for (int i = 0; i < mixed.length; i++) {
 			assertEquals(0.25, mixed[i], 1e-3, "sample " + i);
 		}
@@ -46,8 +46,8 @@ public class MixerTest {
 
 	@Test
 	public void mixIsAsLongAsTheFirstSample() {
-		assertEquals(4000, Mixer.mix(constant(4000, 0.1), 1.0, constant(16000, 0.1), 1.0).getSampleCount());
-		assertEquals(16000, Mixer.mix(constant(16000, 0.1), 1.0, constant(4000, 0.1), 1.0).getSampleCount());
+		assertEquals(4000, AudioMixer.mix(constant(4000, 0.1), 1.0, constant(16000, 0.1), 1.0).getSampleCount());
+		assertEquals(16000, AudioMixer.mix(constant(16000, 0.1), 1.0, constant(4000, 0.1), 1.0).getSampleCount());
 		return;
 	}
 

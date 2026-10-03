@@ -9,13 +9,14 @@ import java.util.Objects;
 import javax.sound.sampled.AudioInputStream;
 
 /**
- * Helper class for operating on audio {@link Sample}s.
+ * Helper class for operating on audio {@link Sample}s. Before 3.0 it was called {@code Mixer}, the same simple name as
+ * {@link javax.sound.sampled.Mixer}.
  *
  * @author <a href="mailto:james.childers@gmail.com">James Childers</a>
  * @author <a href="mailto:paulh@logicsquad.net">Paul Hoadley</a>
  * @since 1.0
  */
-public final class Mixer {
+public final class AudioMixer {
 	/**
 	 * Length of the crossfade at each join when a {@link Sample} is repeated: 50 ms
 	 */
@@ -24,7 +25,7 @@ public final class Mixer {
 	/**
 	 * Private constructor for non-instantiability.
 	 */
-	private Mixer() {
+	private AudioMixer() {
 		throw new AssertionError();
 	}
 

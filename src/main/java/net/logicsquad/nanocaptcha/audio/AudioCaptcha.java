@@ -213,7 +213,7 @@ public final class AudioCaptcha {
 				vProd = voiceProducers.get(random.nextInt(voiceProducers.size()));
 				double volume = MIN_VOLUME + (1 - MIN_VOLUME) * random.nextDouble();
 				int gap = i == ansAry.length - 1 ? 0 : random.nextInt(MAX_GAP + 1);
-				samples.add(Mixer.adjust(vProd.getVocalization(ansAry[i]), volume, gap));
+				samples.add(AudioMixer.adjust(vProd.getVocalization(ansAry[i]), volume, gap));
 			}
 
 			// 3. Add noise, if any, and return the result
@@ -223,7 +223,7 @@ public final class AudioCaptcha {
 				return new AudioCaptcha(this);
 			}
 
-			audio = Mixer.concatenate(samples);
+			audio = AudioMixer.concatenate(samples);
 			return new AudioCaptcha(this);
 		}
 	}

@@ -337,6 +337,10 @@ Image CAPTCHAs look different in this release:
   stream that fails throws an `UncheckedIOException`, rather than a
   `RuntimeException`. The messages say what the audio needs to
   be. [#65](https://github.com/logicsquad/nanocaptcha/issues/65)
+- Renamed `Mixer` to `AudioMixer`, which doesn't clash with
+  `javax.sound.sampled.Mixer`. A `NoiseProducer` of your own that uses
+  it needs the new
+  name. [#70](https://github.com/logicsquad/nanocaptcha/issues/70)
 
 ### Removed
 - Removed `ChineseContentProducer` and `ArabicContentProducer`,

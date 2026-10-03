@@ -14,7 +14,7 @@ import java.util.concurrent.ThreadLocalRandom;
 
 import javax.sound.sampled.AudioInputStream;
 
-import net.logicsquad.nanocaptcha.audio.Mixer;
+import net.logicsquad.nanocaptcha.audio.AudioMixer;
 import net.logicsquad.nanocaptcha.audio.Sample;
 
 /**
@@ -125,13 +125,13 @@ public class RandomNoiseProducer implements NoiseProducer {
 	 */
 	@Override
 	public Sample addNoise(List<Sample> samples) {
-		Sample appended = Mixer.concatenate(samples);
+		Sample appended = AudioMixer.concatenate(samples);
 		ThreadLocalRandom random = ThreadLocalRandom.current();
 		Sample noise = noises.get(random.nextInt(noises.size()));
 		// Start the noise anywhere, so that it can't be lined up and subtracted again
 		noise = from(noise, appended.getAudioInputStream().getFrameLength(), random);
 		// Decrease the volume of the noise to make sure the voices can be heard
-		return Mixer.mix(appended, 1.0, noise, NOISE_VOLUME);
+		return AudioMixer.mix(appended, 1.0, noise, NOISE_VOLUME);
 	}
 
 	/**
