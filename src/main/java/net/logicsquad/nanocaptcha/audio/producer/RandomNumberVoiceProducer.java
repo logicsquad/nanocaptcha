@@ -2,7 +2,6 @@ package net.logicsquad.nanocaptcha.audio.producer;
 
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
@@ -29,11 +28,6 @@ public class RandomNumberVoiceProducer implements VoiceProducer {
 	private static final Map<String, Sample> SAMPLES = new ConcurrentHashMap<>();
 
 	/**
-	 * List of supported languages
-	 */
-	private static final List<Locale> SUPPORTED_LANGUAGES = Arrays.asList(Locale.ENGLISH, Locale.GERMAN, Locale.FRENCH);
-
-	/**
 	 * Property key for declaring a default language (which will be used in the
 	 * no-args constructor) via 2-digit ISO 639 code
 	 */
@@ -50,30 +44,16 @@ public class RandomNumberVoiceProducer implements VoiceProducer {
 	private static final String PATH_PREFIX_TEMPLATE = "/net/logicsquad/nanocaptcha/sounds/%s/numbers/";
 
 	/**
-	 * English voices
+	 * Built-in voices, by language. Each voice has a vocalization of every digit, such as
+	 * {@code /net/logicsquad/nanocaptcha/sounds/de/numbers/7_b.wav} for a 7 in German voice {@code b}, made by
+	 * {@code scripts/generate-audio.py}. Adding a language takes only its files and an entry here.
+	 *
+	 * @see <a href="https://github.com/logicsquad/nanocaptcha/issues/67">#67</a>
 	 */
-	private static final List<String> VOICES_EN = Arrays.asList("a", "b", "c");
-
-	/**
-	 * German voices
-	 */
-	private static final List<String> VOICES_DE = Arrays.asList("a", "b");
-
-	/**
-	 * French voices
-	 */
-	private static final List<String> VOICES_FR = Arrays.asList("a");
-
-	/**
-	 * Map from language to list of voice names
-	 */
-	static final Map<Locale, List<String>> VOICES = new HashMap<>();
-
-	static {
-		VOICES.put(Locale.ENGLISH, VOICES_EN);
-		VOICES.put(Locale.GERMAN, VOICES_DE);
-		VOICES.put(Locale.FRENCH, VOICES_FR);
-	}
+	static final Map<Locale, List<String>> VOICES = Map.of(
+			Locale.ENGLISH, List.of("a", "b", "c"),
+			Locale.GERMAN, List.of("a", "b"),
+			Locale.FRENCH, List.of("a"));
 
 	/**
 	 * Default {@link Locale}
@@ -117,7 +97,7 @@ public class RandomNumberVoiceProducer implements VoiceProducer {
 	 */
 	public RandomNumberVoiceProducer(Locale language) {
 		Objects.requireNonNull(language);
-		this.language = SUPPORTED_LANGUAGES.stream().filter(l -> l.getLanguage().equals(language.getLanguage())).findFirst()
+		this.language = VOICES.keySet().stream().filter(l -> l.getLanguage().equals(language.getLanguage())).findFirst()
 				.orElseGet(RandomNumberVoiceProducer::defaultLanguage);
 		return;
 	}
@@ -164,7 +144,7 @@ public class RandomNumberVoiceProducer implements VoiceProducer {
 			synchronized (RandomNumberVoiceProducer.class) {
 				if (defaultLanguage == null) {
 					String language = System.getProperty(DEFAULT_LANGUAGE_KEY);
-					if (language == null || !SUPPORTED_LANGUAGES.stream().map(l -> l.getLanguage()).anyMatch(s -> s.equals(language))) {
+					if (language == null || !VOICES.keySet().stream().map(l -> l.getLanguage()).anyMatch(s -> s.equals(language))) {
 						defaultLanguage = FALLBACK_LANGUAGE;
 					} else {
 						defaultLanguage = new Locale(language);

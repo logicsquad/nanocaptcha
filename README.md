@@ -114,6 +114,28 @@ French, and an unsupported language gets the default. You can even mix
 languages by calling `addVoice()` with more than one
 `RandomNumberVoiceProducer`.
 
+For a language NanoCaptcha doesn't include, add a `VoiceProducer` of
+your own. It has one method, which returns the `Sample` for a digit,
+so all you need is a recording of each digit, as a WAV file in
+`Sample.SC_AUDIO_FORMAT`: 16 kHz, 16-bit, mono. A `Sample` can go into
+any number of CAPTCHAs, so read the recordings once:
+
+    // Once, when the application starts
+    Map<Character, Sample> spanish = new HashMap<>();
+    for (char digit = '0'; digit <= '9'; digit++) {
+        URL recording = MyApp.class.getResource("/voices/es/" + digit + ".wav");
+        spanish.put(digit, new Sample(recording));
+    }
+
+    // For each CAPTCHA
+    AudioCaptcha audioCaptcha = new AudioCaptcha.Builder()
+        .addContent()
+        .addVoice(spanish::get)
+        .build();
+
+`AudioCaptcha` gives each digit its own volume and gap, whichever
+voice it comes from.
+
 As with image CAPTCHAs, these can be further customised by:
 
 * Adding background noise with a `NoiseProducer`.

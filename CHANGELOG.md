@@ -323,6 +323,11 @@ Image CAPTCHAs look different in this release:
 
 ## Release 3.0
 
+### Added
+- Added a README example of an audio CAPTCHA in a language NanoCaptcha
+  doesn't include, from a `VoiceProducer` of your own and a recording
+  of each digit. [#67](https://github.com/logicsquad/nanocaptcha/issues/67)
+
 ### Changed
 - NanoCaptcha now needs Java 17 or later: it compiles with
   `--release 17`, and CI tests on Java 17, 21 and 25. On Java 8 to
