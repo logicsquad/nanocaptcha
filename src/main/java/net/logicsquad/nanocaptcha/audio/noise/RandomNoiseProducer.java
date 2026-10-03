@@ -116,22 +116,20 @@ public class RandomNoiseProducer implements NoiseProducer {
 	}
 
 	/**
-	 * Concatenates {@code samples}, then adds a random background noise sample
-	 * (from this object's list of samples), from a random point in it, returning
-	 * the resulting {@link Sample}.
+	 * Adds a random background noise sample (from this object's list of samples), from a random point in it, to
+	 * {@code clip}, returning the resulting {@link Sample}.
 	 *
-	 * @param samples a list of {@link Sample}s
-	 * @return concatenated {@link Sample}s with added noise
+	 * @param clip a {@link Sample}
+	 * @return {@code clip} with noise added
 	 */
 	@Override
-	public Sample addNoise(List<Sample> samples) {
-		Sample appended = AudioMixer.concatenate(samples);
+	public Sample addNoise(Sample clip) {
 		ThreadLocalRandom random = ThreadLocalRandom.current();
 		Sample noise = noises.get(random.nextInt(noises.size()));
 		// Start the noise anywhere, so that it can't be lined up and subtracted again
-		noise = from(noise, appended.getAudioInputStream().getFrameLength(), random);
+		noise = from(noise, clip.getAudioInputStream().getFrameLength(), random);
 		// Decrease the volume of the noise to make sure the voices can be heard
-		return AudioMixer.mix(appended, 1.0, noise, NOISE_VOLUME);
+		return AudioMixer.mix(clip, 1.0, noise, NOISE_VOLUME);
 	}
 
 	/**

@@ -162,12 +162,13 @@ public final class AudioCaptcha {
 				samples.add(AudioMixer.adjust(vProd.getVocalization(ansAry[i]), volume, gap));
 			}
 
-			// Add noise, if any, and return the result
+			// Join the digits, add noise, if any, and return the result
+			Sample clip = AudioMixer.concatenate(samples);
 			if (!noiseProducers.isEmpty()) {
 				NoiseProducer nProd = noiseProducers.get(random.nextInt(noiseProducers.size()));
-				return new AudioCaptcha(content, nProd.addNoise(samples));
+				clip = nProd.addNoise(clip);
 			}
-			return new AudioCaptcha(content, AudioMixer.concatenate(samples));
+			return new AudioCaptcha(content, clip);
 		}
 
 		/**

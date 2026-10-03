@@ -34,7 +34,7 @@ public class RandomNoiseProducerTest {
 	@Test
 	public void addNoiseUsesTheNoisesItsGiven() throws IOException {
 		RandomNoiseProducer producer = new RandomNoiseProducer(Collections.singletonList(constant(1600, 0.5)));
-		short[] mixed = pcm(producer.addNoise(Collections.singletonList(constant(1600, 0.0))));
+		short[] mixed = pcm(producer.addNoise(constant(1600, 0.0)));
 		assertEquals(1600, mixed.length);
 		for (short value : mixed) {
 			// Noise is mixed in at 0.6 of its level

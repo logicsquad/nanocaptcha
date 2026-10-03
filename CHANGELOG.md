@@ -408,6 +408,11 @@ them need `image.backgrounds.` changing to
   can't display the content, now comes from `create()`, rather than
   from the method that added
   it. [#64](https://github.com/logicsquad/nanocaptcha/issues/64)
+- The audio `NoiseProducer`'s `addNoise()` now takes the spoken
+  digits as one `Sample`, already joined, rather than a list of them
+  to join first. A `NoiseProducer` of your own can drop its
+  `AudioMixer.concatenate()`
+  call. [#86](https://github.com/logicsquad/nanocaptcha/issues/86)
 - Renamed `Sample.SC_AUDIO_FORMAT` to `Sample.FORMAT`. The `SC_` was
   from SimpleCaptcha, and `AUDIO_` repeated
   `AudioFormat`. [#91](https://github.com/logicsquad/nanocaptcha/issues/91)
