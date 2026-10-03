@@ -52,13 +52,37 @@ public class SampleTest {
 
 	@Test
 	public void constructorThrowsOnWrongFormat() {
-		assertThrows(RuntimeException.class, () -> new Sample(resource(MP3_FILENAME)));
+		IllegalArgumentException e = assertThrows(IllegalArgumentException.class, () -> new Sample(resource(MP3_FILENAME)));
+		assertTrue(e.getMessage().contains("WAV"), e.getMessage());
 		return;
 	}
 
 	@Test
 	public void urlConstructorThrowsOnWrongAudioParameters() {
-		assertThrows(IllegalArgumentException.class, () -> new Sample(resource(WAV_BAD_FILENAME)));
+		IllegalArgumentException e = assertThrows(IllegalArgumentException.class, () -> new Sample(resource(WAV_BAD_FILENAME)));
+		// It says what the audio needs to be
+		assertTrue(e.getMessage().contains(Sample.SC_AUDIO_FORMAT.toString()), e.getMessage());
+		return;
+	}
+
+	@Test
+	public void constructorThrowsUncheckedIOExceptionIfTheAudioCantBeRead() {
+		// A WAV file whose stream fails part of the way through, after its header
+		InputStream failing = new FilterInputStream(new ByteArrayInputStream(wav(new short[8000]))) {
+			private int count;
+
+			@Override
+			public int read(byte[] b, int off, int len) throws IOException {
+				if (count > 4000) {
+					throw new IOException("Connection reset");
+				}
+				int read = super.read(b, off, Math.min(len, 1000));
+				count += read;
+				return read;
+			}
+		};
+		UncheckedIOException e = assertThrows(UncheckedIOException.class, () -> new Sample(failing));
+		assertEquals("Connection reset", e.getCause().getMessage());
 		return;
 	}
 

@@ -331,6 +331,12 @@ Image CAPTCHAs look different in this release:
   `/net/logicsquad/nanocaptcha/` in the JAR, rather than at `/fonts/`
   and `/sounds/`, where another JAR's files at the same paths could
   take their place. [#79](https://github.com/logicsquad/nanocaptcha/issues/79)
+- `Sample` no longer logs before it throws. Audio that Java Sound
+  can't read, such as an MP3 file, now throws an
+  `IllegalArgumentException`, as audio in the wrong format does, and a
+  stream that fails throws an `UncheckedIOException`, rather than a
+  `RuntimeException`. The messages say what the audio needs to
+  be. [#65](https://github.com/logicsquad/nanocaptcha/issues/65)
 
 ### Removed
 - Removed `ChineseContentProducer` and `ArabicContentProducer`,
@@ -351,3 +357,6 @@ Image CAPTCHAs look different in this release:
   own class loader and module could see. Use `Sample(URL)`, with a URL
   from your own class's `getResource()`, and
   `RandomNoiseProducer(List<Sample>)`. [#79](https://github.com/logicsquad/nanocaptcha/issues/79)
+- Removed the dependency on `slf4j-api`, so NanoCaptcha has no runtime
+  dependencies at all, and on the module path it no longer needs
+  `--add-modules org.slf4j`. [#65](https://github.com/logicsquad/nanocaptcha/issues/65)

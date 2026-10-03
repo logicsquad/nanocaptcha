@@ -11,8 +11,7 @@ CAPTCHAs. NanoCaptcha is intended to be:
 
 * Self-contained: no network API hits to any external services.
 
-* Minimally-dependent: using NanoCaptcha should not involve pulling in
-  a plethora of JARs, and ideally none at all.
+* Dependency-free: using NanoCaptcha doesn't pull in any other JARs.
 
 It's worth being clear about what a CAPTCHA like this can do. Modern
 OCR and speech recognition can read short text and digit CAPTCHAs
@@ -143,12 +142,6 @@ You can use NanoCaptcha in your projects by including it as a Maven dependency:
       <artifactId>nanocaptcha</artifactId>
       <version>2.3</version>
     </dependency>
-
-NanoCaptcha's audio classes use SLF4J. On the module path NanoCaptcha
-is an automatic module (`net.logicsquad.nanocaptcha`), which can't
-declare that it needs SLF4J, so if your application doesn't use SLF4J
-itself, add `--add-modules org.slf4j` to the `java` command line or
-`requires org.slf4j;` to your `module-info.java`.
 
 Using NanoCaptcha in a web application
 --------------------------------------

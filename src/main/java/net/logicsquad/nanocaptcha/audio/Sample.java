@@ -16,9 +16,6 @@ import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.UnsupportedAudioFileException;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 /**
  * <p>
  * Class representing a sound sample, typically read in from a file. Note that
@@ -50,11 +47,6 @@ import org.slf4j.LoggerFactory;
  */
 public class Sample {
 	/**
-	 * Logger
-	 */
-	private static final Logger LOG = LoggerFactory.getLogger(Sample.class);
-
-	/**
 	 * {@link AudioFormat} for all {@code Sample}s
 	 */
 	public static final AudioFormat SC_AUDIO_FORMAT = new AudioFormat(16_000, // sample rate
@@ -73,10 +65,9 @@ public class Sample {
 	 *
 	 * @param is an {@link InputStream}
 	 * @throws NullPointerException     if {@code is} is {@code null}
-	 * @throws IllegalArgumentException if the audio format is unsupported
-	 * @throws RuntimeException         if
-	 *                                  {@link AudioSystem#getAudioInputStream(InputStream)}
-	 *                                  is unable to read the audio stream
+	 * @throws IllegalArgumentException if the audio isn't in a file format that Java Sound can read, such as WAV, or
+	 *                                  isn't in {@link #SC_AUDIO_FORMAT}
+	 * @throws UncheckedIOException     if {@code is} can't be read
 	 */
 	public Sample(InputStream is) {
 		this(read(is));
@@ -89,11 +80,9 @@ public class Sample {
 	 * @param url a {@link URL}
 	 * @throws NullPointerException     if {@code url} is {@code null}, as it is when {@link Class#getResource(String)}
 	 *                                  can't find a resource
-	 * @throws IllegalArgumentException if the audio format is unsupported
-	 * @throws UncheckedIOException     if {@code url} can't be opened
-	 * @throws RuntimeException         if
-	 *                                  {@link AudioSystem#getAudioInputStream(InputStream)}
-	 *                                  is unable to read the audio stream
+	 * @throws IllegalArgumentException if the audio isn't in a file format that Java Sound can read, such as WAV, or
+	 *                                  isn't in {@link #SC_AUDIO_FORMAT}
+	 * @throws UncheckedIOException     if {@code url} can't be opened or read
 	 * @since 2.2
 	 * @see <a href="https://github.com/logicsquad/nanocaptcha/issues/50">#50</a>
 	 */
@@ -138,7 +127,8 @@ public class Sample {
 			AudioInputStream audio = is instanceof AudioInputStream ? (AudioInputStream) is
 					: AudioSystem.getAudioInputStream(new BufferedInputStream(is));
 			if (!audio.getFormat().matches(SC_AUDIO_FORMAT)) {
-				throw new IllegalArgumentException("Unsupported audio format.");
+				throw new IllegalArgumentException("The audio is " + audio.getFormat() + ", but a Sample needs " + SC_AUDIO_FORMAT
+						+ ".");
 			}
 			// A single read() can return less than the whole clip, so keep going until the end.
 			ByteArrayOutputStream data = new ByteArrayOutputStream();
@@ -148,9 +138,11 @@ public class Sample {
 				data.write(buffer, 0, count);
 			}
 			return data.toByteArray();
-		} catch (UnsupportedAudioFileException | IOException e) {
-			LOG.error("Unable to get audio input stream.", e);
-			throw new RuntimeException(e);
+		} catch (UnsupportedAudioFileException e) {
+			throw new IllegalArgumentException("Java Sound can't read the audio, which isn't in a file format it supports, "
+					+ "such as WAV. A Sample needs " + SC_AUDIO_FORMAT + ".", e);
+		} catch (IOException e) {
+			throw new UncheckedIOException("Can't read the audio.", e);
 		}
 	}
 
