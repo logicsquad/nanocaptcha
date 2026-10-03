@@ -61,20 +61,17 @@ public class RandomNumberVoiceProducer implements VoiceProducer {
 	static volatile Locale defaultLanguage;
 
 	/**
-	 * Map from each single digit to list of vocalizations to choose from for that
-	 * digit
+	 * Vocalizations to choose from for each digit, by digit. They're worked out in the constructor, rather than when
+	 * they're first needed, so that another thread sharing this object can't see them half done.
+	 *
+	 * @see <a href="https://github.com/logicsquad/nanocaptcha/issues/64">#64</a>
 	 */
-	private Map<Integer, List<String>> vocalizations;
+	private final Map<Integer, List<String>> vocalizations;
 
 	/**
 	 * Language to use for vocalizations
 	 */
 	final Locale language;
-
-	/**
-	 * Prefix to path for vocalizations
-	 */
-	private String pathPrefix;
 
 	/**
 	 * Constructor resulting in object providing built-in voices to vocalize digits in the default language: English,
@@ -99,6 +96,7 @@ public class RandomNumberVoiceProducer implements VoiceProducer {
 		Objects.requireNonNull(language);
 		this.language = VOICES.keySet().stream().filter(l -> l.getLanguage().equals(language.getLanguage())).findFirst()
 				.orElseGet(RandomNumberVoiceProducer::defaultLanguage);
+		vocalizations = vocalizations(this.language);
 		return;
 	}
 
@@ -107,7 +105,7 @@ public class RandomNumberVoiceProducer implements VoiceProducer {
 		String stringNumber = Character.toString(number);
 		try {
 			int idx = Integer.parseInt(stringNumber);
-			List<String> files = vocalizations().get(idx);
+			List<String> files = vocalizations.get(idx);
 			String filename = files.get(ThreadLocalRandom.current().nextInt(files.size()));
 			return SAMPLES.computeIfAbsent(filename, RandomNumberVoiceProducer::readBuiltIn);
 		} catch (NumberFormatException e) {
@@ -156,40 +154,22 @@ public class RandomNumberVoiceProducer implements VoiceProducer {
 	}
 
 	/**
-	 * Returns a localized path prefix to find the vocalizations.
+	 * Returns the vocalizations to choose from for each digit in {@code language}.
 	 *
-	 * @return path prefix
+	 * @param language a language in {@link #VOICES}
+	 * @return vocalizations, by digit
 	 * @see <a href="https://github.com/logicsquad/nanocaptcha/issues/7">#7</a>
-	 * @since 1.4
+	 * @see <a href="https://github.com/logicsquad/nanocaptcha/issues/64">#64</a>
 	 */
-	private String pathPrefix() {
-		if (pathPrefix == null) {
-			pathPrefix = String.format(PATH_PREFIX_TEMPLATE, language.getLanguage());
-		}
-		return pathPrefix;
-	}
-
-	/**
-	 * Returns the map from numbers to vocalization samples.
-	 *
-	 * @return map of vocalizations
-	 * @see <a href="https://github.com/logicsquad/nanocaptcha/issues/7">#7</a>
-	 * @since 1.4
-	 */
-	private Map<Integer, List<String>> vocalizations() {
-		if (vocalizations == null) {
-			vocalizations = new HashMap<>();
-			List<String> sampleNames;
-			for (int i = 0; i < 10; i++) {
-				sampleNames = new ArrayList<>();
-				StringBuilder sb;
-				for (String name : VOICES.get(language)) {
-					sb = new StringBuilder(pathPrefix());
-					sb.append(i).append("_").append(name).append(".wav");
-					sampleNames.add(sb.toString());
-				}
-				vocalizations.put(i, sampleNames);
+	private static Map<Integer, List<String>> vocalizations(Locale language) {
+		String pathPrefix = String.format(PATH_PREFIX_TEMPLATE, language.getLanguage());
+		Map<Integer, List<String>> vocalizations = new HashMap<>();
+		for (int i = 0; i < 10; i++) {
+			List<String> sampleNames = new ArrayList<>();
+			for (String name : VOICES.get(language)) {
+				sampleNames.add(pathPrefix + i + "_" + name + ".wav");
 			}
+			vocalizations.put(i, sampleNames);
 		}
 		return vocalizations;
 	}

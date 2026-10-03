@@ -2,12 +2,14 @@ package net.logicsquad.nanocaptcha.image.renderer;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+import java.awt.Color;
 import java.awt.Font;
 import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
@@ -141,6 +143,22 @@ public class AbstractWordRendererTest {
 			ink = render(renderer, word, 60, 200);
 			assertTrue(ink.x + ink.width <= 57, "'" + word + "' covers " + ink);
 		}
+		return;
+	}
+
+	@Test
+	public void keepsItsOwnCopiesOfTheColoursAndFonts() {
+		List<Color> colors = new ArrayList<>(List.of(Color.RED));
+		List<Font> fonts = new ArrayList<>(List.of(AbstractWordRenderer.DEFAULT_FONTS.get(0)));
+		WordRenderer renderer = new DefaultWordRenderer.Builder().randomColor(colors).randomFont(fonts).build();
+		// A factory shares the renderer between threads, so the lists mustn't change it
+		colors.set(0, Color.BLUE);
+		fonts.clear();
+		BufferedImage image = new BufferedImage(200, 50, BufferedImage.TYPE_INT_ARGB);
+		renderer.render("ab3xk", image);
+		int[] ink = Arrays.stream(image.getRGB(0, 0, 200, 50, null, 0, 200)).filter(pixel -> pixel >>> 24 != 0).toArray();
+		assertTrue(ink.length > 100, "only " + ink.length + " pixels drawn");
+		assertTrue(Arrays.stream(ink).allMatch(pixel -> (pixel & 0xff) == 0), "drawn in blue");
 		return;
 	}
 

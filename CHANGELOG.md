@@ -395,3 +395,9 @@ Image CAPTCHAs look different in this release:
   place and drew over the pixels underneath. Each glyph is now
   sheared rather than drawn twice, which changes how sheared CAPTCHAs
   look. [#84](https://github.com/logicsquad/nanocaptcha/issues/84)
+- `RandomNumberVoiceProducer`, and renderers from
+  `DefaultWordRenderer.Builder`, are now safe to share between
+  threads. The producer worked out its clips the first time it was
+  used, which another thread could see half done, and `randomColor()`
+  and `randomFont()` kept the caller's lists, which could change
+  afterwards. [#64](https://github.com/logicsquad/nanocaptcha/issues/64)

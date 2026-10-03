@@ -264,15 +264,18 @@ public abstract class AbstractWordRenderer implements WordRenderer {
 
 		/**
 		 * Sets {@link #colorSupplier} to randomly select a {@link Color} from the provided {@code colors}. If the list is empty, no changes are
-		 * made to the current {@link #colorSupplier}.
+		 * made to the current {@link #colorSupplier}. The renderer keeps its own copy of the list, so changing
+		 * {@code colors} afterwards doesn't change the renderer.
 		 *
 		 * @param colors the list of {@link Color}s to choose from
 		 * @return this
 		 * @since 2.0
+		 * @see <a href="https://github.com/logicsquad/nanocaptcha/issues/64">#64</a>
 		 */
 		public Builder randomColor(List<Color> colors) {
 			if (!colors.isEmpty()) {
-				colorSupplier = () -> colors.get(ThreadLocalRandom.current().nextInt(colors.size()));
+				List<Color> copy = new ArrayList<>(colors);
+				colorSupplier = () -> copy.get(ThreadLocalRandom.current().nextInt(copy.size()));
 			}
 			return this;
 		}
@@ -306,15 +309,18 @@ public abstract class AbstractWordRenderer implements WordRenderer {
 
 		/**
 		 * Sets {@link #fontSupplier} to randomly select a {@link Font} from the provided {@code fonts}. If the list is empty, no changes are made
-		 * to the current {@link #fontSupplier}.
+		 * to the current {@link #fontSupplier}. The renderer keeps its own copy of the list, so changing {@code fonts}
+		 * afterwards doesn't change the renderer.
 		 *
 		 * @param fonts the list of {@link Font}s to choose from
 		 * @return this
 		 * @since 2.1
+		 * @see <a href="https://github.com/logicsquad/nanocaptcha/issues/64">#64</a>
 		 */
 		public Builder randomFont(List<Font> fonts) {
 			if (!fonts.isEmpty()) {
-				fontSupplier = () -> fonts.get(ThreadLocalRandom.current().nextInt(fonts.size()));
+				List<Font> copy = new ArrayList<>(fonts);
+				fontSupplier = () -> copy.get(ThreadLocalRandom.current().nextInt(copy.size()));
 			}
 			return this;
 		}
