@@ -27,11 +27,11 @@ import javax.imageio.ImageIO;
 import org.junit.jupiter.api.Test;
 
 import net.logicsquad.nanocaptcha.content.LatinContentProducer;
-import net.logicsquad.nanocaptcha.image.backgrounds.BackgroundProducer;
-import net.logicsquad.nanocaptcha.image.backgrounds.FlatColorBackgroundProducer;
-import net.logicsquad.nanocaptcha.image.backgrounds.GradiatedBackgroundProducer;
-import net.logicsquad.nanocaptcha.image.backgrounds.SquigglesBackgroundProducer;
-import net.logicsquad.nanocaptcha.image.backgrounds.TransparentBackgroundProducer;
+import net.logicsquad.nanocaptcha.image.background.BackgroundProducer;
+import net.logicsquad.nanocaptcha.image.background.FlatColorBackgroundProducer;
+import net.logicsquad.nanocaptcha.image.background.GradiatedBackgroundProducer;
+import net.logicsquad.nanocaptcha.image.background.SquigglesBackgroundProducer;
+import net.logicsquad.nanocaptcha.image.background.TransparentBackgroundProducer;
 import net.logicsquad.nanocaptcha.image.filter.FishEyeImageFilter;
 import net.logicsquad.nanocaptcha.image.filter.ImageFilter;
 import net.logicsquad.nanocaptcha.image.filter.RippleImageFilter;

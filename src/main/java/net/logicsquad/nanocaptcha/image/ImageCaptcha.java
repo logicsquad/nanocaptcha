@@ -21,9 +21,9 @@ import javax.imageio.stream.MemoryCacheImageOutputStream;
 
 import net.logicsquad.nanocaptcha.content.ContentProducer;
 import net.logicsquad.nanocaptcha.content.LatinContentProducer;
-import net.logicsquad.nanocaptcha.image.backgrounds.BackgroundProducer;
-import net.logicsquad.nanocaptcha.image.backgrounds.FlatColorBackgroundProducer;
-import net.logicsquad.nanocaptcha.image.backgrounds.TransparentBackgroundProducer;
+import net.logicsquad.nanocaptcha.image.background.BackgroundProducer;
+import net.logicsquad.nanocaptcha.image.background.FlatColorBackgroundProducer;
+import net.logicsquad.nanocaptcha.image.background.TransparentBackgroundProducer;
 import net.logicsquad.nanocaptcha.image.filter.ImageFilter;
 import net.logicsquad.nanocaptcha.image.filter.RippleImageFilter;
 import net.logicsquad.nanocaptcha.image.noise.CurvedLineNoiseProducer;

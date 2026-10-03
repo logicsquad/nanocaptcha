@@ -15,7 +15,7 @@ module net.logicsquad.nanocaptcha {
 	exports net.logicsquad.nanocaptcha.audio.producer;
 	exports net.logicsquad.nanocaptcha.content;
 	exports net.logicsquad.nanocaptcha.image;
-	exports net.logicsquad.nanocaptcha.image.backgrounds;
+	exports net.logicsquad.nanocaptcha.image.background;
 	exports net.logicsquad.nanocaptcha.image.filter;
 	exports net.logicsquad.nanocaptcha.image.noise;
 	exports net.logicsquad.nanocaptcha.image.renderer;

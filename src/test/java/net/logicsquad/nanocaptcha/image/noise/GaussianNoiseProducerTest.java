@@ -11,7 +11,7 @@ import java.util.Random;
 import org.junit.jupiter.api.Test;
 
 import net.logicsquad.nanocaptcha.image.ImageCaptcha;
-import net.logicsquad.nanocaptcha.image.backgrounds.FlatColorBackgroundProducer;
+import net.logicsquad.nanocaptcha.image.background.FlatColorBackgroundProducer;
 
 /**
  * Unit tests on {@link GaussianNoiseProducer} class.

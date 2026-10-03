@@ -340,6 +340,11 @@ had
 The same goes for
 `AudioCaptcha`. [#64](https://github.com/logicsquad/nanocaptcha/issues/64)
 
+The background producers have moved to the
+`net.logicsquad.nanocaptcha.image.background` package, so imports of
+them need `image.backgrounds.` changing to
+`image.background.`. [#92](https://github.com/logicsquad/nanocaptcha/issues/92)
+
 ### Added
 - Added a README example of an audio CAPTCHA in a language NanoCaptcha
   doesn't include, from a `VoiceProducer` of your own and a recording
@@ -404,6 +409,9 @@ The same goes for
   can't display the content, now comes from `create()`, rather than
   from the method that added
   it. [#64](https://github.com/logicsquad/nanocaptcha/issues/64)
+- Renamed the `net.logicsquad.nanocaptcha.image.backgrounds` package to
+  `net.logicsquad.nanocaptcha.image.background`, to match `filter`,
+  `noise` and `renderer`. [#92](https://github.com/logicsquad/nanocaptcha/issues/92)
 
 ### Removed
 - Removed `ChineseContentProducer` and `ArabicContentProducer`,

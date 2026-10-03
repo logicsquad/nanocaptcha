@@ -1,4 +1,4 @@
-package net.logicsquad.nanocaptcha.image.backgrounds;
+package net.logicsquad.nanocaptcha.image.background;
 
 import java.io.IOException;
 
@@ -45,7 +45,7 @@ public class BackgroundProducerGoldenImageTest {
 	 * @throws IOException if the golden image can't be read or written
 	 */
 	private static void assertMatches(BackgroundProducer backgroundProducer) throws IOException {
-		GoldenImages.assertMatches("backgrounds/" + backgroundProducer.getClass().getSimpleName(),
+		GoldenImages.assertMatches("background/" + backgroundProducer.getClass().getSimpleName(),
 				backgroundProducer.getBackground(200, 50));
 		return;
 	}
