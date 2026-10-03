@@ -35,16 +35,6 @@ public abstract class AbstractWordRenderer implements WordRenderer {
 	 */
 	private static final String PUBLIC_SANS_FONT = "/fonts/PublicSans-Bold.ttf";
 
-    /**
-     * Random number generator
-     *
-     * @deprecated NanoCaptcha's own renderers now use {@link ThreadLocalRandom}, so that threads don't contend for one
-     *             generator, and subclasses should do the same. This field will be removed in 3.0.
-     * @see <a href="https://github.com/logicsquad/nanocaptcha/issues/49">#49</a>
-     */
-    @Deprecated
-    protected static final Random RAND = new Random();
-
 	/**
 	 * Default {@link Color}s
 	 */

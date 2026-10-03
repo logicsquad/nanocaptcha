@@ -339,3 +339,6 @@ Image CAPTCHAs look different in this release:
 - Removed `FastWordRenderer`, deprecated in 2.3. Use
   `DefaultWordRenderer`
   instead. [#81](https://github.com/logicsquad/nanocaptcha/issues/81)
+- Removed `AbstractWordRenderer.RAND`, deprecated in 2.2. A renderer
+  of your own that used it can call `ThreadLocalRandom.current()`
+  instead. [#78](https://github.com/logicsquad/nanocaptcha/issues/78)
