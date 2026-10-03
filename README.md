@@ -130,8 +130,8 @@ languages by calling `addVoice()` with more than one
 For a language NanoCaptcha doesn't include, add a `VoiceProducer` of
 your own. It has one method, which returns the `Sample` for a digit,
 so all you need is a recording of each digit, as a WAV file in
-`Sample.SC_AUDIO_FORMAT`: 16 kHz, 16-bit, mono. A `Sample` can go into
-any number of CAPTCHAs, so read the recordings once:
+`Sample.FORMAT`: 16 kHz, 16-bit, mono. A `Sample` can go into any
+number of CAPTCHAs, so read the recordings once:
 
     // Once, when the application starts
     Map<Character, Sample> spanish = new HashMap<>();

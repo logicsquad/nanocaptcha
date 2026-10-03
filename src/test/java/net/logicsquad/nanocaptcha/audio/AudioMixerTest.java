@@ -65,6 +65,6 @@ public class AudioMixerTest {
 			data[2 * i] = (byte) pcm;
 			data[2 * i + 1] = (byte) (pcm >> 8);
 		}
-		return new Sample(new AudioInputStream(new ByteArrayInputStream(data), Sample.SC_AUDIO_FORMAT, length));
+		return new Sample(new AudioInputStream(new ByteArrayInputStream(data), Sample.FORMAT, length));
 	}
 }

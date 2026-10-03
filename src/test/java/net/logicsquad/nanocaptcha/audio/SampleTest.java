@@ -61,7 +61,7 @@ public class SampleTest {
 	public void urlConstructorThrowsOnWrongAudioParameters() {
 		IllegalArgumentException e = assertThrows(IllegalArgumentException.class, () -> new Sample(resource(WAV_BAD_FILENAME)));
 		// It says what the audio needs to be
-		assertTrue(e.getMessage().contains(Sample.SC_AUDIO_FORMAT.toString()), e.getMessage());
+		assertTrue(e.getMessage().contains(Sample.FORMAT.toString()), e.getMessage());
 		return;
 	}
 
@@ -183,7 +183,7 @@ public class SampleTest {
 	}
 
 	/**
-	 * Returns a WAV file in {@link Sample#SC_AUDIO_FORMAT} containing {@code values}.
+	 * Returns a WAV file in {@link Sample#FORMAT} containing {@code values}.
 	 *
 	 * @param values 16-bit samples
 	 * @return WAV file contents
@@ -196,7 +196,7 @@ public class SampleTest {
 		}
 		ByteArrayOutputStream out = new ByteArrayOutputStream();
 		try {
-			AudioSystem.write(new AudioInputStream(new ByteArrayInputStream(data), Sample.SC_AUDIO_FORMAT, values.length),
+			AudioSystem.write(new AudioInputStream(new ByteArrayInputStream(data), Sample.FORMAT, values.length),
 					AudioFileFormat.Type.WAVE, out);
 		} catch (IOException e) {
 			throw new UncheckedIOException(e);

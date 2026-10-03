@@ -408,6 +408,9 @@ them need `image.backgrounds.` changing to
   can't display the content, now comes from `create()`, rather than
   from the method that added
   it. [#64](https://github.com/logicsquad/nanocaptcha/issues/64)
+- Renamed `Sample.SC_AUDIO_FORMAT` to `Sample.FORMAT`. The `SC_` was
+  from SimpleCaptcha, and `AUDIO_` repeated
+  `AudioFormat`. [#91](https://github.com/logicsquad/nanocaptcha/issues/91)
 - Renamed the `net.logicsquad.nanocaptcha.image.backgrounds` package to
   `net.logicsquad.nanocaptcha.image.background`, to match `filter`,
   `noise` and `renderer`. [#92](https://github.com/logicsquad/nanocaptcha/issues/92)

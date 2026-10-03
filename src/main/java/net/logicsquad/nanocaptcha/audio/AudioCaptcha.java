@@ -29,7 +29,7 @@ public final class AudioCaptcha {
 	/**
 	 * Longest gap after a digit (in samples): a quarter of a second
 	 */
-	private static final int MAX_GAP = (int) (Sample.SC_AUDIO_FORMAT.getSampleRate() / 4);
+	private static final int MAX_GAP = (int) (Sample.FORMAT.getSampleRate() / 4);
 
 	/**
 	 * Generated audio

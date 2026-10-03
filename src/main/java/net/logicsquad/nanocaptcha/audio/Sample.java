@@ -47,16 +47,19 @@ import javax.sound.sampled.UnsupportedAudioFileException;
  */
 public class Sample {
 	/**
-	 * {@link AudioFormat} for all {@code Sample}s
+	 * The {@link AudioFormat} of every {@code Sample}: 16 kHz, 16-bit, signed, little-endian and mono
+	 *
+	 * @since 3.0
+	 * @see <a href="https://github.com/logicsquad/nanocaptcha/issues/91">#91</a>
 	 */
-	public static final AudioFormat SC_AUDIO_FORMAT = new AudioFormat(16_000, // sample rate
+	public static final AudioFormat FORMAT = new AudioFormat(16_000, // sample rate
 			16, // sample size in bits
 			1, // channels
 			true, // signed?
 			false); // big endian?;
 
 	/**
-	 * Audio data, in {@link #SC_AUDIO_FORMAT}
+	 * Audio data, in {@link #FORMAT}
 	 */
 	private final byte[] data;
 
@@ -66,7 +69,7 @@ public class Sample {
 	 * @param is an {@link InputStream}
 	 * @throws NullPointerException     if {@code is} is {@code null}
 	 * @throws IllegalArgumentException if the audio isn't in a file format that Java Sound can read, such as WAV, or
-	 *                                  isn't in {@link #SC_AUDIO_FORMAT}
+	 *                                  isn't in {@link #FORMAT}
 	 * @throws UncheckedIOException     if {@code is} can't be read
 	 */
 	public Sample(InputStream is) {
@@ -81,7 +84,7 @@ public class Sample {
 	 * @throws NullPointerException     if {@code url} is {@code null}, as it is when {@link Class#getResource(String)}
 	 *                                  can't find a resource
 	 * @throws IllegalArgumentException if the audio isn't in a file format that Java Sound can read, such as WAV, or
-	 *                                  isn't in {@link #SC_AUDIO_FORMAT}
+	 *                                  isn't in {@link #FORMAT}
 	 * @throws UncheckedIOException     if {@code url} can't be opened or read
 	 * @since 2.2
 	 * @see <a href="https://github.com/logicsquad/nanocaptcha/issues/50">#50</a>
@@ -91,7 +94,7 @@ public class Sample {
 	}
 
 	/**
-	 * Constructor taking audio data in {@link #SC_AUDIO_FORMAT}.
+	 * Constructor taking audio data in {@link #FORMAT}.
 	 *
 	 * @param data audio data
 	 */
@@ -126,8 +129,8 @@ public class Sample {
 		try {
 			AudioInputStream audio = is instanceof AudioInputStream ? (AudioInputStream) is
 					: AudioSystem.getAudioInputStream(new BufferedInputStream(is));
-			if (!audio.getFormat().matches(SC_AUDIO_FORMAT)) {
-				throw new IllegalArgumentException("The audio is " + audio.getFormat() + ", but a Sample needs " + SC_AUDIO_FORMAT
+			if (!audio.getFormat().matches(FORMAT)) {
+				throw new IllegalArgumentException("The audio is " + audio.getFormat() + ", but a Sample needs " + FORMAT
 						+ ".");
 			}
 			// A single read() can return less than the whole clip, so keep going until the end.
@@ -140,7 +143,7 @@ public class Sample {
 			return data.toByteArray();
 		} catch (UnsupportedAudioFileException e) {
 			throw new IllegalArgumentException("Java Sound can't read the audio, which isn't in a file format it supports, "
-					+ "such as WAV. A Sample needs " + SC_AUDIO_FORMAT + ".", e);
+					+ "such as WAV. A Sample needs " + FORMAT + ".", e);
 		} catch (IOException e) {
 			throw new UncheckedIOException("Can't read the audio.", e);
 		}
@@ -154,7 +157,7 @@ public class Sample {
 	 * @see <a href="https://github.com/logicsquad/nanocaptcha/issues/40">#40</a>
 	 */
 	public AudioInputStream getAudioInputStream() {
-		return new AudioInputStream(new ByteArrayInputStream(data), SC_AUDIO_FORMAT, getSampleCount());
+		return new AudioInputStream(new ByteArrayInputStream(data), FORMAT, getSampleCount());
 	}
 
 	/**
@@ -193,7 +196,7 @@ public class Sample {
 	 * @return number of samples for all channels
 	 */
 	long getSampleCount() {
-		return data.length / SC_AUDIO_FORMAT.getFrameSize();
+		return data.length / FORMAT.getFrameSize();
 	}
 
 	/**
@@ -214,7 +217,7 @@ public class Sample {
 	@Override
 	public String toString() {
 		StringBuilder sb = new StringBuilder(26);
-		sb.append("[Sample: samples=").append(getSampleCount()).append(" format=").append(SC_AUDIO_FORMAT).append(']');
+		sb.append("[Sample: samples=").append(getSampleCount()).append(" format=").append(FORMAT).append(']');
 		return sb.toString();
 	}
 }

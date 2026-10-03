@@ -51,7 +51,7 @@ public class RandomNoiseProducerTest {
 			data[2 * i] = (byte) i;
 			data[2 * i + 1] = (byte) (i >> 8);
 		}
-		Sample ramp = new Sample(new AudioInputStream(new ByteArrayInputStream(data), Sample.SC_AUDIO_FORMAT, 16_000));
+		Sample ramp = new Sample(new AudioInputStream(new ByteArrayInputStream(data), Sample.FORMAT, 16_000));
 		Set<Short> starts = new HashSet<>();
 		for (int seed = 0; seed < 20; seed++) {
 			short[] noise = pcm(RandomNoiseProducer.from(ramp, 1600, new Random(seed)));
@@ -86,7 +86,7 @@ public class RandomNoiseProducerTest {
 			data[2 * i] = (byte) pcm;
 			data[2 * i + 1] = (byte) (pcm >> 8);
 		}
-		return new Sample(new AudioInputStream(new ByteArrayInputStream(data), Sample.SC_AUDIO_FORMAT, length));
+		return new Sample(new AudioInputStream(new ByteArrayInputStream(data), Sample.FORMAT, length));
 	}
 
 	/**
