@@ -72,16 +72,6 @@ public class RandomNoiseProducerTest {
 		return;
 	}
 
-	@Test
-	@SuppressWarnings("deprecation")
-	public void namesConstructorStillReadsResources() {
-		assertDoesNotThrow(() -> new RandomNoiseProducer(RandomNoiseProducer.BUILT_IN_NOISES));
-		IllegalArgumentException e = assertThrows(IllegalArgumentException.class,
-				() -> new RandomNoiseProducer(new String[] { "/no/such/noise.wav" }));
-		assertTrue(e.getMessage().contains("'/no/such/noise.wav'"), e.getMessage());
-		return;
-	}
-
 	/**
 	 * Returns a {@link Sample} of {@code length} samples, all with {@code value}.
 	 *

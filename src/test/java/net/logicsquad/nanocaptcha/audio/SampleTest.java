@@ -38,28 +38,6 @@ public class SampleTest {
 	private static final int WAV_GOOD_SAMPLES = 15221;
 
 	@Test
-	@SuppressWarnings("deprecation")
-	public void stringConstructorThrowsOnNull() {
-		assertThrows(NullPointerException.class, () -> new Sample((String) null));
-		return;
-	}
-
-	@Test
-	@SuppressWarnings("deprecation")
-	public void stringConstructorStillReadsResources() {
-		assertEquals(WAV_GOOD_SAMPLES, new Sample(WAV_GOOD_FILENAME).getSampleCount());
-		return;
-	}
-
-	@Test
-	@SuppressWarnings("deprecation")
-	public void stringConstructorNamesAMissingResource() {
-		IllegalArgumentException e = assertThrows(IllegalArgumentException.class, () -> new Sample("/no/such/sample.wav"));
-		assertTrue(e.getMessage().contains("'/no/such/sample.wav'"), e.getMessage());
-		return;
-	}
-
-	@Test
 	public void urlConstructorThrowsOnNull() {
 		NullPointerException e = assertThrows(NullPointerException.class, () -> new Sample((URL) null));
 		assertTrue(e.getMessage().contains("getResource()"), e.getMessage());

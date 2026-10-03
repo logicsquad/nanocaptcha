@@ -48,8 +48,8 @@ public class RandomNoiseProducer implements NoiseProducer {
 			"/net/logicsquad/nanocaptcha/sounds/noises/rain.wav", };
 
 	/**
-	 * Noises already read, by file name. A {@link Sample} doesn't change once it's created, so each file only needs
-	 * reading once.
+	 * Built-in noises already read, by resource name. A {@link Sample} doesn't change once it's created, so each one only
+	 * needs reading once.
 	 */
 	private static final Map<String, Sample> SAMPLES = new ConcurrentHashMap<>();
 
@@ -63,24 +63,6 @@ public class RandomNoiseProducer implements NoiseProducer {
 	 */
 	public RandomNoiseProducer() {
 		this(builtInNoises());
-	}
-
-	/**
-	 * Constructor taking an array of noise resource names, which are read with {@link Sample#Sample(String)}. So only
-	 * resources that NanoCaptcha's own class loader and module can see are found, and a name without a leading
-	 * {@code /} is relative to the {@code net.logicsquad.nanocaptcha.audio} package.
-	 *
-	 * @param noiseFiles names of noise resources
-	 * @throws IllegalArgumentException if a resource can't be found, or its audio format is unsupported, or
-	 *                                  {@code noiseFiles} is empty
-	 * @deprecated Use {@link #RandomNoiseProducer(List)}, with {@link Sample}s made by {@link Sample#Sample(URL)} from
-	 *             your own class's {@link Class#getResource(String)}, which finds your resources wherever they are. This
-	 *             constructor will be removed in 3.0.
-	 * @see <a href="https://github.com/logicsquad/nanocaptcha/issues/50">#50</a>
-	 */
-	@Deprecated
-	public RandomNoiseProducer(String[] noiseFiles) {
-		this(read(noiseFiles));
 	}
 
 	/**
@@ -131,22 +113,6 @@ public class RandomNoiseProducer implements NoiseProducer {
 			throw new IllegalStateException("NanoCaptcha's noise '" + name + "' is missing from the classpath.");
 		}
 		return new Sample(url);
-	}
-
-	/**
-	 * Returns the noises named in {@code noiseFiles}, reading each one with {@link Sample#Sample(String)} the first time
-	 * it's needed.
-	 *
-	 * @param noiseFiles names of noise resources
-	 * @return noises
-	 */
-	@SuppressWarnings("deprecation")
-	private static List<Sample> read(String[] noiseFiles) {
-		List<Sample> noises = new ArrayList<>(noiseFiles.length);
-		for (String name : noiseFiles) {
-			noises.add(SAMPLES.computeIfAbsent(name, Sample::new));
-		}
-		return noises;
 	}
 
 	/**

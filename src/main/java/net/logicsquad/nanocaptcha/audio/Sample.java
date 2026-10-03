@@ -69,25 +69,6 @@ public class Sample {
 	private final byte[] data;
 
 	/**
-	 * Constructor taking the name of a resource, which it reads and then closes. The name is looked up with
-	 * {@link Class#getResourceAsStream(String)} on this class, so only resources that NanoCaptcha's own class loader and
-	 * module can see are found, and a name without a leading {@code /} is relative to the
-	 * {@code net.logicsquad.nanocaptcha.audio} package.
-	 *
-	 * @param filename name of a resource
-	 * @throws NullPointerException     if {@code filename} is {@code null}
-	 * @throws IllegalArgumentException if there's no resource called {@code filename}, or its audio format is
-	 *                                  unsupported
-	 * @deprecated Use {@link #Sample(URL)} with a {@link URL} from your own class's {@link Class#getResource(String)},
-	 *             which finds your resources wherever they are. This constructor will be removed in 3.0.
-	 * @see <a href="https://github.com/logicsquad/nanocaptcha/issues/50">#50</a>
-	 */
-	@Deprecated
-	public Sample(String filename) {
-		this(read(Objects.requireNonNull(filename)));
-	}
-
-	/**
 	 * Constructor taking an {@link InputStream}, which it reads to the end but doesn't close.
 	 *
 	 * @param is an {@link InputStream}
@@ -128,25 +109,6 @@ public class Sample {
 	private Sample(byte[] data) {
 		this.data = data;
 		return;
-	}
-
-	/**
-	 * Returns the audio data from the resource {@code filename}, closing the stream once it's read.
-	 *
-	 * @param filename filename
-	 * @return audio data
-	 */
-	private static byte[] read(String filename) {
-		try (InputStream is = Sample.class.getResourceAsStream(filename)) {
-			if (is == null) {
-				throw new IllegalArgumentException("Can't find the audio resource '" + filename + "'. Sample(String) only finds "
-						+ "resources that NanoCaptcha itself can see, and a name without a leading '/' is relative to "
-						+ "net.logicsquad.nanocaptcha.audio. Use Sample(URL) with your own class's getResource() instead.");
-			}
-			return read(is);
-		} catch (IOException e) {
-			throw new UncheckedIOException(e);
-		}
 	}
 
 	/**

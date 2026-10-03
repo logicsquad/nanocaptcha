@@ -346,3 +346,8 @@ Image CAPTCHAs look different in this release:
 - Removed `AbstractWordRenderer.RAND`, deprecated in 2.2. A renderer
   of your own that used it can call `ThreadLocalRandom.current()`
   instead. [#78](https://github.com/logicsquad/nanocaptcha/issues/78)
+- Removed `Sample(String)` and `RandomNoiseProducer(String[])`,
+  deprecated in 2.2, which only found resources that NanoCaptcha's
+  own class loader and module could see. Use `Sample(URL)`, with a URL
+  from your own class's `getResource()`, and
+  `RandomNoiseProducer(List<Sample>)`. [#79](https://github.com/logicsquad/nanocaptcha/issues/79)
