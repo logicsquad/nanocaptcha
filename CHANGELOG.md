@@ -502,3 +502,10 @@ them need `image.backgrounds.` changing to
   them all, and could subtract it. The ellipses' size, spacing and
   dashes, and where they start, now vary a little with each
   background. [#94](https://github.com/logicsquad/nanocaptcha/issues/94)
+- `RippleImageFilter` rippled every image the same way, so an attacker
+  who knew the distortion could largely undo it. Its waves' phase,
+  height and length now vary a little with each image. The filter is
+  also NanoCaptcha's own code now, in place of about 940 lines from JH
+  Labs Java Image Filters, most of them unused, so `NOTICE` no longer
+  carries their
+  licence. [#96](https://github.com/logicsquad/nanocaptcha/issues/96)

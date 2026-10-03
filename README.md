@@ -265,6 +265,4 @@ to contribute.
 References
 ----------
 NanoCaptcha is based on
-[SimpleCaptcha](https://sourceforge.net/p/simplecaptcha/),
-and incorporates code from
-[JH Labs Java Image Filters](http://huxtable.com/ip/filters/).
+[SimpleCaptcha](https://sourceforge.net/p/simplecaptcha/).
