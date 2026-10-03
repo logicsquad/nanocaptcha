@@ -1,6 +1,8 @@
 package net.logicsquad.nanocaptcha.image.renderer;
 
+import java.awt.Color;
 import java.awt.Font;
+import java.awt.FontFormatException;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
 import java.awt.Shape;
@@ -8,8 +10,17 @@ import java.awt.font.FontRenderContext;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.PathIterator;
 import java.awt.image.BufferedImage;
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import java.util.Random;
 import java.util.concurrent.ThreadLocalRandom;
+import java.util.function.Supplier;
 
 /**
  * Renders the content onto the image. Each glyph gets a small random rotation, scale, vertical shift and sub-pixel
@@ -21,8 +32,55 @@ import java.util.concurrent.ThreadLocalRandom;
  * @author <a href="mailto:botyrbojey@gmail.com">bivashy</a>
  * @since 1.0
  * @see <a href="https://github.com/logicsquad/nanocaptcha/issues/75">#75</a>
+ * @see <a href="https://github.com/logicsquad/nanocaptcha/issues/85">#85</a>
  */
-public final class DefaultWordRenderer extends AbstractWordRenderer {
+public final class DefaultWordRenderer implements WordRenderer {
+	/**
+	 * Resource path to "Courier Prime"
+	 */
+	private static final String COURIER_PRIME_FONT = "/net/logicsquad/nanocaptcha/fonts/CourierPrime-Bold.ttf";
+
+	/**
+	 * Resource path to "Public Sans"
+	 */
+	private static final String PUBLIC_SANS_FONT = "/net/logicsquad/nanocaptcha/fonts/PublicSans-Bold.ttf";
+
+	/**
+	 * Font size (in points) of {@link #DEFAULT_FONTS}. They're sized to the image instead: this size in an image of the
+	 * default height, 50 pixels, and in proportion otherwise.
+	 */
+	private static final int FONT_SIZE = 40;
+
+	/**
+	 * Height of image (in pixels) that {@link #FONT_SIZE} suits
+	 */
+	private static final int FONT_SIZE_HEIGHT = 50;
+
+	/**
+	 * Built-in fonts, which can display everything NanoCaptcha's own content producers generate
+	 */
+	static final List<Font> DEFAULT_FONTS = List.of(fontFromResource(COURIER_PRIME_FONT), fontFromResource(PUBLIC_SANS_FONT));
+
+	/**
+	 * Default supplier for {@link Color}
+	 */
+	private static final Supplier<Color> DEFAULT_COLOR_SUPPLIER = () -> Color.BLACK;
+
+	/**
+	 * Default supplier for {@link Font}: one of {@link #DEFAULT_FONTS} at random
+	 */
+	private static final Supplier<Font> DEFAULT_FONT_SUPPLIER = () -> DEFAULT_FONTS.get(ThreadLocalRandom.current().nextInt(DEFAULT_FONTS.size()));
+
+	/**
+	 * Default percentage offset along x-axis
+	 */
+	private static final double X_OFFSET_DEFAULT = 0.05;
+
+	/**
+	 * Default percentage offset along y-axis
+	 */
+	private static final double Y_OFFSET_DEFAULT = 0.25;
+
 	/**
 	 * Largest rotation of a glyph, either way (in radians)
 	 */
@@ -49,13 +107,48 @@ public final class DefaultWordRenderer extends AbstractWordRenderer {
 	private static final double FLATNESS = 0.05;
 
 	/**
+	 * Percentage offset along x-axis
+	 */
+	private final double xOffset;
+
+	/**
+	 * Percentage offset along y-axis
+	 */
+	private final double yOffset;
+
+	/**
+	 * Whether to choose the y-offset at random for each render
+	 */
+	private final boolean randomYOffset;
+
+	/**
+	 * Whether {@link #fontSupplier} supplies {@link #DEFAULT_FONTS}, which are sized to the image
+	 */
+	private final boolean defaultFonts;
+
+	/**
+	 * Supplier of {@link Color}
+	 */
+	private final Supplier<Color> colorSupplier;
+
+	/**
+	 * Supplier for {@link Font}
+	 */
+	private final Supplier<Font> fontSupplier;
+
+	/**
 	 * Constructor taking its settings from a {@link Builder}
 	 *
 	 * @param builder a {@link Builder}
 	 * @since 2.3
 	 */
 	private DefaultWordRenderer(Builder builder) {
-		super(builder);
+		xOffset = builder.xOffset;
+		yOffset = builder.yOffset;
+		randomYOffset = builder.randomYOffset;
+		colorSupplier = builder.colorSupplier;
+		fontSupplier = builder.fontSupplier;
+		defaultFonts = fontSupplier == DEFAULT_FONT_SUPPLIER;
 		return;
 	}
 
@@ -93,16 +186,16 @@ public final class DefaultWordRenderer extends AbstractWordRenderer {
 			Variation[] variations = new Variation[chars.length];
 			float size = fontSize(image.getHeight());
 			for (int i = 0; i < chars.length; i++) {
-				Font font = fontSupplier().get();
+				Font font = fontSupplier.get();
 				if (!font.canDisplay(chars[i])) {
 					throw new IllegalArgumentException(
 							cannotDisplay(font, chars[i]) + " Supply a font that can with DefaultWordRenderer.Builder.font().");
 				}
 				// The built-in fonts are sized to the image, and others keep their own size
-				fonts[i] = defaultFonts() && font.getSize2D() != size ? font.deriveFont(size) : font;
+				fonts[i] = defaultFonts && font.getSize2D() != size ? font.deriveFont(size) : font;
 				variations[i] = new Variation(random);
 			}
-			int xBaseline = (int) Math.round(image.getWidth() * xOffset());
+			int xBaseline = (int) Math.round(image.getWidth() * xOffset);
 			// The same margin on the right, and clear of the edges, where a border would touch the text
 			int width = image.getWidth() - xBaseline - Math.max(1, xBaseline);
 			int height = image.getHeight() - 2;
@@ -113,17 +206,50 @@ public final class DefaultWordRenderer extends AbstractWordRenderer {
 				}
 				line = new Line(chars, fonts, variations, frc);
 			}
-			int yBaseline = randomYOffset() ? randomBaseline(image.getHeight(), line.ascent, line.descent, random)
-					: image.getHeight() - (int) Math.round(image.getHeight() * yOffset());
+			int yBaseline = randomYOffset ? randomBaseline(image.getHeight(), line.ascent, line.descent, random)
+					: image.getHeight() - (int) Math.round(image.getHeight() * yOffset);
 
 			g.translate(xBaseline, yBaseline);
 			for (Shape glyph : line.glyphs) {
-				g.setColor(colorSupplier().get());
+				g.setColor(colorSupplier.get());
 				g.fill(glyph);
 			}
 		} finally {
 			g.dispose();
 		}
+	}
+
+	/**
+	 * Returns the size of {@link #DEFAULT_FONTS} in an image {@code height} pixels high: {@link #FONT_SIZE} at the
+	 * default height, and in proportion otherwise, in whole points.
+	 *
+	 * @param height image height
+	 * @return font size
+	 * @since 2.3
+	 */
+	static float fontSize(int height) {
+		return (float) Math.max(1, Math.floor((double) height * FONT_SIZE / FONT_SIZE_HEIGHT));
+	}
+
+	/**
+	 * Returns a random y-coordinate for the baseline of text that reaches {@code ascent} above it and {@code descent}
+	 * below it, anywhere the text fits in an image {@code height} pixels high. It keeps the text off the top and
+	 * bottom rows, where a border would touch it. Text too tall to fit is centred.
+	 *
+	 * @param height  image height
+	 * @param ascent  how far the text reaches above the baseline, such as the height of the pixels it inks
+	 * @param descent how far the text reaches below the baseline
+	 * @param random  a {@link Random}
+	 * @return y-coordinate of baseline
+	 * @since 2.3
+	 */
+	static int randomBaseline(int height, double ascent, double descent, Random random) {
+		int highest = (int) Math.ceil(ascent) + 1;
+		int lowest = height - 1 - (int) Math.ceil(descent);
+		if (lowest < highest) {
+			return (highest + lowest) / 2;
+		}
+		return highest + random.nextInt(lowest - highest + 1);
 	}
 
 	/**
@@ -165,6 +291,67 @@ public final class DefaultWordRenderer extends AbstractWordRenderer {
 			}
 		}
 		return bounds[0] > bounds[2] ? new double[4] : bounds;
+	}
+
+	/**
+	 * Returns a {@link Font} loaded from supplied {@code resourceName}.
+	 *
+	 * @param resourceName path to resource
+	 * @return loaded {@link Font}
+	 * @throws IllegalStateException if the font can't be loaded
+	 * @since 1.5
+	 * @see <a href="https://github.com/logicsquad/nanocaptcha/issues/37">#37</a>
+	 * @see <a href="https://github.com/logicsquad/nanocaptcha/issues/77">#77</a>
+	 */
+	private static Font fontFromResource(String resourceName) {
+		try (InputStream is = DefaultWordRenderer.class.getResourceAsStream(resourceName)) {
+			if (is == null) {
+				throw new IllegalStateException("NanoCaptcha's font '" + resourceName + "' is missing from the classpath.");
+			}
+			return Font.createFont(Font.TRUETYPE_FONT, is).deriveFont((float) FONT_SIZE);
+		} catch (IOException | FontFormatException e) {
+			throw cannotLoadFont(resourceName, e, Paths.get(System.getProperty("java.io.tmpdir")));
+		}
+	}
+
+	/**
+	 * Returns an exception explaining why the font {@code resourceName} couldn't be loaded. Java copies a font to a
+	 * temporary file before loading it, so this first checks that a file can be created in {@code temporaryDirectory}.
+	 * If it can, the likeliest cause is that the JDK can't use fonts at all.
+	 *
+	 * @param resourceName       path to resource
+	 * @param cause              what went wrong loading the font
+	 * @param temporaryDirectory the JVM's temporary directory
+	 * @return exception to throw
+	 * @see <a href="https://github.com/logicsquad/nanocaptcha/issues/77">#77</a>
+	 */
+	static IllegalStateException cannotLoadFont(String resourceName, Exception cause, Path temporaryDirectory) {
+		try {
+			Files.delete(Files.createTempFile(temporaryDirectory, "nanocaptcha", ".tmp"));
+		} catch (IOException | SecurityException e) {
+			IllegalStateException exception = new IllegalStateException("NanoCaptcha can't load its font '" + resourceName
+					+ "', because Java copies fonts to a temporary file before loading them, and it can't create one in '"
+					+ temporaryDirectory + "'. Mount a writable directory at /tmp, or set -Djava.io.tmpdir to one. "
+					+ "See https://github.com/logicsquad/nanocaptcha#running-in-containers", cause);
+			exception.addSuppressed(e);
+			return exception;
+		}
+		return new IllegalStateException("NanoCaptcha can't load its font '" + resourceName + "'. This usually means the JDK "
+				+ "can't use fonts at all, as in slim and Alpine container images: install fontconfig and a font package, "
+				+ "or use a JDK image that includes them. "
+				+ "See https://github.com/logicsquad/nanocaptcha#running-in-containers", cause);
+	}
+
+	/**
+	 * Returns a message saying that {@code font} can't display {@code c}.
+	 *
+	 * @param font a {@link Font}
+	 * @param c    a character {@code font} can't display
+	 * @return message
+	 * @see <a href="https://github.com/logicsquad/nanocaptcha/issues/38">#38</a>
+	 */
+	static String cannotDisplay(Font font, char c) {
+		return String.format("Font '%s' can't display '%c' (U+%04X).", font.getFontName(), c, (int) c);
 	}
 
 	/**
@@ -296,11 +483,174 @@ public final class DefaultWordRenderer extends AbstractWordRenderer {
 
 	/**
 	 * Builder for {@code DefaultWordRenderer}.
-	 * 
+	 *
 	 * @since 1.4
 	 */
-	public static class Builder extends AbstractWordRenderer.Builder {
-		@Override
+	public static final class Builder {
+		/**
+		 * X-axis offset
+		 */
+		private double xOffset;
+
+		/**
+		 * Y-axis offset
+		 */
+		private double yOffset;
+
+		/**
+		 * Whether to choose the y-offset at random for each render
+		 */
+		private boolean randomYOffset;
+
+		/**
+		 * Supplier for {@link Color}
+		 */
+		private Supplier<Color> colorSupplier;
+
+		/**
+		 * Supplier for {@link Font}
+		 */
+		private Supplier<Font> fontSupplier;
+
+		/**
+		 * Constructor
+		 */
+		public Builder() {
+			xOffset = X_OFFSET_DEFAULT;
+			yOffset = Y_OFFSET_DEFAULT;
+			colorSupplier = DEFAULT_COLOR_SUPPLIER;
+			fontSupplier = DEFAULT_FONT_SUPPLIER;
+			return;
+		}
+
+		/**
+		 * Sets y-offset value.
+		 *
+		 * @param yOffset y-offset (in [0, 1])
+		 * @return this
+		 */
+		public Builder yOffset(double yOffset) {
+			this.yOffset = yOffset;
+			randomYOffset = false;
+			return this;
+		}
+
+		/**
+		 * Sets x-offset value.
+		 *
+		 * @param xOffset x-offset (in [0, 1])
+		 * @return this
+		 */
+		public Builder xOffset(double xOffset) {
+			this.xOffset = xOffset;
+			return this;
+		}
+
+		/**
+		 * Chooses the y-offset at random each time the renderer renders, anywhere the text fits in the image.
+		 *
+		 * @return this
+		 */
+		public Builder randomiseYOffset() {
+			randomYOffset = true;
+			return this;
+		}
+
+		/**
+		 * Chooses each glyph's {@link Color} at random from the given {@link Color}s.
+		 *
+		 * @param color  the first {@link Color}
+		 * @param colors additional {@link Color}s (optional)
+		 * @return this
+		 * @since 2.0
+		 */
+		public Builder randomColor(Color color, Color... colors) {
+			List<Color> colorList = new ArrayList<>();
+			colorList.add(color);
+			Collections.addAll(colorList, colors);
+			return randomColor(colorList);
+		}
+
+		/**
+		 * Chooses each glyph's {@link Color} at random from {@code colors}. If the list is empty, the colours stay as they
+		 * were. The renderer keeps its own copy of the list, so changing {@code colors} afterwards doesn't change the
+		 * renderer.
+		 *
+		 * @param colors the list of {@link Color}s to choose from
+		 * @return this
+		 * @since 2.0
+		 * @see <a href="https://github.com/logicsquad/nanocaptcha/issues/64">#64</a>
+		 */
+		public Builder randomColor(List<Color> colors) {
+			if (!colors.isEmpty()) {
+				List<Color> copy = new ArrayList<>(colors);
+				colorSupplier = () -> copy.get(ThreadLocalRandom.current().nextInt(copy.size()));
+			}
+			return this;
+		}
+
+		/**
+		 * Draws every glyph in {@code color}.
+		 *
+		 * @param color a {@link Color}
+		 * @return this
+		 * @since 2.0
+		 */
+		public Builder color(Color color) {
+			colorSupplier = () -> color;
+			return this;
+		}
+
+		/**
+		 * Chooses each glyph's {@link Font} at random from the given {@link Font}s.
+		 *
+		 * @param font  the first {@link Font}
+		 * @param fonts additional {@link Font}s (optional)
+		 * @return this
+		 * @since 2.1
+		 */
+		public Builder randomFont(Font font, Font... fonts) {
+			List<Font> fontList = new ArrayList<>();
+			fontList.add(font);
+			Collections.addAll(fontList, fonts);
+			return randomFont(fontList);
+		}
+
+		/**
+		 * Chooses each glyph's {@link Font} at random from {@code fonts}. If the list is empty, the fonts stay as they
+		 * were. The renderer keeps its own copy of the list, so changing {@code fonts} afterwards doesn't change the
+		 * renderer.
+		 *
+		 * @param fonts the list of {@link Font}s to choose from
+		 * @return this
+		 * @since 2.1
+		 * @see <a href="https://github.com/logicsquad/nanocaptcha/issues/64">#64</a>
+		 */
+		public Builder randomFont(List<Font> fonts) {
+			if (!fonts.isEmpty()) {
+				List<Font> copy = new ArrayList<>(fonts);
+				fontSupplier = () -> copy.get(ThreadLocalRandom.current().nextInt(copy.size()));
+			}
+			return this;
+		}
+
+		/**
+		 * Draws every glyph in {@code font}, at its own size.
+		 *
+		 * @param font a {@link Font}
+		 * @return this
+		 * @since 2.1
+		 */
+		public Builder font(Font font) {
+			fontSupplier = () -> font;
+			return this;
+		}
+
+		/**
+		 * Builds the renderer described by this {@code Builder}.
+		 *
+		 * @return new {@link DefaultWordRenderer}
+		 */
 		public DefaultWordRenderer build() {
 			return new DefaultWordRenderer(this);
 		}

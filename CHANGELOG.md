@@ -426,9 +426,15 @@ them need `image.backgrounds.` changing to
 - Removed `FastWordRenderer`, deprecated in 2.3. Use
   `DefaultWordRenderer`
   instead. [#81](https://github.com/logicsquad/nanocaptcha/issues/81)
-- Removed `AbstractWordRenderer.RAND`, deprecated in 2.2. A renderer
-  of your own that used it can call `ThreadLocalRandom.current()`
-  instead. [#78](https://github.com/logicsquad/nanocaptcha/issues/78)
+- Removed `AbstractWordRenderer`, whose only subclass was
+  `DefaultWordRenderer`, and with it `AbstractWordRenderer.RAND`,
+  deprecated in 2.2. `DefaultWordRenderer.Builder`'s methods now
+  return `DefaultWordRenderer.Builder`, so `build()` gives a
+  `DefaultWordRenderer` after any of them. For a renderer of your
+  own, implement `WordRenderer`, which has one method, and take any
+  randomness from
+  `ThreadLocalRandom.current()`. [#78](https://github.com/logicsquad/nanocaptcha/issues/78)
+  [#85](https://github.com/logicsquad/nanocaptcha/issues/85)
 - Removed `Sample(String)` and `RandomNoiseProducer(String[])`,
   deprecated in 2.2, which only found resources that NanoCaptcha's
   own class loader and module could see. Use `Sample(URL)`, with a URL
