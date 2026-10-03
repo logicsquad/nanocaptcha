@@ -262,10 +262,19 @@ public final class AudioCaptcha {
 		return audio;
 	}
 
+	/**
+	 * Returns a description of this {@code AudioCaptcha} for debugging, with the length of its answer, but not the answer
+	 * itself, which would then end up wherever the description does. For the answer, use {@link #getContent()}.
+	 *
+	 * @return description
+	 * @see <a href="https://github.com/logicsquad/nanocaptcha/issues/70">#70</a>
+	 */
 	@Override
 	public String toString() {
-		StringBuilder sb = new StringBuilder(35);
-		sb.append("[AudioCaptcha: created=").append(created).append(" content='").append(content).append("']");
+		int length = content.codePointCount(0, content.length());
+		StringBuilder sb = new StringBuilder(64);
+		sb.append("[AudioCaptcha: created=").append(created).append(" content=").append(length)
+				.append(length == 1 ? " character]" : " characters]");
 		return sb.toString();
 	}
 

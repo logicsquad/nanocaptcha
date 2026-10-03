@@ -337,6 +337,11 @@ Image CAPTCHAs look different in this release:
   stream that fails throws an `UncheckedIOException`, rather than a
   `RuntimeException`. The messages say what the audio needs to
   be. [#65](https://github.com/logicsquad/nanocaptcha/issues/65)
+- `ImageCaptcha.toString()` and `AudioCaptcha.toString()` now give the
+  length of the answer, as in `content=5 characters`, rather than the
+  answer itself, which went wherever the description did: into logs,
+  error pages and templates. Use `getContent()` for the
+  answer. [#70](https://github.com/logicsquad/nanocaptcha/issues/70)
 - Renamed `Mixer` to `AudioMixer`, which doesn't clash with
   `javax.sound.sampled.Mixer`. A `NoiseProducer` of your own that uses
   it needs the new

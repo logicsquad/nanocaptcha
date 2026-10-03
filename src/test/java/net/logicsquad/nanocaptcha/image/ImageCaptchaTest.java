@@ -54,6 +54,15 @@ public class ImageCaptchaTest {
 	}
 
 	@Test
+	public void toStringGivesTheLengthOfTheAnswerButNotTheAnswer() {
+		ImageCaptcha captcha = new ImageCaptcha.Builder(200, 50).addContent(() -> "ab3xk").build();
+		assertEquals("[ImageCaptcha: created=" + captcha.getCreated() + " content=5 characters]", captcha.toString());
+		captcha = new ImageCaptcha.Builder(200, 50).addContent(() -> "a").build();
+		assertEquals("[ImageCaptcha: created=" + captcha.getCreated() + " content=1 character]", captcha.toString());
+		return;
+	}
+
+	@Test
 	public void isCorrectAcceptsOnlyTheContent() {
 		ImageCaptcha captcha = ImageCaptcha.create();
 		assertTrue(captcha.isCorrect(captcha.getContent()));

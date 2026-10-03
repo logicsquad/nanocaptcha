@@ -81,6 +81,13 @@ public class AudioCaptchaTest {
 	}
 
 	@Test
+	public void toStringGivesTheLengthOfTheAnswerButNotTheAnswer() {
+		AudioCaptcha captcha = new AudioCaptcha.Builder().addContent(() -> "12345").build();
+		assertEquals("[AudioCaptcha: created=" + captcha.getCreated() + " content=5 characters]", captcha.toString());
+		return;
+	}
+
+	@Test
 	public void isCorrectAcceptsOnlyTheContent() {
 		AudioCaptcha captcha = AudioCaptcha.create();
 		assertTrue(captcha.isCorrect(captcha.getContent()));
