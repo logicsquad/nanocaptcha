@@ -346,6 +346,12 @@ Image CAPTCHAs look different in this release:
   `javax.sound.sampled.Mixer`. A `NoiseProducer` of your own that uses
   it needs the new
   name. [#70](https://github.com/logicsquad/nanocaptcha/issues/70)
+- Image CAPTCHAs now have an opaque light grey background
+  (`Color.LIGHT_GRAY`) unless another is added, including those from
+  `ImageCaptcha.create()`, so they show on dark pages and can be
+  written as JPEG. `addBackground()` adds that background too. For a
+  transparent image, add a
+  `TransparentBackgroundProducer`. [#68](https://github.com/logicsquad/nanocaptcha/issues/68)
 
 ### Removed
 - Removed `ChineseContentProducer` and `ArabicContentProducer`,

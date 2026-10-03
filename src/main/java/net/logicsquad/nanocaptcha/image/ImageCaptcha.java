@@ -19,6 +19,7 @@ import javax.imageio.stream.MemoryCacheImageOutputStream;
 import net.logicsquad.nanocaptcha.content.ContentProducer;
 import net.logicsquad.nanocaptcha.content.LatinContentProducer;
 import net.logicsquad.nanocaptcha.image.backgrounds.BackgroundProducer;
+import net.logicsquad.nanocaptcha.image.backgrounds.FlatColorBackgroundProducer;
 import net.logicsquad.nanocaptcha.image.backgrounds.TransparentBackgroundProducer;
 import net.logicsquad.nanocaptcha.image.filter.ImageFilter;
 import net.logicsquad.nanocaptcha.image.filter.RippleImageFilter;
@@ -56,6 +57,11 @@ public final class ImageCaptcha {
 	private static final int DEFAULT_Y = 50;
 
 	/**
+	 * Colour of the default background
+	 */
+	private static final Color DEFAULT_BACKGROUND = Color.LIGHT_GRAY;
+
+	/**
 	 * Generated image
 	 */
 	private final BufferedImage image;
@@ -89,8 +95,9 @@ public final class ImageCaptcha {
 	 *
 	 * <ul>
 	 * <li>x- and y-dimensions 200 x 50, unless overridden by properties;</li>
-	 * <li>{@link LatinContentProducer} with length 5; and</li>
-	 * <li>{@link DefaultWordRenderer} with <em>its</em> defaults.</li>
+	 * <li>{@link LatinContentProducer} with length 5;</li>
+	 * <li>{@link DefaultWordRenderer} with <em>its</em> defaults; and</li>
+	 * <li>a light grey background, the {@link Builder}'s default.</li>
 	 * </ul>
 	 *
 	 * <p>
@@ -170,19 +177,21 @@ public final class ImageCaptcha {
 		}
 
 		/**
-		 * Adds a background using the default {@link BackgroundProducer} (a
-		 * {@link TransparentBackgroundProducer}).
+		 * Adds the default background, a flat light grey ({@link Color#LIGHT_GRAY}), which the image also gets if no
+		 * background is added.
 		 *
 		 * @return this
+		 * @see <a href="https://github.com/logicsquad/nanocaptcha/issues/68">#68</a>
 		 */
 		public Builder addBackground() {
-			return addBackground(new TransparentBackgroundProducer());
+			return addBackground(new FlatColorBackgroundProducer(DEFAULT_BACKGROUND));
 		}
 
 		/**
 		 * Adds a background using the given {@link BackgroundProducer}. Note that
 		 * adding more than one background does not have an additive effect: the last
-		 * background added is the winner.
+		 * background added is the winner. For a transparent image, add a
+		 * {@link TransparentBackgroundProducer}.
 		 *
 		 * @param backgroundProducer a {@link BackgroundProducer}
 		 * @return this
@@ -314,16 +323,17 @@ public final class ImageCaptcha {
 		public ImageCaptcha build() {
 			checkNotBuilt();
 			built = true;
-			if (background != null) {
-				// Paint the main image over the background
-				Graphics2D g = background.createGraphics();
-				g.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 1.0f));
-				g.drawImage(image, null, null);
-				g.dispose();
-				image = background;
+			if (background == null) {
+				background = new FlatColorBackgroundProducer(DEFAULT_BACKGROUND).getBackground(image.getWidth(), image.getHeight());
 			}
+			// Paint the main image over the background
+			Graphics2D g = background.createGraphics();
+			g.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 1.0f));
+			g.drawImage(image, null, null);
+			g.dispose();
+			image = background;
 			if (addBorder) {
-				Graphics2D g = image.createGraphics();
+				g = image.createGraphics();
 				g.setColor(Color.BLACK);
 				g.drawRect(0, 0, image.getWidth() - 1, image.getHeight() - 1);
 				g.dispose();

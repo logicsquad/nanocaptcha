@@ -28,12 +28,12 @@ You can build a minimal image CAPTCHA very easily:
 
     ImageCaptcha imageCaptcha = ImageCaptcha.create();
 
-This creates a 200 x 50 pixel image and adds five random characters
-from the Latin alphabet.  The `getImage()` method returns the image as
-a `BufferedImage` object. `isCorrect(String)` will verify the supplied
-string against the text content of the image. If you need the text
-content itself, call `getContent()`.  Image CAPTCHAs can be further
-customised by:
+This creates a 200 x 50 pixel image with a light grey background,
+and adds five random characters from the Latin alphabet. The
+`getImage()` method returns the image as a `BufferedImage` object.
+`isCorrect(String)` will verify the supplied string against the text
+content of the image. If you need the text content itself, call
+`getContent()`.  Image CAPTCHAs can be further customised by:
 
 * Using different `ContentProducer`s (e.g., `NumbersContentProducer`).
 * Supplying your own `Color`s and `Font`s.
@@ -81,11 +81,11 @@ To send an image CAPTCHA to a browser, `writePng()` writes it to an
 returns it as a `data:` URI, which can go straight into the `src` of
 an `<img>` tag, so there's no separate request for the image.
 
-Unless you add an opaque background, the image is transparent where
+An image with a `TransparentBackgroundProducer` is transparent where
 nothing is drawn, and JPEG can't store transparency, so
 `ImageIO.write(imageCaptcha.getImage(), "jpg", out)` returns `false`
-and writes nothing. Use PNG, or if you need a JPEG, add a background
-such as `FlatColorBackgroundProducer`.
+and writes nothing. Use PNG, or keep an opaque background, such as the
+default light grey.
 
 Building a minimal audio CAPTCHA is just as easy:
 

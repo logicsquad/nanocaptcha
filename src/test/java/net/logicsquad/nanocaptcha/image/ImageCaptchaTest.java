@@ -95,6 +95,25 @@ public class ImageCaptchaTest {
 	}
 
 	@Test
+	public void defaultsToAnOpaqueLightGreyBackground() throws IOException {
+		// create(), and a Builder with no background or the default one
+		List<ImageCaptcha> captchas = Arrays.asList(ImageCaptcha.create(), new ImageCaptcha.Builder(200, 50).build(),
+				new ImageCaptcha.Builder(200, 50).addBackground().addContent().build());
+		for (ImageCaptcha captcha : captchas) {
+			BufferedImage image = captcha.getImage();
+			assertEquals(Color.LIGHT_GRAY.getRGB(), image.getRGB(0, 0));
+			assertTrue(Arrays.stream(pixels(image)).allMatch(pixel -> pixel >>> 24 == 0xff), "not opaque");
+			// So it can be a JPEG (#45)
+			assertTrue(ImageIO.write(image, "jpg", new ByteArrayOutputStream()), "no JPEG");
+		}
+		// Transparency is a choice
+		BufferedImage image = new ImageCaptcha.Builder(200, 50).addBackground(new TransparentBackgroundProducer()).build()
+				.getImage();
+		assertEquals(0, image.getRGB(0, 0) >>> 24);
+		return;
+	}
+
+	@Test
 	public void addBorderDrawsEveryEdgePixelAndNothingElse() {
 		// Wide, and tall
 		for (int[] size : new int[][] { { 200, 50 }, { 60, 200 } }) {
@@ -104,7 +123,8 @@ public class ImageCaptchaTest {
 			for (int x = 0; x < width; x++) {
 				for (int y = 0; y < height; y++) {
 					boolean edge = x == 0 || y == 0 || x == width - 1 || y == height - 1;
-					assertEquals(edge ? Color.BLACK.getRGB() : 0, image.getRGB(x, y), width + " x " + height + ", pixel " + x + ", " + y);
+					assertEquals(edge ? Color.BLACK.getRGB() : Color.LIGHT_GRAY.getRGB(), image.getRGB(x, y),
+							width + " x " + height + ", pixel " + x + ", " + y);
 				}
 			}
 		}
@@ -163,9 +183,10 @@ public class ImageCaptchaTest {
 
 	@Test
 	public void toPngHoldsTheImage() throws IOException {
-		// Transparent, with a transparent background, and opaque
+		// The default background, a transparent one, and a gradient
 		List<ImageCaptcha> captchas = Arrays.asList(ImageCaptcha.create(),
-				new ImageCaptcha.Builder(200, 50).addBackground().addContent().addNoise().addFilter().addBorder().build(),
+				new ImageCaptcha.Builder(200, 50).addBackground(new TransparentBackgroundProducer()).addContent().addNoise()
+						.addFilter().addBorder().build(),
 				new ImageCaptcha.Builder(200, 50).addBackground(new GradiatedBackgroundProducer()).addContent().build());
 		for (ImageCaptcha captcha : captchas) {
 			assertHoldsImage(captcha.toPng(), captcha.getImage());
@@ -240,7 +261,8 @@ public class ImageCaptchaTest {
 	 * @param renderer a {@link WordRenderer}
 	 */
 	private static void assertDrawsText(WordRenderer renderer) {
-		ImageCaptcha captcha = new ImageCaptcha.Builder(200, 50).addContent(new LatinContentProducer(), renderer).build();
+		ImageCaptcha captcha = new ImageCaptcha.Builder(200, 50).addBackground(new TransparentBackgroundProducer())
+				.addContent(new LatinContentProducer(), renderer).build();
 		BufferedImage image = captcha.getImage();
 		assertEquals(200, image.getWidth());
 		assertEquals(50, image.getHeight());
