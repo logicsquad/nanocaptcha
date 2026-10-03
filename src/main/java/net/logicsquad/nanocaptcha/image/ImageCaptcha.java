@@ -233,7 +233,7 @@ public final class ImageCaptcha {
 		 *
 		 * @see <a href="https://github.com/logicsquad/nanocaptcha/issues/64">#64</a>
 		 */
-		public static final class Builder implements net.logicsquad.nanocaptcha.Builder<Factory> {
+		public static final class Builder {
 			/**
 			 * Image width
 			 */
@@ -419,7 +419,6 @@ public final class ImageCaptcha {
 			 * @return new {@link Factory}
 			 * @see <a href="https://github.com/logicsquad/nanocaptcha/issues/64">#64</a>
 			 */
-			@Override
 			public Factory build() {
 				return new Factory(this);
 			}

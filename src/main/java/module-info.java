@@ -9,7 +9,6 @@ module net.logicsquad.nanocaptcha {
 	// The API uses its types, such as BufferedImage and AudioInputStream, so modules that read NanoCaptcha read it too
 	requires transitive java.desktop;
 
-	exports net.logicsquad.nanocaptcha;
 	exports net.logicsquad.nanocaptcha.audio;
 	exports net.logicsquad.nanocaptcha.audio.noise;
 	exports net.logicsquad.nanocaptcha.audio.producer;

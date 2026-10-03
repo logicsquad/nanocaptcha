@@ -175,7 +175,7 @@ public final class AudioCaptcha {
 		 *
 		 * @see <a href="https://github.com/logicsquad/nanocaptcha/issues/64">#64</a>
 		 */
-		public static final class Builder implements net.logicsquad.nanocaptcha.Builder<Factory> {
+		public static final class Builder {
 			/**
 			 * {@link ContentProducer}s, whose content is read out in the order they were added
 			 */
@@ -280,7 +280,6 @@ public final class AudioCaptcha {
 			 * @return new {@link Factory}
 			 * @see <a href="https://github.com/logicsquad/nanocaptcha/issues/64">#64</a>
 			 */
-			@Override
 			public Factory build() {
 				return new Factory(this);
 			}

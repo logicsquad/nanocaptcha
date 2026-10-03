@@ -435,6 +435,10 @@ them need `image.backgrounds.` changing to
 - Removed the dependency on `slf4j-api`, so NanoCaptcha has no runtime
   dependencies at all, and on the module path it no longer needs
   `--add-modules org.slf4j`. [#65](https://github.com/logicsquad/nanocaptcha/issues/65)
+- Removed the `net.logicsquad.nanocaptcha.Builder` interface, which
+  nothing took, and with it the `net.logicsquad.nanocaptcha` package,
+  which held nothing
+  else. [#87](https://github.com/logicsquad/nanocaptcha/issues/87)
 
 ### Fixed
 - `ShearImageFilter` no longer crashes the JVM on Alpine when it

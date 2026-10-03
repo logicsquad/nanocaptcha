@@ -174,7 +174,7 @@ public abstract class AbstractWordRenderer implements WordRenderer {
 	/**
 	 * Builder for {@code AbstractWordRenderer}.
 	 */
-	public abstract static class Builder implements net.logicsquad.nanocaptcha.Builder<AbstractWordRenderer> {
+	public abstract static class Builder {
 		/**
 		 * X-axis offset
 		 */
@@ -336,6 +336,13 @@ public abstract class AbstractWordRenderer implements WordRenderer {
 			fontSupplier = () -> font;
 			return this;
 		}
+
+		/**
+		 * Builds the renderer described by this {@code Builder}.
+		 *
+		 * @return new renderer
+		 */
+		public abstract AbstractWordRenderer build();
 	}
 
 	/**
