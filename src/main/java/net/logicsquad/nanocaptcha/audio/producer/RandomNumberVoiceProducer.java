@@ -28,15 +28,9 @@ public class RandomNumberVoiceProducer implements VoiceProducer {
 	private static final Map<String, Sample> SAMPLES = new ConcurrentHashMap<>();
 
 	/**
-	 * Property key for declaring a default language (which will be used in the
-	 * no-args constructor) via 2-digit ISO 639 code
+	 * Language for the no-argument constructor, and for a language without built-in voices
 	 */
-	static final String DEFAULT_LANGUAGE_KEY = "net.logicsquad.nanocaptcha.audio.producer.RandomNumberVoiceProducer.defaultLanguage";
-
-	/**
-	 * Default language of last resort if there's nothing set by property
-	 */
-	private static final Locale FALLBACK_LANGUAGE = Locale.ENGLISH;
+	private static final Locale DEFAULT_LANGUAGE = Locale.ENGLISH;
 
 	/**
 	 * Prefix for locating voices
@@ -56,11 +50,6 @@ public class RandomNumberVoiceProducer implements VoiceProducer {
 			Locale.FRENCH, List.of("a"));
 
 	/**
-	 * Default {@link Locale}
-	 */
-	static volatile Locale defaultLanguage;
-
-	/**
 	 * Vocalizations to choose from for each digit, by digit. They're worked out in the constructor, rather than when
 	 * they're first needed, so that another thread sharing this object can't see them half done.
 	 *
@@ -74,18 +63,19 @@ public class RandomNumberVoiceProducer implements VoiceProducer {
 	final Locale language;
 
 	/**
-	 * Constructor resulting in object providing built-in voices to vocalize digits in the default language: English,
-	 * unless the {@code net.logicsquad.nanocaptcha.audio.producer.RandomNumberVoiceProducer.defaultLanguage} system
-	 * property names another supported language. The JVM's default {@link Locale} isn't used.
+	 * Constructor resulting in object providing built-in voices to vocalize digits in English. The JVM's default
+	 * {@link Locale} isn't used.
+	 *
+	 * @see <a href="https://github.com/logicsquad/nanocaptcha/issues/88">#88</a>
 	 */
 	public RandomNumberVoiceProducer() {
-		this(defaultLanguage());
+		this(DEFAULT_LANGUAGE);
 	}
 
 	/**
 	 * Constructor taking a language {@link Locale}. Only the language counts, so a regional {@link Locale} such as
-	 * {@link Locale#GERMANY} or {@code fr-CA} gets that language's voices. If {@code language} is not a supported
-	 * language, the default language will be used.
+	 * {@link Locale#GERMANY} or {@code fr-CA} gets that language's voices. If {@code language} isn't one with built-in
+	 * voices, English is used.
 	 *
 	 * @param language a {@link Locale} representing a language
 	 * @see <a href="https://github.com/logicsquad/nanocaptcha/issues/7">#7</a>
@@ -95,7 +85,7 @@ public class RandomNumberVoiceProducer implements VoiceProducer {
 	public RandomNumberVoiceProducer(Locale language) {
 		Objects.requireNonNull(language);
 		this.language = VOICES.keySet().stream().filter(l -> l.getLanguage().equals(language.getLanguage())).findFirst()
-				.orElseGet(RandomNumberVoiceProducer::defaultLanguage);
+				.orElse(DEFAULT_LANGUAGE);
 		vocalizations = vocalizations(this.language);
 		return;
 	}
@@ -128,29 +118,6 @@ public class RandomNumberVoiceProducer implements VoiceProducer {
 			throw new IllegalStateException("NanoCaptcha's vocalization '" + filename + "' is missing from the classpath.");
 		}
 		return new Sample(url);
-	}
-
-	/**
-	 * Returns a default {@link Locale} to use when not explicitly declared by constructor.
-	 *
-	 * @return default {@link Locale}
-	 * @see <a href="https://github.com/logicsquad/nanocaptcha/issues/7">#7</a>
-	 * @since 1.4
-	 */
-	static Locale defaultLanguage() {
-		if (defaultLanguage == null) {
-			synchronized (RandomNumberVoiceProducer.class) {
-				if (defaultLanguage == null) {
-					String language = System.getProperty(DEFAULT_LANGUAGE_KEY);
-					if (language == null || !VOICES.keySet().stream().map(l -> l.getLanguage()).anyMatch(s -> s.equals(language))) {
-						defaultLanguage = FALLBACK_LANGUAGE;
-					} else {
-						defaultLanguage = new Locale(language);
-					}
-				}
-			}
-		}
-		return defaultLanguage;
 	}
 
 	/**

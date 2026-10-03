@@ -97,6 +97,22 @@ public class ImageCaptchaTest {
 	}
 
 	@Test
+	public void createMakesA200By50ImageWhateverTheOldPropertiesSay() {
+		String prefix = "net.logicsquad.nanocaptcha.image.ImageCaptcha.";
+		System.setProperty(prefix + "defaultX", "300");
+		System.setProperty(prefix + "defaultY", "100");
+		try {
+			BufferedImage image = ImageCaptcha.create().getImage();
+			assertEquals(200, image.getWidth());
+			assertEquals(50, image.getHeight());
+		} finally {
+			System.clearProperty(prefix + "defaultX");
+			System.clearProperty(prefix + "defaultY");
+		}
+		return;
+	}
+
+	@Test
 	public void builderRefusesAnImageWithNoPixels() {
 		assertThrows(IllegalArgumentException.class, () -> new ImageCaptcha.Factory.Builder(0, 50));
 		assertThrows(IllegalArgumentException.class, () -> new ImageCaptcha.Factory.Builder(200, -1));

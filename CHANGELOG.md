@@ -441,6 +441,16 @@ them need `image.backgrounds.` changing to
   nothing took, and with it the `net.logicsquad.nanocaptcha` package,
   which held nothing
   else. [#87](https://github.com/logicsquad/nanocaptcha/issues/87)
+- Removed the system properties that changed NanoCaptcha's defaults:
+  `net.logicsquad.nanocaptcha.image.ImageCaptcha.defaultX` and
+  `defaultY`, for the size of `ImageCaptcha.create()`'s image, and
+  `net.logicsquad.nanocaptcha.audio.producer.RandomNumberVoiceProducer.defaultLanguage`,
+  for the language of `AudioCaptcha.create()` and
+  `new RandomNumberVoiceProducer()`. Those now always make a
+  200 × 50 image and use English, as does an unsupported language.
+  For anything else, build a factory, with
+  `new RandomNumberVoiceProducer(locale)` for another
+  language. [#88](https://github.com/logicsquad/nanocaptcha/issues/88)
 - Removed `FiveLetterFirstNameContentProducer`. It chose its answer
   from 7,235 first names, so a guess was right once in 7,235 tries,
   against once in about 6.4 million for five characters from

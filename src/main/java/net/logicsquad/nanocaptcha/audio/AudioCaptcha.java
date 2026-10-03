@@ -66,17 +66,18 @@ public final class AudioCaptcha {
 	 *
 	 * <ul>
 	 * <li>{@link NumbersContentProducer} with length 5; and</li>
-	 * <li>{@link RandomNumberVoiceProducer} in its default language.</li>
+	 * <li>{@link RandomNumberVoiceProducer} in English.</li>
 	 * </ul>
 	 *
 	 * <p>
-	 * That is, the audio clip will contain five numbers read out in English, unless the
-	 * {@code net.logicsquad.nanocaptcha.audio.producer.RandomNumberVoiceProducer.defaultLanguage} system property names
-	 * another supported language. The JVM's default {@link java.util.Locale Locale} isn't used.
+	 * That is, the audio clip will contain five numbers read out in English. The JVM's default
+	 * {@link java.util.Locale Locale} isn't used. For another language, build a {@link Factory} with a
+	 * {@link RandomNumberVoiceProducer} in that language.
 	 * </p>
 	 *
 	 * @return new {@code AudioCaptcha}
 	 * @since 2.0
+	 * @see <a href="https://github.com/logicsquad/nanocaptcha/issues/88">#88</a>
 	 */
 	public static AudioCaptcha create() {
 		return new Factory.Builder().addContent().build().create();

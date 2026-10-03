@@ -40,24 +40,14 @@ import net.logicsquad.nanocaptcha.image.renderer.WordRenderer;
  */
 public final class ImageCaptcha {
 	/**
-	 * Key for {@code defaultX} property
+	 * Width of the image {@link #create()} makes
 	 */
-	private static final String DEFAULT_X_KEY = "net.logicsquad.nanocaptcha.image.ImageCaptcha.defaultX";
+	private static final int DEFAULT_WIDTH = 200;
 
 	/**
-	 * Key for {@code defaultY} property
+	 * Height of the image {@link #create()} makes
 	 */
-	private static final String DEFAULT_Y_KEY = "net.logicsquad.nanocaptcha.image.ImageCaptcha.defaultY";
-
-	/**
-	 * Default x-value if {@code defaultX} not set
-	 */
-	private static final int DEFAULT_X = 200;
-
-	/**
-	 * Default y-value if {@code defaultY} not set
-	 */
-	private static final int DEFAULT_Y = 50;
+	private static final int DEFAULT_HEIGHT = 50;
 
 	/**
 	 * Colour of the default background
@@ -98,28 +88,22 @@ public final class ImageCaptcha {
 	 * </p>
 	 *
 	 * <ul>
-	 * <li>x- and y-dimensions 200 x 50, unless overridden by properties;</li>
+	 * <li>200 x 50 pixels;</li>
 	 * <li>{@link LatinContentProducer} with length 5;</li>
 	 * <li>{@link DefaultWordRenderer} with <em>its</em> defaults; and</li>
 	 * <li>a light grey background, the {@link Factory.Builder}'s default.</li>
 	 * </ul>
 	 *
 	 * <p>
-	 * To override the x- and y-dimensions for your project, you can set these properties:
+	 * For anything else, build a {@link Factory}.
 	 * </p>
-	 *
-	 * <ul>
-	 * <li>{@code net.logicsquad.nanocaptcha.image.ImageCaptcha.defaultX}</li>
-	 * <li>{@code net.logicsquad.nanocaptcha.image.ImageCaptcha.defaultY}</li>
-	 * </ul>
 	 *
 	 * @return new {@code ImageCaptcha}
 	 * @since 2.0
+	 * @see <a href="https://github.com/logicsquad/nanocaptcha/issues/88">#88</a>
 	 */
 	public static ImageCaptcha create() {
-		int width = Integer.getInteger(DEFAULT_X_KEY, DEFAULT_X);
-		int height = Integer.getInteger(DEFAULT_Y_KEY, DEFAULT_Y);
-		return new Factory.Builder(width, height).addContent().build().create();
+		return new Factory.Builder(DEFAULT_WIDTH, DEFAULT_HEIGHT).addContent().build().create();
 	}
 
 	/**

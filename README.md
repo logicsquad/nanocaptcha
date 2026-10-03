@@ -108,13 +108,10 @@ out in English. To customise your CAPTCHA, build an
 `AudioCaptcha.Factory` with its `Builder`, as for image CAPTCHAs.
 
 There is support for different languages. (Currently English, German
-and French are supported.) You can set the system property
-`net.logicsquad.nanocaptcha.audio.producer.RandomNumberVoiceProducer.defaultLanguage`
-to a 2-digit code for a supported language, e.g., `de`, and
-`AudioCaptcha.create()` will return German digit vocalizations. The
-JVM's default `Locale` isn't used. Alternatively, you can supply a
-`RandomNumberVoiceProducer` explicitly, for example in the language of
-each visitor to a web application:
+and French are supported.) `AudioCaptcha.create()` reads the digits
+in English, and the JVM's default `Locale` isn't used. For another
+language, supply a `RandomNumberVoiceProducer` explicitly, for example
+in the language of each visitor to a web application:
 
     AudioCaptcha audioCaptcha = new AudioCaptcha.Factory.Builder()
         .addContent()
@@ -123,7 +120,7 @@ each visitor to a web application:
         .create();
 
 Only the language counts, so `de-AT` gets German and `fr-CA` gets
-French, and an unsupported language gets the default. You can even mix
+French, and an unsupported language gets English. You can even mix
 languages by calling `addVoice()` with more than one
 `RandomNumberVoiceProducer`.
 
