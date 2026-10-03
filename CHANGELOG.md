@@ -319,3 +319,11 @@ Image CAPTCHAs look different in this release:
   was the bundled clips end to end, with the noise from its start at
   a fixed volume, so the noise could be subtracted and the clips
   matched. [#75](https://github.com/logicsquad/nanocaptcha/issues/75)
+
+
+## Release 3.0
+
+### Changed
+- NanoCaptcha now needs Java 17 or later: it compiles with
+  `--release 17`, and CI tests on Java 17, 21 and 25. On Java 8 to
+  16, use 2.3. [#63](https://github.com/logicsquad/nanocaptcha/issues/63)

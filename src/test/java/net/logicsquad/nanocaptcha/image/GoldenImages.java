@@ -13,8 +13,8 @@ import javax.imageio.ImageIO;
 
 /**
  * Compares images from tests with golden images stored under {@code src/test/resources/golden}. When a change to how
- * something looks is intended, regenerate them on Java 17 or later with {@code mvn test -Dgolden.update=true}, which
- * rewrites only the images that have changed, and look at those before committing them.
+ * something looks is intended, regenerate them with {@code mvn test -Dgolden.update=true}, which rewrites only the
+ * images that have changed, and look at those before committing them.
  *
  * @author <a href="mailto:paulh@logicsquad.net">Paul Hoadley</a>
  * @since 2.3

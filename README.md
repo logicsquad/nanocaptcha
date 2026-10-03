@@ -85,11 +85,10 @@ returns it as a `data:` URI, which can go straight into the `src` of
 an `<img>` tag, so there's no separate request for the image.
 
 Unless you add an opaque background, the image is transparent where
-nothing is drawn, and JPEG can't store transparency. On JDK 11 and
-later, `ImageIO.write(imageCaptcha.getImage(), "jpg", out)` returns
-`false` and writes nothing, and on JDK 8 it writes a JPEG that most
-viewers show in the wrong colours. Use PNG, or if you need a JPEG, add
-a background such as `FlatColorBackgroundProducer`.
+nothing is drawn, and JPEG can't store transparency, so
+`ImageIO.write(imageCaptcha.getImage(), "jpg", out)` returns `false`
+and writes nothing. Use PNG, or if you need a JPEG, add a background
+such as `FlatColorBackgroundProducer`.
 
 Building a minimal audio CAPTCHA is just as easy:
 

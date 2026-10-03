@@ -3,8 +3,6 @@ package net.logicsquad.nanocaptcha.image.backgrounds;
 import java.io.IOException;
 
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.condition.EnabledForJreRange;
-import org.junit.jupiter.api.condition.JRE;
 
 import net.logicsquad.nanocaptcha.image.GoldenImages;
 
@@ -28,12 +26,7 @@ public class BackgroundProducerGoldenImageTest {
 		return;
 	}
 
-	/**
-	 * Only on Java 17 and later. Earlier JDKs stroke shapes differently: Java 9 replaced the rasteriser with Marlin,
-	 * which has changed since.
-	 */
 	@Test
-	@EnabledForJreRange(min = JRE.JAVA_17)
 	public void squigglesBackgroundProducerMatchesGoldenImage() throws IOException {
 		assertMatches(new SquigglesBackgroundProducer());
 		return;

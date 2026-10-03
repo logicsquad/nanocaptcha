@@ -5,8 +5,6 @@ import java.io.IOException;
 import java.util.Random;
 
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.condition.EnabledForJreRange;
-import org.junit.jupiter.api.condition.JRE;
 
 import net.logicsquad.nanocaptcha.image.GoldenImages;
 
@@ -18,12 +16,7 @@ import net.logicsquad.nanocaptcha.image.GoldenImages;
  * @see GoldenImages
  */
 public class NoiseProducerGoldenImageTest {
-	/**
-	 * Only on Java 17 and later. Earlier JDKs stroke shapes differently: Java 9 replaced the rasteriser with Marlin,
-	 * which has changed since.
-	 */
 	@Test
-	@EnabledForJreRange(min = JRE.JAVA_17)
 	public void curvedLineNoiseProducerMatchesGoldenImage() throws IOException {
 		BufferedImage image = GoldenImages.input();
 		new CurvedLineNoiseProducer().makeNoise(image, new Random(GoldenImages.SEED));
